@@ -11,8 +11,13 @@ fi
 
 PY3="/Library/Frameworks/Python.framework/Versions/3.1/bin/python3.1"
 
+BEDTOOL_DIR="$HOME/chipseq/bedtools"
+
+pushd $BEDTOOL_DIR > /dev/null
+
 $PY3 pybed.py strand -v 1 $1 $2 > tempfile 
 streeng='^#0x0'$3
 grep $streeng tempfile | awk '{ SUM += $3} END { print SUM/2 }'
 rm -f tempfile
 
+popd > /dev/null
