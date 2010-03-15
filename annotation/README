@@ -1,0 +1,40 @@
+
+March 15, 2010
+--------------
+wget ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2ensembl.gz 
+gunzip gene2ensembl.gz
+grep ^10090 gene2ensembl > gene2ensembl_mouse
+
+
+March 15, 2010
+-------------- 
+GenomeAnnotationsM37.gff has duplicated rows e.g. ENSMUST00000073545
+removed them using uniq
+
+March 10, 2010
+--------------
+
+cp -p   /Volumes/aderem/ChIPSeq_Analysis/GenomeAnnotationsM37.gff . 
+
+awk '{print $9}' GenomeAnnotationsM37.gff | sed 's/ACC=\"//g' | sed 's/\"\;//g' > GenomeAnnotationsM37.ensids
+paste GenomeAnnotationsM37.ensids GenomeAnnotationsM37.gff > tempfile
+awk '{OFS="\t";print "chr"$2,$5,$6,$1,"",$8}' tempfile
+awk '{OFS="\t";print "chr"$2,$5,$6,$1,"",$8}' tempfile > GenomeAnnotationsM37.bed
+rm -f tempfile
+
+go in by hand and remove what remains of comment line preceding miRNA entries 
+
+March 9, 2010
+-------------
+
+Download from 
+
+http://hgdownload.cse.ucsc.edu/goldenPath/mm9/database/
+
+refGene.txt.gz (28-Feb-2010), unzip, rename then
+
+awk '{OFS="\t"; print $3,$5,$6,$2,"",$4}' refGene.mouse.txt > refGene.mouse.bed
+
+ensGene.txt.gz (16-Aug-2009) unzip, rename then
+
+awk '{OFS="\t"; print $3, $5, $6,$2,"",$4}' ensGene.mouse.txt > ensGene.mouse.bed
