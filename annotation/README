@@ -1,10 +1,25 @@
 
+
+
 March 15, 2010
 --------------
 wget ftp://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2ensembl.gz 
 gunzip gene2ensembl.gz
 grep ^10090 gene2ensembl > gene2ensembl_mouse
 
+This seems to be missing many ENSMUSTs so lets use BioMart
+
+ Dataset 34213 / 34213 Genes
+Mus musculus genes (NCBIM37)
+Mus musculus genes (NCBIM37)
+Filters
+[None selected]
+Attributes
+Ensembl Gene ID
+Ensembl Transcript ID
+EntrezGene ID
+
+mart_export.txt
 
 March 15, 2010
 -------------- 
