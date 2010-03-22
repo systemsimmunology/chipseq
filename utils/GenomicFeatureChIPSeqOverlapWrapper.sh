@@ -35,7 +35,7 @@ awk '{OFS="\t"; print $2,$3,$4,$5,$6,$7,$8}' $ofile > t1
 paste ensids ensids.eids ensids.gname t1 > t2
 rm -f ensids ensids.eids ensids.gname
 
-newheader="Genome Feature\tEnsemble ID\tSymbol\tFractional Overlap\tLength of Overlap\tLength of Genome Feature\tFeature Chromosome\tFeature Start\tFeature End\tFeature Strand"
+newheader="Genome Feature\tEntrez ID\tSymbol\tFractional Overlap\tLength of Overlap\tLength of Genome Feature\tFeature Chromosome\tFeature Start\tFeature End\tFeature Strand"
 
 tail +2 t2 > t3
 echo -e $newheader > t4
