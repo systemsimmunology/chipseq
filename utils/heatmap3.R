@@ -138,7 +138,7 @@ heatmap3 <- function (x, Rowv, Colv, distfun = dist, hclustfun = hclust,
     layout(ll, width = ll.width, height = ll.height, respect = TRUE)
     par(mar = margin)
     ##cat(par()$mar,"\n")
-    par(mar=c(11,4.1,4.1,11)
+    par(mar=c(11,4.1,4.1,11))
     image(1:ncol(x), 1:nrow(x), t(x), axes = FALSE, xlim = c(0.5, 
         ncol(x) + 0.5), ylim = c(0.5, nrow(x) + 0.5), xlab = "", 
         ylab = "", col = col, ...)

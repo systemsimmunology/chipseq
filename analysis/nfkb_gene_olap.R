@@ -1,5 +1,5 @@
 
-olap.gene <- as.vector(as.matrix(read.table("gene_nfkb_overlap.tsv",sep="\t", header=TRUE, as.is=TRUE,row.names=1)))
+olap.gene <- as.vector(as.matrix(read.table("../processed_data/gene_nfkb_overlap.tsv",sep="\t", header=TRUE, as.is=TRUE,row.names=1)))
 gene.minus.nfkb <- as.vector(as.matrix(read.table("gene_minus_nfkb.tsv",sep="\t", header=TRUE, as.is=TRUE,row.names=1)))
 nfkb.minus.gene <- as.vector(as.matrix(read.table("nfkb_minus_gene.tsv",sep="\t", header=TRUE, as.is=TRUE,row.names=1)))
 

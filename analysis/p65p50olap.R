@@ -1,12 +1,9 @@
+source("~/bin/R/functions/matrixUtils.R")
 
-olap <- as.matrix(read.table("overlap.tsv",sep="\t", header=TRUE, as.is=TRUE,row.names=1))
-
-odiff <- as.matrix(read.table("overlap_diff.tsv",sep="\t", header=TRUE, as.is=TRUE,row.names=1))
- 
-olap <- read.matrix("overlap.tsv")
+olap <- read.matrix("../processed_data/p50p65_overlap.tsv")
 colnames(olap) <- rownames(olap) ## fix the numerical prefix problem
 
-odiff <- read.matrix("overlap_diff.tsv")
+odiff <- read.matrix("../processed_data/p50p65_overlap_diff.tsv")
 colnames(odiff) <- rownames(odiff) ## fix the numerical prefix problem
 
 bfiles <- rownames(olap)
@@ -25,12 +22,6 @@ fracolap <- olap / ( olap + odiff + t(odiff))
 rownames(fracolap) <- bsimp
 colnames(fracolap) <- bsimp
 
-image(fracolap)
-heatmap(fracolap, Rowv=NA, Colv=NA, margins=c(15,15),revC=TRUE,scale="none", col = brewer.pal(9,"Blues"))
-
-#biocLite("Heatplus")
-heatmap_2(fracolap,do.dendro=c(FALSE,FALSE), legend = 2, scale="none", legfrac=7, col = brewer.pal(9,"Blues"))
-
 revcols <- function (mat){
   nc <- ncol(mat)
   mat[,seq(nc,1,-1)]
@@ -45,7 +36,8 @@ fracdiff <- odiff / ( olap + odiff )
 rownames(fracdiff) <- bsimp
 colnames(fracdiff) <- bsimp
 
-png=TRUE
+png=FALSE
+source("/Users/thorsson/chipseq/utils/heatmap3.R")
 
 if (!png) {x11()} else {png("Overlap_bpairs.png", height=700, width=700)}
 main="Base pair overlap"
