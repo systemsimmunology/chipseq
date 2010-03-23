@@ -1,9 +1,8 @@
 
 March 2010
 
-../utils/multi_compare.sh p50p65.bedlist p50p65.bedlist ../data/ 3 > ../processed_data/p50p65_overlap.tsv
-
-../utils/multi_compare.sh p50p65.bedlist p50p65.bedlist ../data/ 1 > ../processed_data/p50p65_overlap_diff.tsv
+../utils/multi_compare.sh ../auxfiles/p50p65.bedlist ../auxfiles/p50p65.bedlist ../data/ 3 > ../processed_data/p50p65_overlap.tsv
+../utils/multi_compare.sh ../auxfiles/p50p65.bedlist ../auxfiles/p50p65.bedlist ../data/ 1 > ../processed_data/p50p65_overlap_diff.tsv
 
 Run p65p50overlap.R
 
