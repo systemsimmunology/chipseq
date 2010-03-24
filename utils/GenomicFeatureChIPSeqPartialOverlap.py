@@ -19,6 +19,10 @@ olapfile = sys.argv[1]
 annotfeat_file = sys.argv[2]
 chip=sys.argv[3]
 
+annotfeat_file="../annotation/GenomeAnnotationsM37.bed"
+chip="20090529_1922_A_BMM_LPS_0240_PolII"
+olapfile = "../bedtools/temp.bed"
+
 ## Read in overlap file
 lines = open(olapfile).read().split('\n')
 lines = lines[0:-1]
@@ -46,39 +50,52 @@ for gl in glines:
 fnames = fchromo.keys()
 
 ## Need to go through pairs of lines 
+## If adjacent segments (lines) contain
+## polII, polII and GeneX 
+## we score that as an extension of GeneX
 
-## If belonging to annotfeat, add to bp coverage vector olaps (per annotated feature)
-olaps = {}
-for line in lines:
-    toks = line.split('\t')
-    chromo = toks[0]
-    start = int(toks[1])
-    end = int(toks[2])
-    tiktoks = toks[3].split(',')
-    havechip = chip in tiktoks
-    if ( havechip ):
-        ng = len(tiktoks) - 1 
-        if ( ng > 0 ): ## Process if something is found besides ChIP seq region
-            for i in range(1,(ng+1)): ## WARNING: Relies on ChIP file being "file 1" in pybed.comparison
-                annotfeat = tiktoks[i]
-                bpolap = end - start ## see comment * below
-                if ( olaps.has_key(annotfeat) ):
-                    olaps[annotfeat] = olaps[annotfeat] + bpolap
-                else:
-                    olaps[annotfeat] = bpolap
-                ##print annotfeat + " " + str(start) + " " + str(end) + '\n'
+for i in range(0,3):
+  print str(i) + "\n"
 
-annotfeats  = olaps.keys()
+prelap = {}
+for i in range(0,nlines-2):
+  
+  toksA = lines[i].split('\t')
+  chromoA = toksA[0]
+  startA = int(toksA[1])
+  endA = int(toksA[2])
+  tiktoksA = toksA[3].split(',')
+  havechipA = chip in tiktoksA
+  featsA = []
+  for tok in tiktoksA:
+    if  ( tok.find('ENSMUST') != -1 ):
+      featsA.append(tok)
+  nfeatsA = len(featsA)
+  
+  
+  toksB = lines[i+1].split('\t')
+  chromoB = toksB[0]
+  startB = int(toksB[1])
+  endB = int(toksB[2])
+  tiktoksB = toksB[3].split(',')
+  havechipB = chip in tiktoksB
+  featsB = []
+  for tok in tiktoksB:
+    if  ( tok.find('ENSMUST') != -1 ):
+      featsB.append(tok)
+  nfeatsB = len(featsB)
+
+  adjacent = endA==startB
+
+  if (adjacent & havechipA & havechipB & (nfeatsA==0) & (nfeatsB>0) ):
+    ng = nfeatsB
+    bpA = endA-startA+1
+    for feat in featsB:
+      prelap[feat] = bpA ## check if this can get overwritten 
+
+annotfeats  = prelap.keys()
 print "Genome Feature\tFractional Overlap\tLength of Overlap\tLength of Genome Feature\tFeature Chromosome\tFeature Start\tFeature End\tFeature Strand"
 for annotfeat in annotfeats:
-    reglength = olaps[annotfeat]/2 + 1
-    # divide by two to deal with a double counting problem: 
-    # * we overcount if we have the +1 in bpolap
-    # in rare cases were flanking regions begin and end at same point
-    flength = fend[annotfeat]-fstart[annotfeat]+1
-    fracolap=float(reglength)/float(flength)
-    print annotfeat + '\t' + str(round(fracolap,8)) + '\t' + str(reglength) + '\t' + \
-          str(flength) + '\t' + fchromo[annotfeat] + '\t' + str(fstart[annotfeat]) + '\t' + \
-          str(fend[annotfeat]) + '\t' + fstrand[annotfeat]
-
-            
+  print annotfeat + '\t' + str(prelap[annotfeat]) + '\t' + fchromo[annotfeat] + \
+      '\t' + str(fstart[annotfeat]) + '\t' + \
+      str(fend[annotfeat]) + '\t' + fstrand[annotfeat]
