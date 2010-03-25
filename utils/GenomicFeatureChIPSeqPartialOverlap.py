@@ -54,9 +54,6 @@ fnames = fchromo.keys()
 ## polII, polII and GeneX 
 ## we score that as an extension of GeneX
 
-for i in range(0,3):
-  print str(i) + "\n"
-
 prelap = {}
 for i in range(0,nlines-2):
   
