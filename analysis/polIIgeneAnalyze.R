@@ -1,5 +1,6 @@
 
-load("/Users/thorsson/allarrays/dev/lps.RData")
+load("../data/lps.RData")
+##c("dm.lps.exon","dm.lps.3prime","CSSs.tc.exon","CSSs.tc.3prime")
 
 rt <- read.table("../processed_data/20090529_1922_A_BMM_LPS_0240_PolII-geneoverlap.tsv",sep="\t",as.is=TRUE,header=TRUE)
 
@@ -76,10 +77,26 @@ inbothchips <- intersect(names(fracolap),names(fracolap.0))
 
 plot(fracolap.0[inbothchips],fracolap[inbothchips],main="Fractional Overlaps",xlab="t=0 (SLIMseq 1919)",ylab="t=4hr (SLIMseq 1922)")
 
-gg <- cbind(fracolap.0[inbothchips],fracolap[inbothchips])
+gg <- cbind(fracolap.0[inbothchips],fracolap[inbothchips],fracolap[inbothchips]/fracolap.0[inbothchips])
 rownames(gg) <- inbothchips
-colnames(gg) <- c("NonStim (1919)","4hr (1922)")
-  
+colnames(gg) <- c("NonStim (1919)","4hr (1922)","Ratio 4hr/0hr")
+ 
 ggout <- matrixPrintFormat(gg)
 
-write.table(ggout,file="PolIIfracolap0vs4hr.tsv",sep="\t",row.names=FALSE,col.names=FALSE)
+write.table(ggout,file="../processed_data/PolIIfracolap0vs4hr.tsv",sep="\t",row.names=FALSE,col.names=FALSE,quote=FALSE)
+
+v0 <- fracolap.0[inbothchips]
+v4 <- fracolap[inbothchips]
+rat40 <- v4/v0
+
+eid <- names(which(rat40>100 & v4>0.6))[1]
+
+plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon)
+
+names(which(rat40<0.01 & v0>0.8))
+
+eid <- names(which(rat40<0.01 & v0>0.6))[3]
+par(mfrow=c(1,2))
+plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon) 
+plotCSS(eid,CSSs.tc.3prime[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.3prime,tmax=12)
+
