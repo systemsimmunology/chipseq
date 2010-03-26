@@ -75,3 +75,11 @@ names(glen.0) <- rt0[["Entrez.ID"]][inds.0]
 inbothchips <- intersect(names(fracolap),names(fracolap.0))
 
 plot(fracolap.0[inbothchips],fracolap[inbothchips],main="Fractional Overlaps",xlab="t=0 (SLIMseq 1919)",ylab="t=4hr (SLIMseq 1922)")
+
+gg <- cbind(fracolap.0[inbothchips],fracolap[inbothchips])
+rownames(gg) <- inbothchips
+colnames(gg) <- c("NonStim (1919)","4hr (1922)")
+  
+ggout <- matrixPrintFormat(gg)
+
+write.table(ggout,file="PolIIfracolap0vs4hr.tsv",sep="\t",row.names=FALSE,col.names=FALSE)
