@@ -5,18 +5,19 @@
 # Input
 # 1. Overlap file, resulting from pybed.py ($PY3 pybed.py strand -v 0 -f chip.bed geneannot.bed )
 # 2. Genome Annotation file, in bed format
-# 3. String identifier for ChIP-seq experiment ( e.g. 20090805_1960_B_BMM_LPS_0240_PolII ) 
+# 3. Prefix for features in annotation file
+# 4. String identifier for ChIP-seq experiment ( e.g. 20090805_1960_B_BMM_LPS_0240_PolII ) 
 
 import sys
-import re
 
-if (len (sys.argv) != 4):
-  print 'error!  usage: GenomicFeatureChIPSeqOverlap.py <Overlap file from pybed.py> <Genome Annotation File> <ChIPseq ID>\n'
+if (len (sys.argv) != 5):
+  print 'error!  usage: GenomicFeatureChIPSeqOverlap.py <Overlap file from pybed.py> <Genome Annotation File> <Feature Prefix> <ChIPseq ID>\n'
   sys.exit ()
   
 olapfile = sys.argv[1]
 annotfeat_file = sys.argv[2]
-chip=sys.argv[3]
+featureprefix=sys.argv[3]
+chip=sys.argv[4]
 
 ## Read in overlap file
 lines = open(olapfile).read().split('\n')
@@ -51,20 +52,22 @@ for line in lines:
     chromo = toks[0]
     start = int(toks[1])
     end = int(toks[2])
+    bpolap = end - start  ## see comment * below
     tiktoks = toks[3].split(',')
     havechip = chip in tiktoks
-    if ( havechip ):
-        ng = len(tiktoks) - 1 
-        if ( ng > 0 ): ## Process if something is found besides ChIP seq region
-            for i in range(1,(ng+1)): ## WARNING: Relies on ChIP file being "file 1" in pybed.comparison
-                annotfeat = tiktoks[i]
-                bpolap = end - start ## see comment * below
-                if ( olaps.has_key(annotfeat) ):
-                    olaps[annotfeat] = olaps[annotfeat] + bpolap
-                else:
-                    olaps[annotfeat] = bpolap
-                ##print annotfeat + " " + str(start) + " " + str(end) + '\n'
+    feats = []
+    for tok in tiktoks:
+      if  ( tok.find(featureprefix) != -1 ):
+        feats.append(tok)
+    nfeats = len(feats)
 
+    if ( havechip & (nfeats>0)):
+      for feat in feats:
+        if ( olaps.has_key(feat) ):
+          olaps[feat] = olaps[feat] + bpolap
+        else:
+          olaps[feat] = bpolap
+                
 annotfeats  = olaps.keys()
 print "Genome Feature\tFractional Overlap\tLength of Overlap\tLength of Genome Feature\tFeature Chromosome\tFeature Start\tFeature End\tFeature Strand"
 for annotfeat in annotfeats:
@@ -77,5 +80,3 @@ for annotfeat in annotfeats:
     print annotfeat + '\t' + str(round(fracolap,8)) + '\t' + str(reglength) + '\t' + \
           str(flength) + '\t' + fchromo[annotfeat] + '\t' + str(fstart[annotfeat]) + '\t' + \
           str(fend[annotfeat]) + '\t' + fstrand[annotfeat]
-
-            
