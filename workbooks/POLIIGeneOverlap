@@ -5,6 +5,22 @@ March 31, 2010
 
 ../utils/CombineOverlapFiles.sh ../auxfiles/PolIIbedfiles > overlaptimecourse.tsv
 
+~/bin/reMap.py poolfile 1 ../annotation/refGene.mouse.bed 4 1 > chromo
+~/bin/reMap.py poolfile 1 ../annotation/refGene.mouse.bed 4 2 > start
+~/bin/reMap.py poolfile 1 ../annotation/refGene.mouse.bed 4 3 > end
+~/bin/reMap.py poolfile 1 ../annotation/refGene.mouse.bed 4 6 > strand
+
+~/bin/reMap.py poolfile 1 ~/data/ncbi/gene2refseqSimplified_NM_mouse 2 1 > t1 
+~/bin/reMap.py t1 1 ~/data/ncbi/gene_info_simplified_mouse 1 2  > t2
+paste poolfile t1 t2 chromo start end strand > t3
+tail +2 t3 > t4
+newheader="Genome Feature\tEntrez ID\tSymbol\tChromosome\tStart\tEnd\tStrand"  
+echo -e $newheader > t5
+cat t5 t4 > t6
+awk '{OFS="\t"; print $2, $3, $4, $5, $7, $8}' overlaptimecourse.tsv > t7
+paste t6 t7 > alloverlaps.tsv
+rm -f t1,t2,t3,t4,t5,t6,t7
+
 March 26, 2010
 --------------
 PolIIfracolap0vs4hr.tsv from polIIgeneAnalyze.R
