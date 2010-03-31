@@ -1,13 +1,13 @@
 #!/bin/bash
 #
-# For a chipseq BED file, computes overlap with annotation file with pybed.py
-# then parses that output file with GenomicFeatureChIPSeqOverlap.py
+# For a chipseq BED file, computes partial with annotation file with pybed.py
+# then parses that output file with GenomicFeatureChIPSeqPartialSeqOverlap.py
 # and finally includes additional annotations.
 
 WRONGARGS=1
-if [ $# != 1 ]
+if [ $# != 2 ]
 then
-  echo "Usage: `basename $0` <ChIPSeq BED file>" >&2
+  echo "Usage: `basename $0` <ChIPSeq BED file> <5 or 3 (prime end)>" >&2
   exit $WRONGARGS
 fi
 
@@ -29,10 +29,10 @@ cp -p temp.bed $startdir/.
 popd >& /dev/null
 
 ## Derive parsed overlap file
-ofile=$bedID.olap.tsv
+ofile=$bedID.$2polap.tsv
 
 echo "Creating:" $ofile
-../utils/GenomicFeatureChIPSeqOverlap.py temp.bed $featurefile $featureprefix $bedID > $ofile
+../utils/GenomicFeatureChIPSeqPartialOverlap.py temp.bed $featurefile $featureprefix $bedID $2> $ofile
 rm -f temp.bed
 
 if [ $featureprefix = "ENSMUST" ]; then
@@ -42,10 +42,10 @@ if [ $featureprefix = "ENSMUST" ]; then
     awk '{OFS="\t"; print $2,$3,$4,$5,$6,$7,$8}' $ofile > t1
     paste ensids ensids.eids ensids.gname t1 > t2
     rm -f ensids ensids.eids ensids.gname
-    newheader="Genome Feature\tEntrez ID\tSymbol\tFractional Overlap\tLength of Overlap\tLength of Genome Feature\tFeature Chromosome\tFeature Start\tFeature End\tFeature Strand"
+    newheader="Genome Feature\tEntrez ID\tSymbol\tExtension Length\tFeature Chromosome\tFeature Start\tFeature End\tFeature Strand"
     tail +2 t2 > t3
     echo -e $newheader > t4
-    finalfile=$bedID-geneoverlap.tsv
+    finalfile=$bedID-gene$2poverlap.tsv
     cat t4 t3 > $finalfile
     rm -f t1 t2 t3 t4
 fi
@@ -57,10 +57,10 @@ if [ $featureprefix = "NM_" ]; then
     awk '{OFS="\t"; print $2,$3,$4,$5,$6,$7,$8}' $ofile > t1
     paste refseqs enids gnames t1 > t2
     rm -f refseqs enids gnames
-    newheader="Genome Feature\tEntrez ID\tSymbol\tFractional Overlap\tLength of Overlap\tLength of Genome Feature\tFeature Chromosome\tFeature Start\tFeature End\tFeature Strand"
+    newheader="Genome Feature\tEntrez ID\tSymbol\tExtension Length\tFeature Chromosome\tFeature Start\tFeature End\tFeature Strand"
     tail +2 t2 > t3
     echo -e $newheader > t4
-    finalfile=$bedID-geneoverlap.tsv
+    finalfile=$bedID-gene$2poverlap.tsv
     cat t4 t3 > $finalfile
     rm -f t1 t2 t3 t4
 fi

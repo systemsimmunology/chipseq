@@ -1,26 +1,20 @@
-
-
-
-March 29, 2010
+March 31, 2010
 --------------
 
+../utils/GenomicFeatureChIPSeqOverlapMetaWrapper.sh ../auxfiles/PolIIbedfiles ../data/PolII/
 
-
+../utils/CombineOverlapFiles.sh ../auxfiles/PolIIbedfiles > overlaptimecourse.tsv
 
 March 26, 2010
 --------------
-
 PolIIfracolap0vs4hr.tsv from polIIgeneAnalyze.R
-
 
 March 25, 2010
 --------------
-
 ../utils/GenomicFeatureChIPSeqOverlapWrapper.sh ../data/PolII/20090611_1919_A_BMM_NoStim_0000_PolII.bed
 
 March 15, 2010
 --------------
-
 in processed_data
 
 ../utils/GenomicFeatureChIPSeqOverlapWrapper.sh ../data/PolII/20090529_1922_A_BMM_LPS_0240_PolII.bed
