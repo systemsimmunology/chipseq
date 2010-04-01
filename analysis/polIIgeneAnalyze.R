@@ -13,7 +13,6 @@ names(glen) <- rt[["Entrez.ID"]][inds]
 
 plot(fracolap,dm.lps.exon[names(fracolap),"BMDM_Bl6_LPS_0240___Female"])
 
-
 plot(fracolap,log(dm.lps.exon[names(fracolap),"BMDM_Bl6_LPS_0360___Female"]))
 
 x11()
@@ -99,4 +98,70 @@ eid <- names(which(rat40<0.01 & v0>0.6))[3]
 par(mfrow=c(1,2))
 plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon) 
 plotCSS(eid,CSSs.tc.3prime[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.3prime,tmax=12)
+
+##### Time course
+
+csconds <- c("t=0","t=1hr (1920)","t=1hr (1958)","t=2hr","t=4hr (1922)","t=4hr (1960)","t=6hr")
+
+ao <- read.table("../processed_data/alloverlaps.tsv",sep="\t",as.is=TRUE,header=TRUE)
+
+nms <- ao[["Genome.Feature"]]
+
+chipseq.eids <- ao[["Entrez.ID"]]
+names(chipseq.eids) <- nms
+
+chipseq.symbols <- ao[["Symbol"]]
+names(chipseq.symbols) <- nms
+
+bpolps <- as.matrix(ao[8:14])
+rownames(bpolps) <- nms
+colnames(bpolps) <- csconds
+
+nmlengths <- ao[["End"]]-ao[["Start"]]+1
+names(nmlengths) <- nms
+
+fracolap <- bpolps / nmlengths
+rownames(fracolap) <- nms
+colnames(fracolap) <- csconds
+
+baddies <- which(nms=="NM_175657")
+
+nms <- nms[-baddies]
+nmlengths <- nmlengths[-baddies]
+chipseq.eids <- chipseq.eids[-baddies]
+bpolps <- bpolps[-baddies,]
+fracolap <- fracolap[-baddies,]
+chipseq.symbols <- chipseq.symbols[-baddies]
+
+inboth <- intersect(row.names(dm.lps.exon),chipseq.eids)
+
+pairs(fracolap[1:5000,],pch=20)
+
+x11()
+pairs(bpolps)
+
+x11()
+pairs(fracolap)
+
+
+source("/Users/thorsson/allarrays/utils/utilitiesPlot.R")
+load("/Users/thorsson/data/ncbi/gene.symbol.RData")
+load("/Users/thorsson/data/ncbi/gene.eid.RData")
+
+gs="Nfkb1"
+bb <- names(which(chipseq.symbols==gs))
+
+nm=bb
+
+eid <- chipseq.eids[nm]
+
+par(mfrow=c(1,3))
+
+plot(fracolap[nm,],type='l',main=chipseq.symbols[nm],ylab="Fractional Overlap",xlab="",col='blue',ylim=c(0,1),xaxt="n")
+points(fracolap[nm,],x=1:7,type='p',col='blue',pch=19)
+axis(1,1:7,labels=csconds)
+
+plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon) 
+plotCSS(eid,CSSs.tc.3prime[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.3prime,tmax=12)
+
 
