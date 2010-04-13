@@ -1,5 +1,21 @@
 
-load("../data/lps.RData")
+
+source("/Users/thorsson/allarrays/utils/utilitiesPlot.R")
+load("/Users/thorsson/data/ncbi/gene.symbol.RData")
+load("/Users/thorsson/data/ncbi/gene.eid.RData")
+
+##load("../data/lps.RData")
+
+load("~/allarrays/data/20100407.curated.exon/CSSs.tc.RData")
+load("~/allarrays/data/20100407.curated.exon/dm.RData")
+dm.lps.exon <- dm
+CSSs.tc.exon <- CSSs.tc
+
+load("~/allarrays/data/20100407.curated.3prime/CSSs.tc.RData")
+load("~/allarrays/data/20100407.curated.3prime/dm.RData")
+dm.lps.3prime <- dm
+CSSs.tc.3prime <- CSSs.tc
+
 ##c("dm.lps.exon","dm.lps.3prime","CSSs.tc.exon","CSSs.tc.3prime")
 
 rt <- read.table("../processed_data/20090529_1922_A_BMM_LPS_0240_PolII-geneoverlap.tsv",sep="\t",as.is=TRUE,header=TRUE)
@@ -95,6 +111,7 @@ plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon)
 names(which(rat40<0.01 & v0>0.8))
 
 eid <- names(which(rat40<0.01 & v0>0.6))[3]
+
 par(mfrow=c(1,2))
 plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon) 
 plotCSS(eid,CSSs.tc.3prime[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.3prime,tmax=12)
@@ -143,12 +160,7 @@ pairs(bpolps)
 x11()
 pairs(fracolap)
 
-
-source("/Users/thorsson/allarrays/utils/utilitiesPlot.R")
-load("/Users/thorsson/data/ncbi/gene.symbol.RData")
-load("/Users/thorsson/data/ncbi/gene.eid.RData")
-
-gs="Nfkb1"
+gs="Cxcl2"
 bb <- names(which(chipseq.symbols==gs))
 
 nm=bb
@@ -156,12 +168,114 @@ nm=bb
 eid <- chipseq.eids[nm]
 
 par(mfrow=c(1,3))
-
 plot(fracolap[nm,],type='l',main=chipseq.symbols[nm],ylab="Fractional Overlap",xlab="",col='blue',ylim=c(0,1),xaxt="n")
 points(fracolap[nm,],x=1:7,type='p',col='blue',pch=19)
 axis(1,1:7,labels=csconds)
-
 plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon) 
 plotCSS(eid,CSSs.tc.3prime[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.3prime,tmax=12)
+
+### fracolap: Some kind of EntrezID summarization would be good
+u.eids <- unique(chipseq.eids)
+nms <- rownames(fracolap)
+
+nms.of.eid <- list()
+for ( eid in u.eids ){
+  nms.of.eid[[eid]] <- nms[which(chipseq.eids==eid)]
+}
+
+frac.olap <- numeric()
+for ( eid in u.eids ){
+  enems <- nms.of.eid[[eid]]
+  if ( length(enems) == 1 ){
+    vec <- fracolap[enems,]
+  } else {
+    vec <- apply(fracolap[enems,],2,mean)
+  }
+  frac.olap <- rbind(frac.olap,vec)
+}
+rownames(frac.olap) <- u.eids
+
+
+### Need to separate into the subgroups
+rt <- as.character(read.table("/Users/thorsson/chipseq/annotation/Ramirez_Carozzi_gene_list_eid.txt")$V1)
+primary.response.eids <- rt[1:26]
+primary.response.eids <- rt[1:26]
+
+
+##
+###
+## Data exploration
+##
+##
+##
+
+cs <- colnames(dm.lps.3prime)[1:8]
+a <- apply(dm.lps.3prime[,cs],1,max)
+
+rats <- dm.lps.3prime[,cs[2:8]]/dm.lps.3prime[,1]
+b <- log(apply(rats,1,max))
+
+sete <- names(which(a>=300 & abs(b)>=log(3.)))
+setf <- intersect(row.names(frac.olap),sete)
+
+## frac.olap is between 0 and 1
+## how do we define "interesting"
+
+c <- apply(frac.olap,1,max)
+setg <- names(which(c>0.2))
+
+seth <- intersect(setg,setf)
+  
+  
+kinplot <- function (eid) {
+  par(mfrow=c(1,3))
+  plot(frac.olap[eid,],type='l',main=gene.symbol[eid],ylab="Fractional Overlap",xlab="",col='blue',ylim=c(0,1),xaxt="n")
+  points(frac.olap[eid,],x=1:7,type='p',col='blue',pch=19)
+  axis(1,1:7,labels=csconds)
+  plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon) 
+  plotCSS(eid,CSSs.tc.3prime[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.3prime,tmax=8)
+}
+
+combo <- cbind(frac.olap[seth,],dm.lps.3prime[seth,1:8])
+
+hc <- hclust(dist(frac.olap[seth,]))                                
+all.cluster.members <- cutree(hc,4)
+
+c1 <- names(which(all.cluster.members==1))
+c2 <- names(which(all.cluster.members==2))
+c3 <- names(which(all.cluster.members==3))
+c4 <- names(which(all.cluster.members==4))
+
+# c1 rises, then peaks late ?
+# c2 2 hrs onwards
+# c3 strong on
+# c4 early -- expression rises rapidly
+# where are the ones that drop off?
+
+source("~/bin/R/functions/plottingUtils.R")
+
+par(mfrow=c(4,2))
+
+profileplot(frac.olap[c1,],main="",ylim=c(0,1))
+profileplot(frac.olap[c2,],main="",ylim=c(0,1))
+profileplot(frac.olap[c3,],main="",ylim=c(0,1))
+profileplot(frac.olap[c4,],main="",ylim=c(0,1))
+
+profileplot(dm.lps.3prime[c1,],main="",ylim=c(0,10000))
+profileplot(dm.lps.3prime[c2,],main="",ylim=c(0,10000))
+profileplot(dm.lps.3prime[c3,],main="",ylim=c(0,10000))
+profileplot(dm.lps.3prime[c4,],main="",ylim=c(0,10000))
+
+
+
+par(mfrow=c(4,2))
+profileplot(frac.olap[c1,],main="",ylim=c(0,1))
+profileplot(dm.lps.3prime[c1,],main="",ylim=c(0,10000))
+profileplot(frac.olap[c2,],main="",ylim=c(0,1))
+profileplot(dm.lps.3prime[c2,],main="",ylim=c(0,10000))
+profileplot(frac.olap[c3,],main="",ylim=c(0,1))
+profileplot(dm.lps.3prime[c3,],main="",ylim=c(0,10000))
+profileplot(frac.olap[c4,],main="",ylim=c(0,1))
+profileplot(dm.lps.3prime[c4,],main="",ylim=c(0,10000))
 
 
