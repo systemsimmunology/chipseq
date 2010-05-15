@@ -6,7 +6,7 @@ bb <- read.table("../data/20080606_1348_B_BMM_LPS_0060_P50.bed",sep="\t",as.is=T
 # should be 5 plus multiples of 5
 
 for ( i in 2:10 ){
-  toks <- split1(bb[i],'\t')  
+  toks <- tokens(bb[i],'\t')  
   ll <- length(toks)
   nfmax <- floor(ll/5)-1
   cat("Ntoks:", ll,nfmax,"\n")
