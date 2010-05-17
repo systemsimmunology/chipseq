@@ -1,5 +1,5 @@
 
-
+ 
 source("/Users/thorsson/allarrays/utils/utilitiesPlot.R")
 load("/Users/thorsson/data/ncbi/gene.symbol.RData")
 load("/Users/thorsson/data/ncbi/gene.eid.RData")
@@ -29,8 +29,6 @@ glen <- rt[["Length.of.Genome.Feature"]][inds]
 names(glen) <- rt[["Entrez.ID"]][inds]
 
 plot(fracolap,dm.lps.exon[names(fracolap),"BMDM_Bl6_LPS_0240___Female"])
-
-plot(fracolap,log(dm.lps.exon[names(fracolap),"BMDM_Bl6_LPS_0360___Female"]))
 
 x11()
 png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/LPS4hrsOlapVsTLength.png", width=800,height=600)
@@ -183,7 +181,7 @@ nms.of.eid <- list()
 for ( eid in u.eids ){
   nms.of.eid[[eid]] <- nms[which(chipseq.eids==eid)]
 }
-
+ 
 frac.olap <- numeric()
 for ( eid in u.eids ){
   enems <- nms.of.eid[[eid]]
@@ -230,10 +228,8 @@ c <- apply(frac.olap,1,max)
 ## Keep only profiles with fractional overlap above a certain threshold
 setg <- names(which(c>0.2))
 
-
 seth <- intersect(setg,setf)
-  
-  
+    
 kinplot <- function (eid) {
   par(mfrow=c(1,3))
   plot(frac.olap[eid,],type='l',main=gene.symbol[eid],ylab="Fractional Overlap",xlab="",col='blue',ylim=c(0,1),xaxt="n")
@@ -260,9 +256,8 @@ heatmap(frac.olap[seth,],Colv=NA, margins=c(15,15),revC=TRUE,scale="none", col =
 
 heatmap(frac.olap[seth,],Colv=NA, margins=c(15,15),revC=TRUE,scale="none", col = brewer.pal(9,"Blues"),labRow=FALSE)
 
-png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/heatmap1.png")
-
-png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/heatmap3.png")
+##png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/heatmap1.png")
+##png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/heatmap3.png")
 
 hc <- hclust(dist(frac.olap[seth,]))                                
 all.cluster.members <- cutree(hc,4)
@@ -272,7 +267,13 @@ c2 <- names(which(all.cluster.members==2))
 c3 <- names(which(all.cluster.members==3))
 c4 <- names(which(all.cluster.members==4))
 
-# c1 rises, then peaks late ?
+## Attempt to get plot including all but c1
+png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/Clusters234.png")
+heatmap(frac.olap[setdiff(seth,c1),],Colv=NA, margins=c(15,15),revC=TRUE,scale="none", col = brewer.pal(9,"Blues"),labRow=FALSE)
+dev.off()
+
+
+# c1 "everything else"
 # c2 2 hrs onwards
 # c3 strong on
 # c4 early -- expression rises rapidly
@@ -317,31 +318,35 @@ plot(apply(dm.lps.3prime[c4,],2,median),type='l')
 ##
 simpcolheads <- c("0","20 min","40 min","1 hr","80 min","2 hr","4 hr","6 hr","8 hr","12 hr","18 hr", "24 hr")
 colnames(dm.lps.3prime) <- simpcolheads
-
+  
 goldratio <- (1+sqrt(5))/2
 
-png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/EarlyPolII.png",height=480,width=(goldratio*480))
+
+png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/EarlyPolII.png",height=480,width=(goldratio*480))
+op <- par(font=1,lwd=2,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
 profileplot(frac.olap[c4,],main="",ylim=c(0,1))
 dev.off()
 
-png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/EarlyPolIIExpression.png",height=480,width=(goldratio*480))
+png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/EarlyPolIIExpression.png",height=480,width=(2*480))
+op <- par(font=1,lwd=3,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
 profileplot(dm.lps.3prime[c4,1:8],main="",ylim=c(0,12000))
 dev.off()
 
-
-png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/LatePolII.png",height=480,width=(goldratio*480))
+png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/LatePolII.png",height=480,width=(goldratio*480))
 profileplot(frac.olap[c2,],main="",ylim=c(0,1))
 dev.off()
 
-png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/LatePolIIExpression.png",height=480,width=(goldratio*480))
+png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/LatePolIIExpression.png",height=480,width=(2*480))
+op <- par(font=1,lwd=3,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
 profileplot(dm.lps.3prime[c2,1:8],main="",ylim=c(0,12000))
 dev.off()
 
-png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/SustainedPolII.png",height=480,width=(goldratio*480))
+png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/SustainedPolII.png",height=480,width=(goldratio*480))
 profileplot(frac.olap[c3,],main="",ylim=c(0,1))
 dev.off()
-
-png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/SustainedPolIIExpression.png",height=480,width=(goldratio*480))
+ 
+png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/SustainedPolIIExpression.png",height=480,width=(2*480))
+op <- par(font=1,lwd=3,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
 profileplot(dm.lps.3prime[c3,1:8],main="",ylim=c(0,12000))
 dev.off()
 
@@ -354,3 +359,58 @@ dev.off()
 cordist <- 1-cor(t(frac.olap[seth,]))
 
 ## can't seem to get into heatmap right away
+
+
+##
+##
+## Gene Groups
+##
+ca <- as.character(read.table("/Users/thorsson/data/GeneOntology/CytokineActivity.tsv")$V1)
+seti <- intersect(ca,seth)
+
+## Multi-dimensional scaling view
+fit <- cmdscale(dist.genes,eig=TRUE,k=2)
+x <- fit$points[,1]
+y <- fit$points[,2]
+ 
+png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/PolIIMDS.png",height=750,width=750)
+     
+x11()
+
+op <- par(font=1,lwd=1,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
+main <- ""
+plot(x, y, xlab="", ylab="", main=main,axes=FALSE)
+axis(1, labels = FALSE)
+axis(2, labels = FALSE)
+text(x, y, labels=gene.symbol[seth],cex=0.9,pos=3)
+
+## cainds <- which(ca %in% seth)
+## This is wrong, don't know why: points(x[cainds],y[cainds],col='red',pch=19)
+## x and y come with labels
+points(x[seti],y[seti],col='green',pch=19)
+
+par(op)
+
+dev.off()
+
+## Cytokines emphasized
+ 
+png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/PolIIMDSCKines.png",height=750,width=750)
+##x11()
+op <- par(font=1,lwd=1,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
+main <- ""
+plot(x, y, xlab="", ylab="", main=main,axes=FALSE)
+axis(1, labels = FALSE)
+axis(2, labels = FALSE)
+cklabs <- character(length=length(seth))
+names(cklabs) <- seth
+cklabs[seti] <- gene.symbol[seti]
+## cainds <- which(ca %in% seth)
+## This is wrong, don't know why: points(x[cainds],y[cainds],col='red',pch=19)
+## x and y come with labels
+points(x[seti],y[seti],col='green',pch=19)
+text(x, y, labels=cklabs,cex=1.0,pos=sample(4,length(seti),replace=T))
+par(op)
+dev.off()
+
+
