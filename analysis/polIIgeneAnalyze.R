@@ -195,12 +195,6 @@ for ( eid in u.eids ){
 rownames(frac.olap) <- u.eids
 
 
-### Primary and Secondary response genes
-### Need to separate into the subgroups
-rt <- as.character(read.table("/Users/thorsson/chipseq/annotation/Ramirez_Carozzi_gene_list_eid.txt")$V1)
-primary.response.eids <- rt[1:26]
-primary.response.eids <- rt[1:26]
-
 
 ##
 ###
@@ -360,21 +354,31 @@ cordist <- 1-cor(t(frac.olap[seth,]))
 
 ## can't seem to get into heatmap right away
 
-
 ##
 ##
 ## Gene Groups
 ##
 ca <- as.character(read.table("/Users/thorsson/data/GeneOntology/CytokineActivity.tsv")$V1)
-seti <- intersect(ca,seth)
+
+## Poseid genes in rogers set
+## awk '{print $5}' poised-genes.tab | awk -F "/" '{print $1}' > poised_eid
+poised.eid <-as.character(read.table("/Users/thorsson/chipseq/analysis/poised_eid")$V1)
+
+### Primary and Secondary response genes
+### Need to separate into the subgroups
+rt <- as.character(read.table("/Users/thorsson/chipseq/annotation/Ramirez_Carozzi_gene_list_eid.txt")$V1)
+primary.response.eids <- rt[1:55]
+## we will need to do more slicing to get the full list
+secondary.response.eids <- rt[56:67]
 
 ## Multi-dimensional scaling view
+dist.genes <- dist(frac.olap[seth,])
 fit <- cmdscale(dist.genes,eig=TRUE,k=2)
 x <- fit$points[,1]
 y <- fit$points[,2]
  
 png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/PolIIMDS.png",height=750,width=750)
-     
+
 x11()
 
 op <- par(font=1,lwd=1,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
@@ -387,11 +391,34 @@ text(x, y, labels=gene.symbol[seth],cex=0.9,pos=3)
 ## cainds <- which(ca %in% seth)
 ## This is wrong, don't know why: points(x[cainds],y[cainds],col='red',pch=19)
 ## x and y come with labels
+seti <- intersect(ca,seth)
 points(x[seti],y[seti],col='green',pch=19)
+
+## Poised genes in red
+setj <- intersect(seth,poised.eid)
+points(x[setj],y[setj],col='red',pch=19)
+
+## primary response gnes in blue
+setk <- intersect(seth, primary.response.eids)
+points(x[setk],y[setk],col='blue',pch=19)
+
+## secondary response genes in magenta
+setl <- intersect(seth, secondary.response.eids)
+points(x[setl],y[setl],col='magenta',pch=19)
+
+
+
 
 par(op)
 
 dev.off()
+
+
+poised.eid <-as.character(read.table("/Users/thorsson/chipseq/analysis/poised_eid")$V1)
+setj <- intersect(seth,poised.eid)
+
+setk <- intersect(seth, primary.response.eids)
+
 
 ## Cytokines emphasized
  
@@ -409,6 +436,24 @@ cklabs[seti] <- gene.symbol[seti]
 ## This is wrong, don't know why: points(x[cainds],y[cainds],col='red',pch=19)
 ## x and y come with labels
 points(x[seti],y[seti],col='green',pch=19)
+text(x, y, labels=cklabs,cex=1.0,pos=sample(4,length(seti),replace=T))
+par(op)
+dev.off()
+
+### Poised Genes emphasized
+##x11()
+op <- par(font=1,lwd=1,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
+main <- ""
+plot(x, y, xlab="", ylab="", main=main,axes=FALSE)
+axis(1, labels = FALSE)
+axis(2, labels = FALSE)
+cklabs <- character(length=length(seth))
+names(cklabs) <- seth
+cklabs[setj] <- gene.symbol[setj]
+## cainds <- which(ca %in% seth)
+## This is wrong, don't know why: points(x[cainds],y[cainds],col='red',pch=19)
+## x and y come with labels
+points(x[setj],y[setj],col='red',pch=19)
 text(x, y, labels=cklabs,cex=1.0,pos=sample(4,length(seti),replace=T))
 par(op)
 dev.off()
