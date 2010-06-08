@@ -2,8 +2,10 @@
 #
 # For a chipseq BED file, computes overlap with annotation file with pybed.py
 # then parses that output file with GenomicFeatureChIPSeqOverlap.py
-# and finally includes additional annotations.
-
+# and finally, includes additional annotations.
+#
+# Output:$bedID-geneoverlap.tsv
+#
 WRONGARGS=1
 if [ $# != 1 ]
 then

@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# Combine multiple overlap calculations (one for each BED file) into matrix form
+#
+# Output to standard out
 
 WRONGARGS=1
 if [ $# != 1 ]

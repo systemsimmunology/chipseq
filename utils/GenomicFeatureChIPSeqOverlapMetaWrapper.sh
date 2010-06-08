@@ -1,9 +1,10 @@
 #!/bin/bash
 #
-# Compare multiple bed files, using all_chromo.sh (using Roger's pybed.py )
-#
-#
-
+# Wrapper for running GenomicFeatureChIPSeqOverlapWrapper.sh
+# on multiple BED files
+# Output for each is 
+# $bedID-geneoverlap.tsv
+# 
 WRONGARGS=1
 if [ $# != 2 ]
 then
