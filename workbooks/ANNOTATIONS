@@ -1,5 +1,10 @@
 
+June 10, 2010
+-------------
 
+wget ftp://hgdownload.cse.ucsc.edu/goldenPath/mm9/bigZips/upstream1000.fa.gz
+
+grep ^\> upstream1000.fa > upstream1000.faheaders
 
 March 15, 2010
 --------------
