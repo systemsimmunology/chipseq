@@ -18,7 +18,8 @@ bfiles=( $(cat $bfilelist ) )
 nb=${#bfiles[@]}
 
 UTILDIR="$HOME/chipseq/utils/"
-OUTDIR="$HOME/chipseq/processed_data"
+#OUTDIR="$HOME/chipseq/processed_data"
+OUTDIR=$PWD
 
 rm -f poolfile
 for (( i=0 ; i<$nb ; i++ )); do

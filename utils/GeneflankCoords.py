@@ -17,7 +17,7 @@ if (len (sys.argv) != 4):
   sys.exit ()
   
 infile = sys.argv[1]
-regionlength = sys.argv[2]
+regionlength = int(sys.argv[2])
 region = sys.argv[3]
 
 ## Read in overlap file

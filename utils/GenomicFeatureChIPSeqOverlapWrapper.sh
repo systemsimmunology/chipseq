@@ -7,25 +7,28 @@
 # Output:$bedID-geneoverlap.tsv
 #
 WRONGARGS=1
-if [ $# != 1 ]
+if [ $# != 3 ]
 then
-  echo "Usage: `basename $0` <ChIPSeq BED file>" >&2
+  echo "Usage: `basename $0` <ChIPSeq BED file> <feature BED file> <Feature Prefix>" >&2
   exit $WRONGARGS
 fi
 
 PY3="/Library/Frameworks/Python.framework/Versions/3.1/bin/python3.1"
 
-featurefile="../annotation/GenomeAnnotationsM37.bed"
-featureprefix="ENSMUST"
+#featurefile="../annotation/GenomeAnnotationsM37.bed"
+#featureprefix="ENSMUST"
 
-featurefile="../annotation/refGene.mouse.bed"
-featureprefix="NM_"
+#featurefile="../annotation/refGene.mouse.bed"
+#featureprefix="NM_"
+
+featurefile=$2
+featureprefix=$3
 
 startdir=$PWD
 bedID=`basename $1 .bed`
 
 ## Go to bedtools and run pybed.py
-pushd "/Users/thorsson/chipseq/bedtools" >& /dev/null
+pushd ~/chipseq/bedtools >& /dev/null
 $PY3 pybed.py strand -v 0 -f $1 $featurefile > temp.bed
 cp -p temp.bed $startdir/. 
 popd >& /dev/null
@@ -34,7 +37,7 @@ popd >& /dev/null
 ofile=$bedID.olap.tsv
 
 echo "Creating:" $ofile
-../utils/GenomicFeatureChIPSeqOverlap.py temp.bed $featurefile $featureprefix $bedID > $ofile
+~/chipseq/utils/GenomicFeatureChIPSeqOverlap.py temp.bed $featurefile $featureprefix $bedID > $ofile
 rm -f temp.bed
 
 if [ $featureprefix = "ENSMUST" ]; then
