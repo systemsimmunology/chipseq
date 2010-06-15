@@ -62,3 +62,38 @@ kinplot <- function (eid) {
   plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon) 
   plotCSS(eid,CSSs.tc.3prime[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.3prime,tmax=8)
 }
+
+#
+# 5 prime upstream
+#
+ao <- read.table("../processed_data/AcH4upstream5kb/AcH4-upstream5kb.alloverlaps.tsv",sep="\t",as.is=TRUE,header=TRUE)
+ach4.csconds <- c("t=0 (1934)","t=0 (1873)","t=1hr (1874)","t=1hr (1935)","t=2hr (1875)","t=2hr (1936)","t=4hr (1938)","t=4hr (H41877)")
+nms <- ao[["Genome.Feature"]]
+chipseq.eids <- ao[["Entrez.ID"]]
+names(chipseq.eids) <- nms
+chipseq.symbols <- ao[["Symbol"]]
+names(chipseq.symbols) <- nms
+ach4up5.bpolps <- as.matrix(ao[8:15])
+rownames(ach4up5.bpolps) <- nms
+colnames(ach4up5.bpolps) <- ach4.csconds
+
+### ach4up5.bpolps: Some kind of EntrezID summarization would be good
+u.eids <- unique(chipseq.eids)
+nms <- rownames(ach4up5.bpolps)
+nms.of.eid <- list()
+for ( eid in u.eids ){
+  nms.of.eid[[eid]] <- nms[which(chipseq.eids==eid)]
+} 
+ach4up5.bpolp <- numeric()
+for ( eid in u.eids ){
+  enems <- nms.of.eid[[eid]]
+  if ( length(enems) == 1 ){
+    vec <- ach4up5.bpolps[enems,]
+  } else {
+    vec <- apply(ach4up5.bpolps[enems,],2,mean)
+  }
+  ach4up5.bpolp <- rbind(ach4up5.bpolp,vec)
+}
+rownames(ach4up5.bpolp) <- u.eids
+
+
