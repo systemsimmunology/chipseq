@@ -1,4 +1,46 @@
 
+June 16, 2010
+-------------
+cd processed_data/PolIIupstream5kb
+~/chipseq/utils/GenomicFeatureChIPSeqOverlapMetaWrapper.sh ~/chipseq/auxfiles/PolIIbedfiles ~/chipseq/data/PolII/ ~/chipseq/annotation/refGene.mouse.upstream5kb.bed NM_
+~/chipseq/utils/CombineOverlapFiles.sh ~/chipseq/auxfiles/PolIIbedfiles PolII-upstream5kb.overlaptimecourse.tsv
+awk '{print $1}' PolII-upstream5kb.overlaptimecourse.tsv > poolfile
+~/bin/reMap.py poolfile 1 ~/chipseq/annotation/refGene.mouse.upstream5kb.bed 4 1 > chromo
+~/bin/reMap.py poolfile 1 ~/chipseq/annotation/refGene.mouse.upstream5kb.bed 4 2 > start
+~/bin/reMap.py poolfile 1 ~/chipseq/annotation/refGene.mouse.upstream5kb.bed 4 3 > end
+~/bin/reMap.py poolfile 1 ~/chipseq/annotation/refGene.mouse.upstream5kb.bed 4 6 > strand
+~/bin/reMap.py poolfile 1 ~/data/ncbi/gene2refseqSimplified_NM_mouse 2 1 > t1 
+~/bin/reMap.py t1 1 ~/data/ncbi/gene_info_simplified_mouse 1 2  > t2
+paste poolfile t1 t2 chromo start end strand > t3
+tail +2 t3 > t4
+newheader="Genome Feature\tEntrez ID\tSymbol\tChromosome\tStart\tEnd\tStrand"  
+echo -e $newheader > t5
+cat t5 t4 > t6
+awk '{OFS="\t"; print $2, $3, $4, $5, $6, $7, $8, $9, $10}' PolII-upstream5kb.overlaptimecourse.tsv > t7
+paste t6 t7 > PolII-upstream5kb.alloverlaps.tsv
+rm -f t1 t2 t3 t4 t5 t6 t7
+rm -f poolfile chromo start end strand 
+
+cd processed_data/PolIIdownstream5kb
+~/chipseq/utils/GenomicFeatureChIPSeqOverlapMetaWrapper.sh ~/chipseq/auxfiles/PolIIbedfiles ~/chipseq/data/PolII/ ~/chipseq/annotation/refGene.mouse.downstream5kb.bed NM_
+~/chipseq/utils/CombineOverlapFiles.sh ~/chipseq/auxfiles/PolIIbedfiles PolII-downstream5kb.overlaptimecourse.tsv
+awk '{print $1}' PolII-downstream5kb.overlaptimecourse.tsv > poolfile
+~/bin/reMap.py poolfile 1 ~/chipseq/annotation/refGene.mouse.downstream5kb.bed 4 1 > chromo
+~/bin/reMap.py poolfile 1 ~/chipseq/annotation/refGene.mouse.downstream5kb.bed 4 2 > start
+~/bin/reMap.py poolfile 1 ~/chipseq/annotation/refGene.mouse.downstream5kb.bed 4 3 > end
+~/bin/reMap.py poolfile 1 ~/chipseq/annotation/refGene.mouse.downstream5kb.bed 4 6 > strand
+~/bin/reMap.py poolfile 1 ~/data/ncbi/gene2refseqSimplified_NM_mouse 2 1 > t1 
+~/bin/reMap.py t1 1 ~/data/ncbi/gene_info_simplified_mouse 1 2  > t2
+paste poolfile t1 t2 chromo start end strand > t3
+tail +2 t3 > t4
+newheader="Genome Feature\tEntrez ID\tSymbol\tChromosome\tStart\tEnd\tStrand"  
+echo -e $newheader > t5
+cat t5 t4 > t6
+awk '{OFS="\t"; print $2, $3, $4, $5, $6, $7, $8, $9, $10}' PolII-downstream5kb.overlaptimecourse.tsv > t7
+paste t6 t7 > PolII-downstream5kb.alloverlaps.tsv
+rm -f t1 t2 t3 t4 t5 t6 t7
+rm -f poolfile chromo start end strand 
+
 March 31, 2010
 --------------
 
