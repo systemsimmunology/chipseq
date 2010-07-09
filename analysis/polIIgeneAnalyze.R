@@ -236,11 +236,8 @@ dev.off()
 
 poised.eid <-as.character(read.table("/Users/thorsson/chipseq/analysis/poised_eid")$V1)
 setj <- intersect(seth,poised.eid)
-
 setk <- intersect(seth, primary.response.eids)
-
-## Cytokines emphasized
- 
+## Cytokines emphasized 
 png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/PolIIMDSCKines.png",height=750,width=750)
 ##x11()
 op <- par(font=1,lwd=1,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
@@ -276,5 +273,33 @@ points(x[setj],y[setj],col='red',pch=19)
 text(x, y, labels=cklabs,cex=1.0,pos=sample(4,length(seti),replace=T))
 par(op)
 dev.off()
+
+
+##
+## July 2010
+##
+
+## Investigate relations between regional occupancies
+
+load("/Users/thorsson/data/ncbi/gene.symbol.RData")
+load("/Users/thorsson/data/ncbi/gene.eid.RData")
+
+load("../processed_data/polII.fracolap.RData")
+set.eids <- union(rownames(polIIdown5.fracolap),union(rownames(polIIgene.fracolap),rownames(polIIup5.fracolap)))
+conds <- colnames(polIIdown5.fracolap)
+nconds <- length(conds)
+
+polII.fracolap.cube <- rep(0,length(set.eids)*3*nconds)
+dim(polII.fracolap.cube) <- c(length(set.eids),3,nconds)
+dimnames(polII.fracolap.cube)[[3]] <- conds
+dimnames(polII.fracolap.cube)[[2]] <- c("5prime","gene","3prime")
+dimnames(polII.fracolap.cube)[[1]] <- set.eids
+
+polII.fracolap.cube[rownames(polIIup5.fracolap),"5prime",] <- polIIup5.fracolap
+polII.fracolap.cube[rownames(polIIgene.fracolap),"gene",] <- polIIgene.fracolap
+polII.fracolap.cube[rownames(polIIdown5.fracolap),"3prime",] <- polIIdown5.fracolap
+
+library(RColorBrewer)
+image(t(polII.fracolap.cube[gene.eid["Irf7"],,]),col = brewer.pal(9,"Blues"))
 
 
