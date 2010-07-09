@@ -22,6 +22,7 @@ plot.polII <- function (eid) {
   if ( eid %in% rownames(polIIdown5.fracolap) ){
     points(polIIdown5.fracolap[eid,],x=1:7,type='l',col='red',pch=19)
   }
+  polII.csconds <- c("t=0","t=1hr (1920)","t=1hr (1958)","t=2hr","t=4hr (1922)","t=4hr (1960)","t=6hr")
   axis(1,1:7,labels=polII.csconds)
   legend(1,1,legend=c("5k upstream","gene","5k downstream"),col=c('green','blue','red'),lwd=3)
 }
@@ -38,6 +39,7 @@ plot.ach4 <- function (eid) {
   if ( eid %in% rownames(ach4down5.fracolap) ){
     points(ach4down5.fracolap[eid,],x=1:8,type='l',col='red',pch=19)
   }
+  ach4.csconds <- c("t=0 (1934)","t=0 (1873)","t=1hr (1874)","t=1hr (1935)","t=2hr (1875)","t=2hr (1936)","t=4hr (1938)","t=4hr (H41877)")  
   axis(1,1:8,labels=ach4.csconds)
   legend(1,1,legend=c("5k upstream","gene","5k downstream"),col=c('green','blue','red'),lwd=3)
 }
