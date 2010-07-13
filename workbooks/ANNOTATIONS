@@ -1,10 +1,10 @@
 
-June 10, 2010
+June 15, 2010
 -------------
 
-wget ftp://hgdownload.cse.ucsc.edu/goldenPath/mm9/bigZips/upstream1000.fa.gz
-
-grep ^\> upstream1000.fa > upstream1000.faheaders
+In annotation
+../utils/GeneflankCoords.py refGene.mouse.bed 5000 downstream > refGene.mouse.downstream5kb.bed
+../utils/GeneflankCoords.py refGene.mouse.bed 5000 upstream > refGene.mouse.upstream5kb.bed
 
 March 15, 2010
 --------------

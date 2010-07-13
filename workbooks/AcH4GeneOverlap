@@ -2,9 +2,6 @@
 June 15, 2010
 --------------
 
-In annotation
-../utils/GeneflankCoords.py refGene.mouse.bed 5000 downstream > refGene.mouse.downstream5kb.bed
-
 cd processed_data/AcH4downstream5kb
 
 ~/chipseq/utils/GenomicFeatureChIPSeqOverlapMetaWrapper.sh ~/chipseq/auxfiles/AcH4bedfiles ~/chipseq/data/AcH4/ ~/chipseq/annotation/refGene.mouse.downstream5kb.bed NM_
@@ -32,8 +29,6 @@ rm -f poolfile chromo start end strand
 
 June 11, 2010
 -------------
-In annotation
-../utils/GeneflankCoords.py refGene.mouse.bed 5000 upstream > refGene.mouse.upstream5kb.bed
 
 cd processed_data/AcH4upstream5kb
 
