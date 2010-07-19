@@ -300,6 +300,12 @@ polII.fracolap.cube[rownames(polIIgene.fracolap),"gene",] <- polIIgene.fracolap
 polII.fracolap.cube[rownames(polIIdown5.fracolap),"3prime",] <- polIIdown5.fracolap
 
 library(RColorBrewer)
-image(t(polII.fracolap.cube[gene.eid["Irf7"],,]),col = brewer.pal(9,"Blues"))
 
+image(t(polII.fracolap.cube[gene.eid["Il23"],,]),col = brewer.pal(9,"Blues"))
+
+ugdPlot <- function ( eid ){
+  image(t(polII.fracolap.cube[eid,,]),col = brewer.pal(9,"Blues"),axes=FALSE,main=gene.symbol[eid])
+  axis(1,labels=csconds,at=(0:6)/6)
+  axis(2,labels=c("5k up","gene","5k down"),at=c(0,1/2,1))
+}
 
