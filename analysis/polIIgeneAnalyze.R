@@ -80,7 +80,7 @@ all.cluster.members <- cutree(hc,4)
 c1 <- names(which(all.cluster.members==1))
 c2 <- names(which(all.cluster.members==2))
 c3 <- names(which(all.cluster.members==3))
-c4 <- names(which(all.cluster.members==4))
+
 
 ## Attempt to get plot including all but c1
 png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/Clusters234.png")
@@ -294,7 +294,6 @@ dim(polII.fracolap.cube) <- c(length(set.eids),3,nconds)
 dimnames(polII.fracolap.cube)[[3]] <- conds
 dimnames(polII.fracolap.cube)[[2]] <- c("5prime","gene","3prime")
 dimnames(polII.fracolap.cube)[[1]] <- set.eids
-
 polII.fracolap.cube[rownames(polIIup5.fracolap),"5prime",] <- polIIup5.fracolap
 polII.fracolap.cube[rownames(polIIgene.fracolap),"gene",] <- polIIgene.fracolap
 polII.fracolap.cube[rownames(polIIdown5.fracolap),"3prime",] <- polIIdown5.fracolap
@@ -308,4 +307,20 @@ ugdPlot <- function ( eid ){
   axis(1,labels=csconds,at=(0:6)/6)
   axis(2,labels=c("5k up","gene","5k down"),at=c(0,1/2,1))
 }
+
+
+## Matrix form for clustering
+polII.fracolap.mat <- rep(0,length(set.eids)*3*nconds)
+dim(polII.fracolap.mat) <- c(length(set.eids),3*nconds)
+dimnames(polII.fracolap.mat)[[2]] <- c(paste("5 prime",conds),paste("gene",conds),paste("3 prime",conds))
+dimnames(polII.fracolap.mat)[[1]] <- set.eids
+polII.fracolap.mat[rownames(polIIup5.fracolap),1:7] <- polIIup5.fracolap
+polII.fracolap.mat[rownames(polIIgene.fracolap),8:14] <- polIIgene.fracolap
+polII.fracolap.mat[rownames(polIIdown5.fracolap),15:21] <- polIIdown5.fracolap
+
+heatmap(polII.fracolap.mat[seth,],Colv=NA, margins=c(15,15),revC=TRUE,scale="none", col = brewer.pal(9,"Blues"),labRow=FALSE)
+
+v <- names(sort(polII.fracolap.mat[seth,5],decreasing=TRUE))
+vv <- names(sort(polII.fracolap.mat[seth,5]/polII.fracolap.mat[seth,12],decreasing=TRUE))
+w <- intersect(vv[1:25],v[1:25])
 
