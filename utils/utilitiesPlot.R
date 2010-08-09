@@ -63,8 +63,9 @@ plot.ach4 <- function (eid) {
 ugdPlot <- function ( eid ){
   lkb <- round(eidlength[eid],-2)/1000
   main <- paste(gene.symbol[eid],",",lkb,"kb")
-  image(t(polII.fracolap.cube[eid,,]),col = brewer.pal(9,"Blues"),axes=FALSE,main=main)
-  axis(1,labels=csconds,at=(0:6)/6)
-  axis(2,labels=c("5k up","gene","5k down"),at=c(0,1/2,1))
+#  image(polII.fracolap.cube[eid,,],col = brewer.pal(9,"Blues"),axes=FALSE,main=main)
+  image(polII.fracolap.cube[gene.eid["Il17ra"],,length(polII.csconds):1],col = brewer.pal(9,"Blues"),axes=FALSE,main=main)
+  axis(2,labels=rev(polII.csconds),at=(0:6)/6)
+  axis(1,labels=c("5k up","gene","5k down"),at=c(0,1/2,1))
 }
 
