@@ -302,3 +302,5 @@ library(RColorBrewer)
 
 image(t(polII.fracolap.cube[gene.eid["Il23"],,]),col = brewer.pal(9,"Blues"))
 
+load("/Users/thorsson/chipseq/annotation/eidlength.RData")
+polII.csconds <- c("t=0","t=1hr (rep1)","t=1hr (rep2)","t=2hr","t=4hr (rep1)","t=4hr (rep2)","t=6hr")
