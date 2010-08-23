@@ -118,7 +118,7 @@ nconds <- length(polII.csconds)
 set.eids <- union(rownames(polIIdown5.fracolap),union(rownames(polIIgene.fracolap),rownames(polIIup5.fracolap)))
 polII.fracolap.cube <- rep(0,length(set.eids)*3*nconds)
 dim(polII.fracolap.cube) <- c(length(set.eids),3,nconds)
-dimnames(polII.fracolap.cube)[[3]] <- conds
+dimnames(polII.fracolap.cube)[[3]] <- polII.csconds
 dimnames(polII.fracolap.cube)[[2]] <- c("5prime","gene","3prime")
 dimnames(polII.fracolap.cube)[[1]] <- set.eids
 polII.fracolap.cube[rownames(polIIup5.fracolap),"5prime",] <- polIIup5.fracolap

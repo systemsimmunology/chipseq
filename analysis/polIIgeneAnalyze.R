@@ -3,16 +3,19 @@
 ## 
 ## simplified condition names
 polII.csconds <- c("t=0","t=1hr (rep1)","t=1hr (rep2)","t=2hr","t=4hr (rep1)","t=4hr (rep2)","t=6hr")
-load("/Users/thorsson/data/ncbi/gene.symbol.RData")
-load("/Users/thorsson/data/ncbi/gene.eid.RData")
+load("~/data/ncbi/gene.symbol.RData")
+load("~/data/ncbi/gene.eid.RData")
 load("../processed_data/polII.fracolap.RData")
+load("../processed_data/ach4.fracolap.RData")
 load("../processed_data/polII.nm.fracolap.RData")
-load("/Users/thorsson/chipseq/annotation/eidlength.RData")
-load("/Users/thorsson/chipseq/annotation/nmlength.RData")
+load("../processed_data/polII.fracolap.cube.RData")
+load("~/chipseq/annotation/eidlength.RData")
+load("~/chipseq/annotation/nmlength.RData")
 library(RColorBrewer)
 source("/Users/thorsson/chipseq/utils/heatmap3.R")
 source("~/bin/R/functions/plottingUtils.R")
-source("/Users/thorsson/allarrays/utils/utilitiesPlot.R") ## required for plotCSS
+source("~/allarrays/utils/utilitiesPlot.R") ## required for plotCSS
+source("../utils/utilitiesPlot.R")
 ## Expression data needed for filtering, plots etc.
 load("~/allarrays/data/20100407.curated.exon/CSSs.tc.RData")
 load("~/allarrays/data/20100407.curated.exon/dm.RData")
@@ -24,10 +27,10 @@ dm.lps.3prime <- dm
 CSSs.tc.3prime <- CSSs.tc
 
 ## Pairwise gene overlaps between samples
+x11()
 pairs(polIIgene.nm.fracolap[1:5000,],pch=20)
-x11()
+## full version
 pairs(polIIgene.nm.bpolps)
-x11()
 pairs(polIIgene.nm.fracolap)
 
 ##
@@ -37,6 +40,12 @@ cs <- colnames(dm.lps.3prime)[1:8] ## up to 6hrs only
 max.abs <- apply(dm.lps.3prime[,cs],1,max)
 rats <- dm.lps.3prime[,cs[2:8]]/dm.lps.3prime[,1]
 max.rats <- log(apply(rats,1,max))
+
+cs.exon <- colnames(dm.lps.exon)[1:4] ## up to 4hrs only
+max.abs.exon <- apply(dm.lps.exon[,cs.exon],1,max)
+rats.exon <- dm.lps.exon[,cs.exon[2:4]]/dm.lps.exon[,1]
+max.rats.exon <- log(apply(rats.exon,1,max))
+
 ## Keep only genes exceeding an absolute and log ratio treshold
 expchange.eids <- names(which(max.abs>=300 & abs(max.rats)>=log(3.)))
 ## Make sure we have binding measurements (in gene only)
@@ -48,6 +57,11 @@ c <- apply(polIIgene.fracolap,1,max)
 fracolap.nolo.eids <- names(which(c>0.2))
 larger.changes.eids <- intersect(fracolap.nolo.eids,expchange.haveP2.eids)
 
+## Strong binding signatures but no expression 
+expnochange.eids <- intersect(names(which(max.abs<300 & abs(max.rats)<log(1.5))),
+                              names(which(max.abs.exon<300 & abs(max.rats.exon)<log(1.5))))
+expnochange.haveP2.eids <- intersect(row.names(polIIgene.fracolap),expnochange.eids)
+changes.butno.expression <- intersect(fracolap.nolo.eids,expnochange.haveP2.eids)
 
 heatmap3(polIIgene.fracolap[larger.changes.eids,],do.dendro=c(TRUE,FALSE), main="",legend = 2, scale="none", legfrac=7, col = brewer.pal(9,"Blues"),Colv=NA,rowlab=FALSE)
 heatmap(polIIgene.fracolap[larger.changes.eids,],Colv=NA, margins=c(15,15),revC=TRUE,scale="none", col = brewer.pal(9,"Blues"))
@@ -62,13 +76,14 @@ all.cluster.members <- cutree(hc,4)
 c1 <- names(which(all.cluster.members==1))
 c2 <- names(which(all.cluster.members==2))
 c3 <- names(which(all.cluster.members==3))
-
+c4 <- names(which(all.cluster.members==4))
 
 ## Attempt to get plot including all but c1
 png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/Clusters234.png")
 heatmap(polIIgene.fracolap[setdiff(larger.changes.eids,c1),],Colv=NA, margins=c(15,15),revC=TRUE,scale="none", col = brewer.pal(9,"Blues"),labRow=FALSE)
 dev.off()
 
+# August 2010 Cluster assignments may have shifted due to overall group change
 
 # c1 "everything else"
 # c2 2 hrs onwards
@@ -220,7 +235,6 @@ points(x[seti],y[seti],col='green',pch=19)
 text(x, y, labels=cklabs,cex=1.0,pos=sample(4,length(seti),replace=T))
 par(op)
 dev.off()
-
 
 ##
 ## July 2010
