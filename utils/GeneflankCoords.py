@@ -9,16 +9,18 @@
 #
 # No accounting taken of possible overlap
 # For upstream regions, checked against coordinates in UCSCs upstream1000.fa
+# spillinlength: bp past TSS or into 3'prime region
 
 import sys
 
-if (len (sys.argv) != 4):
-  print 'error!  usage: GeneflankCoords.py <gene .BED file> <region length(bp)> <upstream or downstream >\n'
+if (len (sys.argv) != 5):
+  print 'error!  usage: GeneflankCoords.py <gene .BED file> <region (out) length(bp)> <spill-in length(bp)> <upstream or downstream >\n'
   sys.exit ()
   
 infile = sys.argv[1]
-regionlength = int(sys.argv[2])
-region = sys.argv[3]
+regionoutlength = int(sys.argv[2])
+spillinlength = int(sys.argv[3])
+region = sys.argv[4]
 
 ## Read in overlap file
 lines = open(infile).read().split('\n')
@@ -63,17 +65,17 @@ for line in lines:
   nm = toks[3]
   
   if ( (strand=='+') & (region=='upstream' ) ):
-    outstart = start - regionlength
-    outend = start - 1
+    outstart = start - regionoutlength
+    outend = start + spillinlength - 1
   if ( (strand=='-') & (region=='upstream' ) ) :
-    outstart = end + 1
-    outend = end + regionlength
+    outstart = end - spillinlength + 1
+    outend = end + regionoutlength
   if ( (strand=='+') & (region=='downstream' ) ) :
-    outstart = end + 1
-    outend = end + regionlength
+    outstart = end - spillinlength + 1
+    outend = end + regionoutlength
   if ( (strand=='-') & (region=='downstream' ) ):
-    outstart = start - regionlength
-    outend = start - 1
+    outstart = start - regionoutlength
+    outend = start + spillinlength - 1
 
   if ( CHROMO_LEN.has_key(chromo) ):
     if ( (outstart > 0) & (outend < CHROMO_LEN[chromo]) ):
