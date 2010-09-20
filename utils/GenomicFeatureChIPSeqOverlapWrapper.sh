@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # For a chipseq BED file, computes overlap with annotation file with pybed.py
-# then parses that output file with GenomicFeatureChIPSeqOverlap.py
+# then converts that to a per-genomic feature overlap with GenomicFeatureChIPSeqOverlap.py
 # and finally, includes additional annotations.
 #
 # Output:$bedID-geneoverlap.tsv
@@ -40,6 +40,9 @@ echo "Creating:" $ofile
 ~/chipseq/utils/GenomicFeatureChIPSeqOverlap.py temp.bed $featurefile $featureprefix $bedID > $ofile
 rm -f temp.bed
 
+##
+## Include mappings to Genes (Entrez genes or ENSMUSGs)
+## 
 if [ $featureprefix = "ENSMUST" ]; then
     awk '{print $1}' $ofile > ensids 
     ~/bin/reMap.py ensids  1 ../annotation/mart_export.txt 2 3 > ensids.eids
