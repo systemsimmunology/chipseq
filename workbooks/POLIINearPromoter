@@ -1,5 +1,29 @@
 
+Sep 23, 2010
+------------
+Created more general script for combining columns into matrix, CombineColumnsToMatrix
+Consistency test
+
+R --no-save --slave --args infiles .olap.tsv 2 PolII-upstream5kb.overlaptimecourse.tsv 0 "RefSeq" < ~/bin/R/CombineColumnsToMatrix.R
+~/bin/R/CombineColumnsToMatrix.sh infiles  .olap.tsv 2 PolII-upstream5kb.overlaptimecourse.tsv 0 "RefSeq"
+
+Tests are over.
+
+~/chipseq/utils/PeakNearTSSMetaWrapper.sh ~/chipseq/auxfiles/PolIIbedfiles ~/chipseq/data/PolII/ ~/chipseq/annotation/refGene.mouse.bed ~/chipseq/annotation/refGene.mouse.10kbridge.bed NM_
+
+~/bin/R/CombineColumnsToMatrix.sh infiles .neartss.tsv 1 PolII-distfromtss.timecourse.tsv NA RefSeq
+~/chipseq/utils/expandNMannots.sh PolII-distfromtss.timecourse.tsv ~/chipseq/annotation/refGene.mouse.bed PolII-distfromtss.tcourse.annot.tsv
+
+~/bin/R/CombineColumnsToMatrix.sh infiles .neartss.tsv 2 PolII-widthneartss.timecourse.tsv NA RefSeq
+~/chipseq/utils/expandNMannots.sh PolII-widthneartss.timecourse.tsv ~/chipseq/annotation/refGene.mouse.bed PolII-widthneartss.tcourse.annot.tsv
+
+September 22, 2010
+------------------
+cd processed_data/PolIINearTSS
+~/chipseq/utils/PeakNearTSSMetaWrapper.sh ~/chipseq/auxfiles/PolIIbedfiles ~/chipseq/data/PolII/ ~/chipseq/annotation/refGene.mouse.bed ~/chipseq/annotation/refGene.mouse.10kbridge.bed NM_
+
 September 10-20, 2010
+---------------------
 
 cd annotation
 ../utils/GeneflankCoords.py ../annotation/refGene.mouse.bed 5000 5000 upstream > refGene.mouse.10kbridge.bed
@@ -10,8 +34,8 @@ cd ../analysis
 
 Developed PeakNearTSSWraper (first step above is still needed )
 
-../utils/PeakNearTSSWrapper.sh ../data/PolII/20090625_1921_A_BMM_LPS_0120_PolII.bed ../annotation/refGene.mouse.bed ../annotation/refGene.mouse.10kbridge.bed NM_
+~/chipseq/utils/PeakNearTSSWrapper.sh ~/chipseq/data/PolII/20090625_1921_A_BMM_LPS_0120_PolII.bed ~/chipseq/annotation/refGene.mouse.bed ~/chipseq/annotation/refGene.mouse.10kbridge.bed NM_
 
 and corresponding MetaWrapper
 
-../utils/PeakNearTSSMetaWrapper.sh /Users/thorsson/chipseq/auxfiles/PolIIbedfiles /Users/thorsson/chipseq/data/PolII/ ../annotation/refGene.mouse.bed ../annotation/refGene.mouse.10kbridge.bed NM_
+~/chipseq/utils/PeakNearTSSMetaWrapper.sh /Users/thorsson/chipseq/auxfiles/PolIIbedfiles /Users/thorsson/chipseq/data/PolII/ ~/chipseq/annotation/refGene.mouse.bed ~/chipseq/annotation/refGene.mouse.10kbridge.bed NM_
