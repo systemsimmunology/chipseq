@@ -24,7 +24,10 @@ tail +2 t3 > t4
 newheader="Genome Feature\tEntrez ID\tSymbol\tChromosome\tStart\tEnd\tStrand"  
 echo -e $newheader > t5
 cat t5 t4 > t6
-awk '{OFS="\t"; print $2, $3, $4, $5, $6, $7, $8, $9, $10}' $infile > t7
+#remove first column. Obtained from
+#http://programming-oneliners.blogspot.com/2005/11/awk-find-delete-second-fieldcolumn-one.html
+#Leaves leading tab, but somehow the paste that follows still works (no double tab)
+awk 'BEGIN{FS="\t";} { OFS="\t";$1= ""; print}' $infile > t7
 paste t6 t7 > $outfile
 rm -f t1 t2 t3 t4 t5 t6 t7
 rm -f poolfile chromo start end strand  

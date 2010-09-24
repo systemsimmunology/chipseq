@@ -1,4 +1,21 @@
 
+
+Sep 24, 2010
+------------
+
+Update everything with new scripts and revised file names
+
+~/chipseq/utils/utils/ProcessAcH4.sh
+
+## Checked that we could produce the earlier results via
+
+cd ~/chipseq/processed_data/AcH4
+~/chipseq/utils/GenomicFeatureChIPSeqOverlapMetaWrapper.sh ~/chipseq/auxfiles/AcH4bedfiles ~/chipseq/data/AcH4/ ~/chipseq/annotation/refGene.mouse.bed NM_
+sed 's/bed/olap.tsv/g' ~/chipseq/auxfiles/AcH4bedfiles > infiles
+~/bin/R/CombineColumnsToMatrix.sh infiles .olap.tsv 2 AcH4-overlaptimecourse.tsv 0 RefSeq
+~/chipseq/utils/expandNMannots.sh AcH4-overlaptimecourse.tsv ~/chipseq/annotation/refGene.mouse.bed AcH4-alloverlaps.tsv
+rm -f infiles
+
 June 15, 2010
 --------------
 
