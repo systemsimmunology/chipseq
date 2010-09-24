@@ -7,7 +7,7 @@ downlength <- 5000
 
 ##### PolII Overlap Time course
 #### Creates polIIgene.nm.fracolap, rows are NM
-ao <- read.table("../processed_data/alloverlaps.tsv",sep="\t",as.is=TRUE,header=TRUE)
+ao <- read.table("../processed_data/PolII/PolII-olap.annot.tsv",sep="\t",as.is=TRUE,header=TRUE)
 nms <- ao[["Genome.Feature"]]
 chipseq.eids <- ao[["Entrez.ID"]]
 names(chipseq.eids) <- nms
@@ -49,7 +49,7 @@ rownames(polIIgene.fracolap) <- u.eids
 #
 # 5 prime upstream
 #
-ao <- read.table("../processed_data/PolIIupstream5kb/PolII-upstream5kb.alloverlaps.tsv",sep="\t",as.is=TRUE,header=TRUE)
+ao <- read.table("../processed_data/PolIIupstream5kb/PolIIupstream5kb-olap.annot.tsv",sep="\t",as.is=TRUE,header=TRUE)
 nms <- ao[["Genome.Feature"]]
 chipseq.eids <- ao[["Entrez.ID"]]
 names(chipseq.eids) <- nms
@@ -80,7 +80,7 @@ polIIup5.fracolap <- polIIup5.bpolp/uplength
 #
 # 5 prime downstream
 #
-ao <- read.table("../processed_data/PolIIdownstream5kb/PolII-downstream5kb.alloverlaps.tsv",sep="\t",as.is=TRUE,header=TRUE)
+ao <- read.table("../processed_data/PolIIdownstream5kb/PolIIdownstream5kb-olap.annot.tsv",sep="\t",as.is=TRUE,header=TRUE)
 nms <- ao[["Genome.Feature"]]
 chipseq.eids <- ao[["Entrez.ID"]]
 names(chipseq.eids) <- nms
@@ -108,8 +108,8 @@ for ( eid in u.eids ){
 rownames(polIIdown5.bpolp) <- u.eids
 polIIdown5.fracolap <- polIIdown5.bpolp/downlength
 
-save(list=c("polIIgene.nm.bpolps","polIIgene.nm.fracolap","polIIdown5.bpolps","polIIdown5.bpolps"),file="../processed_data/polII.nm.fracolap.RData")
-save(list=c("polIIgene.fracolap","polIIdown5.fracolap","polIIup5.fracolap"),file="../processed_data/polII.fracolap.RData")
+save(list=c("polIIgene.nm.bpolps","polIIgene.nm.fracolap","polIIdown5.bpolps","polIIdown5.bpolps"),file="../processed_data/polII/polII.nm.fracolap.RData")
+save(list=c("polIIgene.fracolap","polIIdown5.fracolap","polIIup5.fracolap"),file="../processed_data/polII/polII.fracolap.RData")
 
 ##
 ## Data cube with eids, (upstream,gene,downstream) fracolaps, and conditions
@@ -125,5 +125,5 @@ polII.fracolap.cube[rownames(polIIup5.fracolap),"5prime",] <- polIIup5.fracolap
 polII.fracolap.cube[rownames(polIIgene.fracolap),"gene",] <- polIIgene.fracolap
 polII.fracolap.cube[rownames(polIIdown5.fracolap),"3prime",] <- polIIdown5.fracolap
 
-save(polII.fracolap.cube,file="../processed_data/polII.fracolap.cube.RData")
+save(polII.fracolap.cube,file="../processed_data/polII/polII.fracolap.cube.RData")
 
