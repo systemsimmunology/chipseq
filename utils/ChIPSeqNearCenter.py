@@ -80,7 +80,7 @@ for line in lines: ## loop over overlap segments
           dist2mid=tstart-middle+1  ## to checked
           if ( fstrand[feat]=='+'):
             segmentdist=-dist2mid
-            if ( fstrand[feat]=='-'):
+          if ( fstrand[feat]=='-'):
               segmentdist=dist2mid
         ## Option 2: segment overlaps TSS
         elif ( (start <= tstart) & ( tstart <= end )):

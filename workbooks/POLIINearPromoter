@@ -11,11 +11,16 @@ Tests are over.
 
 ~/chipseq/utils/PeakNearTSSMetaWrapper.sh ~/chipseq/auxfiles/PolIIbedfiles ~/chipseq/data/PolII/ ~/chipseq/annotation/refGene.mouse.bed ~/chipseq/annotation/refGene.mouse.10kbridge.bed NM_
 
+sed 's/bed/neartss.tsv/g' ~/chipseq/auxfiles/PolIIbedfiles > infiles
+
 ~/bin/R/CombineColumnsToMatrix.sh infiles .neartss.tsv 1 PolII-distfromtss.timecourse.tsv NA RefSeq
 ~/chipseq/utils/expandNMannots.sh PolII-distfromtss.timecourse.tsv ~/chipseq/annotation/refGene.mouse.bed PolII-distfromtss.tcourse.annot.tsv
 
 ~/bin/R/CombineColumnsToMatrix.sh infiles .neartss.tsv 2 PolII-widthneartss.timecourse.tsv NA RefSeq
 ~/chipseq/utils/expandNMannots.sh PolII-widthneartss.timecourse.tsv ~/chipseq/annotation/refGene.mouse.bed PolII-widthneartss.tcourse.annot.tsv
+
+These are now contained in 
+utils/ProcessPolII.sh
 
 September 22, 2010
 ------------------
