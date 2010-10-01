@@ -242,11 +242,3 @@ dev.off()
 
 ugdPlot(gene.eid["Il17ra"])
 
-## Sep 2010
-
-m <- read.matrix("20090625_1921_A_BMM_LPS_0120_PolII.neartss.tsv")
-
-ontss <- intersect(names(which(m[,1]==0)),names(which(m[,2] < 500)))
-
-ontss <- names(which(m[,1]==0))
-
