@@ -5,10 +5,10 @@
 polII.csconds <- c("t=0","t=1hr (rep1)","t=1hr (rep2)","t=2hr","t=4hr (rep1)","t=4hr (rep2)","t=6hr")
 load("~/data/ncbi/gene.symbol.RData")
 load("~/data/ncbi/gene.eid.RData")
-load("../processed_data/polII.fracolap.RData")
-load("../processed_data/ach4.fracolap.RData")
-load("../processed_data/polII.nm.fracolap.RData")
-load("../processed_data/polII.fracolap.cube.RData")
+load("../processed_data/polII/polII.fracolap.RData")
+load("../processed_data/AcH4/ach4.fracolap.RData")
+load("../processed_data/polII/polII.nm.fracolap.RData")
+load("../processed_data/polII/polII.fracolap.cube.RData")
 load("~/chipseq/annotation/eidlength.RData")
 load("~/chipseq/annotation/nmlength.RData")
 library(RColorBrewer)
@@ -45,17 +45,25 @@ cs.exon <- colnames(dm.lps.exon)[1:4] ## up to 4hrs only
 max.abs.exon <- apply(dm.lps.exon[,cs.exon],1,max)
 rats.exon <- dm.lps.exon[,cs.exon[2:4]]/dm.lps.exon[,1]
 max.rats.exon <- log(apply(rats.exon,1,max))
-
+ 
 ## Keep only genes exceeding an absolute and log ratio treshold
 expchange.eids <- names(which(max.abs>=300 & abs(max.rats)>=log(3.)))
 ## Make sure we have binding measurements (in gene only)
 expchange.haveP2.eids <- intersect(row.names(polIIgene.fracolap),expchange.eids)
 
 ## how do we define "interesting" fracolaps?
-c <- apply(polIIgene.fracolap,1,max)
+polIIgene.fracolap.max <- apply(polIIgene.fracolap,1,max)
+polIIgene.nm.fracolap.max <- apply(polIIgene.nm.fracolap,1,max)
+
+
 ## Keep only profiles with fractional overlap above a certain threshold
-fracolap.nolo.eids <- names(which(c>0.2))
+fracolap.nolo.eids <- names(which(polIIgene.fracolap.max>0.2))
 larger.changes.eids <- intersect(fracolap.nolo.eids,expchange.haveP2.eids)
+
+## Here are ones that have expression changes but not scoring much with fracolap
+little.fracolap.but.expressed.eids <- setdiff(expchange.haveP2.eids,fracolap.nolo.eids)
+b <- setdiff(little.fracolap.but.expressed.eids,poised.t0.eid) ## not poised
+gene.symbol[names(sort(c[b]*100,decreasing=T))] ## sorted by fracolap
 
 ## Strong binding signatures but no expression 
 expnochange.eids <- intersect(names(which(max.abs<300 & abs(max.rats)<log(1.5))),
@@ -241,4 +249,26 @@ dev.off()
 ##
 
 ugdPlot(gene.eid["Il17ra"])
+
+##
+## Oct 2010
+## Need to debug
+polIIgene.nm.fracolap[unlist(nms.of.eid[names(which(c>1))]),]
+## Still have duplicates in refGene!
+## NM_013549,NM_178212,NM_178216
+## These have scores >1.99.
+## There are probably others
+## Same gene is given at multiple locations, who knows why.
+  
+## After some length, doesn't make sense to consider fracolpa
+plot(polIIgene.nm.fracolap.max,nmlength[names(polIIgene.nm.fracolap.max)],xlim=c(0,0.01))
+
+## Experiment with different length cutoffs.
+## For L > Lm, what is the maximum (median?) fracolap that can be acheived?
+Lm <- 10000
+long.genes <- names(which(nmlength > Lm))
+median(polIIgene.nm.fracolap.max[intersect(long.genes,names(polIIgene.nm.fracolap.max))])
+
+## to be compared with 
+median(polIIgene.nm.fracolap.max)
 

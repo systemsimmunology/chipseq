@@ -3,7 +3,7 @@ rg <- read.table("../annotation/refGene.mouse.bed",as.is=TRUE)
 nmlength <- rg$V3 - rg$V2 + 1
 names(nmlength) <- rg$V4
 
-save(length,file="nmlength.RData")
+save(nmlength,file="nmlength.RData")
 
 ## Declare length associated with an entrez ID to be the mean of the corresponding NMs
 g2r <- read.table("~/data/ncbi/gene2refseqSimplified_mouse",as.is=TRUE)
