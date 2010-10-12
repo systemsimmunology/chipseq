@@ -25,14 +25,34 @@ poised.t0.eid <- unique(eid.of.nm[poised.t0.nm])
 
 w <- intersect(poised.t0.eid,expchange.haveP2.eids)
 
-logmat <- (abs(polII.nm.tssdist)<max.dist) &  (polII.nm.tsswidth<max.width)
+poised.logmat <- (abs(polII.nm.tssdist)<max.dist) &  (polII.nm.tsswidth<max.width)
+poised.logmat <- replace(poised.logmat,which(is.na(poised.logmat)),FALSE) ## NA values also do not meet the criterion
+poised.logmat <- poised.logmat*1 ## convert to binary rep
+poised.logmat <- poised.logmat[,c(1,2,4,5,7)] ## restrict to A
 
-logmat <- logmat[,c(1,2,4,5,7)] ## restrict to A
-q <- apply(logmat,1,sum)
+which(poised.logmat[,1]==0))
 
+poised.t0.nm <- which(poised.logmat[,1]==0)
+q <- apply(poised.logmat,1,sum)
+poised.anytime.nm <- which(q>=1)
+
+m <- cbind(eid.of.nm[poised.t0.nm],
+           gene.symbol[eid.of.nm[poised.t0.nm]]
+           )
+colnames(m) <- c("Entrez ID","Gene Symbol")
+write.matrix(m,"RefSeq",file="PoisedUnstim.tsv")
 ## Study cases where gene is paused over most or all of time course
 
-j <- names(which(q==5))
+m <- cbind(eid.of.nm[poised.anytime.nm],
+           gene.symbol[eid.of.nm[poised.anytime.nm]],
+           poised.logmat[poised.anytime.nm,])
+colnames(m)[c(1,2)] <- c("Entrez ID","Gene Symbol")
+write.matrix(m,"RefSeq",file="PoisedScore.tsv")
+## Study cases where gene is paused over most or all of time course
+
+j.nm <- names(which(q==5))
+j.eid <- as.character(eid.of.nm[j.nm])
+
 ## Saw a few cases of
 ## Multiple transcripts for a gene
 ## Incosistency between array types for the expression levels
@@ -45,4 +65,11 @@ j <- names(which(q==5))
 ### Plan: identify predominant expression patters of the "always poised"
 ### See if / how many are also getting some amount of coverage
 
+plot(max.abs[j.eid],max.rats[j.eid])
+text(max.abs[j.eid],max.rats[j.eid],labels=gene.symbol[j.eid],pos=4)
 
+## More low expression than expected?
+## Strongest, Tor1aip2, has 5 transcripts
+## Next: Slc2a1, is expressed late with increased PolII fracolap
+
+## 

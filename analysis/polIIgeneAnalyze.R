@@ -52,9 +52,9 @@ expchange.eids <- names(which(max.abs>=300 & abs(max.rats)>=log(3.)))
 expchange.haveP2.eids <- intersect(row.names(polIIgene.fracolap),expchange.eids)
 
 ## how do we define "interesting" fracolaps?
+## Compute maximum overlap that a gene exhibits over the timecourse
 polIIgene.fracolap.max <- apply(polIIgene.fracolap,1,max)
 polIIgene.nm.fracolap.max <- apply(polIIgene.nm.fracolap,1,max)
-
 
 ## Keep only profiles with fractional overlap above a certain threshold
 fracolap.nolo.eids <- names(which(polIIgene.fracolap.max>0.2))
@@ -63,7 +63,7 @@ larger.changes.eids <- intersect(fracolap.nolo.eids,expchange.haveP2.eids)
 ## Here are ones that have expression changes but not scoring much with fracolap
 little.fracolap.but.expressed.eids <- setdiff(expchange.haveP2.eids,fracolap.nolo.eids)
 b <- setdiff(little.fracolap.but.expressed.eids,poised.t0.eid) ## not poised
-gene.symbol[names(sort(c[b]*100,decreasing=T))] ## sorted by fracolap
+gene.symbol[names(sort(polIIgene.fracolap.max[b],decreasing=T))] ## sorted by fracolap
 
 ## Strong binding signatures but no expression 
 expnochange.eids <- intersect(names(which(max.abs<300 & abs(max.rats)<log(1.5))),
@@ -265,9 +265,11 @@ plot(polIIgene.nm.fracolap.max,nmlength[names(polIIgene.nm.fracolap.max)],xlim=c
 
 ## Experiment with different length cutoffs.
 ## For L > Lm, what is the maximum (median?) fracolap that can be acheived?
-Lm <- 10000
+Lm <- 1000000
 long.genes <- names(which(nmlength > Lm))
 median(polIIgene.nm.fracolap.max[intersect(long.genes,names(polIIgene.nm.fracolap.max))])
+
+max(polIIgene.nm.fracolap.max[intersect(long.genes,names(polIIgene.nm.fracolap.max))])
 
 ## to be compared with 
 median(polIIgene.nm.fracolap.max)
