@@ -26,6 +26,32 @@ load("~/allarrays/data/20100407.curated.3prime/dm.RData")
 dm.lps.3prime <- dm
 CSSs.tc.3prime <- CSSs.tc
 
+## Use for significance testing
+load("/Users/thorsson/allarrays/data/20100426.curated.3prime/all.lambdas.objects.RData")
+load("/Users/thorsson/allarrays/data/20100426.curated.3prime/all.ratios.objects.RData")
+load("/Users/thorsson/allarrays/data/20100426.curated.3prime/all.mus.objects.RData")
+load("/Users/thorsson/tfinf/annotations/annotation.objects.RData")
+load("/Users/thorsson/tfinf/annotations/all.ps.list.objects.RData")
+source("/Users/thorsson/tfinf/R/utilitiesExpression.R")
+expressed.eids <- as.character(ncbiID[lps.ps.sig])
+
+
+##lambda.cutoff <- 26.61275 ## 0.05% cutoff - leads to 4913 genes for full time-course, at mu.cutoff 100
+lambda.cutoff <- 66.31579 ## 0.01% cutoff - leads to 3069 genes for full time-course, at mu.cutoff 100
+mu.cutoff <- 300
+imax <- 8 ## imax=8 <-> 6 hrs 
+lps.ps.sig <- rownames(sigSlice(lambda.cutoff,lps.ratios[,1:(imax-1)],lps.lambdas[,1:(imax-1)]))
+low.expressors <- names(which(apply(lps.mus[lps.ps.sig,1:imax]<mu.cutoff,1,sum)==imax))
+lps.ps.sig <- setdiff(lps.ps.sig,low.expressors)
+expressed.eids <- as.character(ncbiID[lps.ps.sig])
+
+## evaluated below using only threshold-based methods
+expchange.eids
+
+##compareSets(expressed.eids,expchange.eids)
+##   a    b  a^b  a-b  b-a  a+b 
+## 1517  577  573  944    4 1521 
+
 ## Pairwise gene overlaps between samples
 x11()
 pairs(polIIgene.nm.fracolap[1:5000,],pch=20)
@@ -47,6 +73,8 @@ rats.exon <- dm.lps.exon[,cs.exon[2:4]]/dm.lps.exon[,1]
 max.rats.exon <- log(apply(rats.exon,1,max))
  
 ## Keep only genes exceeding an absolute and log ratio treshold
+
+## 
 expchange.eids <- names(which(max.abs>=300 & abs(max.rats)>=log(3.)))
 ## Make sure we have binding measurements (in gene only)
 expchange.haveP2.eids <- intersect(row.names(polIIgene.fracolap),expchange.eids)
@@ -60,10 +88,17 @@ polIIgene.nm.fracolap.max <- apply(polIIgene.nm.fracolap,1,max)
 fracolap.nolo.eids <- names(which(polIIgene.fracolap.max>0.2))
 larger.changes.eids <- intersect(fracolap.nolo.eids,expchange.haveP2.eids)
 
-## Here are ones that have expression changes but not scoring much with fracolap
-little.fracolap.but.expressed.eids <- setdiff(expchange.haveP2.eids,fracolap.nolo.eids)
-b <- setdiff(little.fracolap.but.expressed.eids,poised.t0.eid) ## not poised
-gene.symbol[names(sort(polIIgene.fracolap.max[b],decreasing=T))] ## sorted by fracolap
+## The distribution of fracolaps is j-shaped, and median is 0 for some timepoints!
+## Could make use of quantiles?
+## Not sure how much sense this makes
+quant90 <- apply(polIIgene.nm.fracolap,2,quantile,0.9)
+##sigo <- t(apply(polIIgene.nm.fracolap,1,'>',quant90))
+##does not look convincing for hr6!
+
+sigo <- t(apply(polIIgene.nm.fracolap,1,'>',0.2))
+
+sigo <- sigo[,c(1,2,4,5,7)] ## keep just A samples
+
 
 ## Strong binding signatures but no expression 
 expnochange.eids <- intersect(names(which(max.abs<300 & abs(max.rats)<log(1.5))),
@@ -274,3 +309,44 @@ max(polIIgene.nm.fracolap.max[intersect(long.genes,names(polIIgene.nm.fracolap.m
 ## to be compared with 
 median(polIIgene.nm.fracolap.max)
 
+##
+## Comparison to poised gene set
+##
+
+length(intersect(poised.t0.eid,expchange.eids))
+length(intersect(poised.anytime.eid,expchange.eids))
+
+## Here are ones that have expression changes but not scoring much with fracolap
+little.fracolap.but.expressed.eids <- setdiff(expchange.haveP2.eids,fracolap.nolo.eids)
+b <- setdiff(little.fracolap.but.expressed.eids,poised.t0.eid) ## not poised
+gene.symbol[names(sort(polIIgene.fracolap.max[b],decreasing=T))] ## sorted by fracolap
+
+##
+## Poised and then "running" 
+##
+## From Katy's spreadsheet Socs3, and Peli1 as examples of this
+##Criterion: Poised at time 0, then shows increased coverage over time.
+##First identify genes in the "increased coverage over time" category
+
+polIIgene.nm.fracolap
+
+## A simple criterion
+## See above for sigo
+
+fracolap.jump.nm <- names(which( (apply(sigo[,2:5]*1,1,sum)>0)&(!sigo[,1]) ))
+##Both of these are true
+##nms.of.eid[[gene.eid["Peli1"]]]  %in% fracolap.jump.nm
+##nms.of.eid[[gene.eid["Socs3"]]]  %in% fracolap.jump.nm
+
+fracolap.jump.eid <- unique(as.character(eid.of.nm[fracolap.jump.nm]))
+
+poised.then.run.nm <- intersect(fracolap.jump.nm,poised.t0.nm)
+poised.then.run.eid <- unique(eid.of.nm[poised.then.run.nm])
+
+m <- cbind(eid.of.nm[poised.then.run.nm],
+           gene.symbol[eid.of.nm[poised.then.run.nm]],
+           (eid.of.nm[poised.then.run.nm] %in% ncbiID[rownames(lps.mus)])*1,
+           (eid.of.nm[poised.then.run.nm] %in% expressed.eids)*1
+           )
+colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp")
+write.matrix(m,"RefSeq",file="PoisedThenRun.tsv")
