@@ -1,4 +1,24 @@
 
+Oct 12, 2010
+-------------
+Possible procedure for identifying overlapping or near overlapping genes
+
+Example 
+ grep Pdss1: NM_019501 overlaps with NM_007380 ( Abi, which also has other NMs)
+
+Overlap of 
+$PY3 pybed.py strand -v 0 -f ../annotation/refGene.mouse.bed ../annotation/refGene.mouse.bed > lookit
+
+grep NM_019501 lookit | grep NM_007380
+( shows up once for + and - )
+
+Examine a modification of GenomicFeatureChIPSeqOverlap.py
+Would need a library of NMs of eid (and inverse)
+- weed out self-overlaps
+- a pairwise NM overlap can occur in many rows (right?), so we'd have to uniqueify
+- Every NM pair would have an associated Eid pair
+- Eid pair can be same-same or different
+
 June 15, 2010
 -------------
 

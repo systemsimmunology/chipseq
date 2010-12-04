@@ -5,17 +5,19 @@
 polII.csconds <- c("t=0","t=1hr (rep1)","t=1hr (rep2)","t=2hr","t=4hr (rep1)","t=4hr (rep2)","t=6hr")
 load("~/data/ncbi/gene.symbol.RData")
 load("~/data/ncbi/gene.eid.RData")
-load("../processed_data/polII/polII.fracolap.RData")
-load("../processed_data/AcH4/ach4.fracolap.RData")
-load("../processed_data/polII/polII.nm.fracolap.RData")
-load("../processed_data/polII/polII.fracolap.cube.RData")
+load("~/chipseq/processed_data/polII/polII.fracolap.RData")
+load("~/chipseq/processed_data/AcH4/ach4.fracolap.RData")
+load("~/chipseq/processed_data/polII/polII.nm.fracolap.RData")
+load("~/chipseq/processed_data/polII/polII.fracolap.cube.RData")
 load("~/chipseq/annotation/eidlength.RData")
 load("~/chipseq/annotation/nmlength.RData")
+load("~/data/ncbi/nms.of.eid.RData")
+load("~/data/ncbi/eid.of.nm.RData")
 library(RColorBrewer)
 source("/Users/thorsson/chipseq/utils/heatmap3.R")
 source("~/bin/R/functions/plottingUtils.R")
 source("~/allarrays/utils/utilitiesPlot.R") ## required for plotCSS
-source("../utils/utilitiesPlot.R")
+source("~/chipseq/utils/utilitiesPlot.R")
 ## Expression data needed for filtering, plots etc.
 load("~/allarrays/data/20100407.curated.exon/CSSs.tc.RData")
 load("~/allarrays/data/20100407.curated.exon/dm.RData")
@@ -25,7 +27,6 @@ load("~/allarrays/data/20100407.curated.3prime/CSSs.tc.RData")
 load("~/allarrays/data/20100407.curated.3prime/dm.RData")
 dm.lps.3prime <- dm
 CSSs.tc.3prime <- CSSs.tc
-
 ## Use for significance testing
 load("/Users/thorsson/allarrays/data/20100426.curated.3prime/all.lambdas.objects.RData")
 load("/Users/thorsson/allarrays/data/20100426.curated.3prime/all.ratios.objects.RData")
@@ -33,17 +34,16 @@ load("/Users/thorsson/allarrays/data/20100426.curated.3prime/all.mus.objects.RDa
 load("/Users/thorsson/tfinf/annotations/annotation.objects.RData")
 load("/Users/thorsson/tfinf/annotations/all.ps.list.objects.RData")
 source("/Users/thorsson/tfinf/R/utilitiesExpression.R")
-expressed.eids <- as.character(ncbiID[lps.ps.sig])
 
-
+##lambda.cutoff <- 57.2 # the older one
 ##lambda.cutoff <- 26.61275 ## 0.05% cutoff - leads to 4913 genes for full time-course, at mu.cutoff 100
 lambda.cutoff <- 66.31579 ## 0.01% cutoff - leads to 3069 genes for full time-course, at mu.cutoff 100
 mu.cutoff <- 300
 imax <- 8 ## imax=8 <-> 6 hrs 
-lps.ps.sig <- rownames(sigSlice(lambda.cutoff,lps.ratios[,1:(imax-1)],lps.lambdas[,1:(imax-1)]))
-low.expressors <- names(which(apply(lps.mus[lps.ps.sig,1:imax]<mu.cutoff,1,sum)==imax))
-lps.ps.sig <- setdiff(lps.ps.sig,low.expressors)
-expressed.eids <- as.character(ncbiID[lps.ps.sig])
+lps.6hr.ps <- rownames(sigSlice(lambda.cutoff,lps.ratios[,1:(imax-1)],lps.lambdas[,1:(imax-1)]))
+low.expressors <- names(which(apply(lps.mus[lps.6hr.ps,1:imax]<mu.cutoff,1,sum)==imax))
+lps.6hr.ps <- setdiff(lps.6hr.ps,low.expressors)
+expressed.eids <- as.character(ncbiID[lps.6hr.ps])
 
 ## evaluated below using only threshold-based methods
 expchange.eids
@@ -64,18 +64,18 @@ pairs(polIIgene.nm.fracolap)
 ##
 cs <- colnames(dm.lps.3prime)[1:8] ## up to 6hrs only
 max.abs <- apply(dm.lps.3prime[,cs],1,max)
-rats <- dm.lps.3prime[,cs[2:8]]/dm.lps.3prime[,1]
-max.rats <- log(apply(rats,1,max))
+rats <- log10(dm.lps.3prime[,cs[2:8]]/dm.lps.3prime[,1])
+max.rats <- apply(rats,1,max)
 
 cs.exon <- colnames(dm.lps.exon)[1:4] ## up to 4hrs only
 max.abs.exon <- apply(dm.lps.exon[,cs.exon],1,max)
-rats.exon <- dm.lps.exon[,cs.exon[2:4]]/dm.lps.exon[,1]
-max.rats.exon <- log(apply(rats.exon,1,max))
+rats.exon <- log10(dm.lps.exon[,cs.exon[2:4]]/dm.lps.exon[,1])
+max.rats.exon <- apply(rats.exon,1,max)
  
 ## Keep only genes exceeding an absolute and log ratio treshold
 
 ## 
-expchange.eids <- names(which(max.abs>=300 & abs(max.rats)>=log(3.)))
+expchange.eids <- names(which(max.abs>=300 & abs(max.rats)>=log10(3.)))
 ## Make sure we have binding measurements (in gene only)
 expchange.haveP2.eids <- intersect(row.names(polIIgene.fracolap),expchange.eids)
 
@@ -101,8 +101,8 @@ sigo <- sigo[,c(1,2,4,5,7)] ## keep just A samples
 
 
 ## Strong binding signatures but no expression 
-expnochange.eids <- intersect(names(which(max.abs<300 & abs(max.rats)<log(1.5))),
-                              names(which(max.abs.exon<300 & abs(max.rats.exon)<log(1.5))))
+expnochange.eids <- intersect(names(which(max.abs<300 & abs(max.rats)<log10(1.5))),
+                              names(which(max.abs.exon<300 & abs(max.rats.exon)<log10(1.5))))
 expnochange.haveP2.eids <- intersect(row.names(polIIgene.fracolap),expnochange.eids)
 changes.butno.expression <- intersect(fracolap.nolo.eids,expnochange.haveP2.eids)
 
@@ -330,16 +330,16 @@ gene.symbol[names(sort(polIIgene.fracolap.max[b],decreasing=T))] ## sorted by fr
 
 polIIgene.nm.fracolap
 
-## A simple criterion
-## See above for sigo
-
+## A simple criterion for PolII occupancy after time 0 
+## See above for sigo, a logical matrix of gene overlap above a certain threshold
 fracolap.jump.nm <- names(which( (apply(sigo[,2:5]*1,1,sum)>0)&(!sigo[,1]) ))
+## No sig overlap at time zero. Has sigoverlap at some later time.
 ##Both of these are true
 ##nms.of.eid[[gene.eid["Peli1"]]]  %in% fracolap.jump.nm
 ##nms.of.eid[[gene.eid["Socs3"]]]  %in% fracolap.jump.nm
-
 fracolap.jump.eid <- unique(as.character(eid.of.nm[fracolap.jump.nm]))
 
+## Poised then run intersection of the poised at 0, with occupancy after that 
 poised.then.run.nm <- intersect(fracolap.jump.nm,poised.t0.nm)
 poised.then.run.eid <- unique(eid.of.nm[poised.then.run.nm])
 
@@ -350,3 +350,56 @@ m <- cbind(eid.of.nm[poised.then.run.nm],
            )
 colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp")
 write.matrix(m,"RefSeq",file="PoisedThenRun.tsv")
+
+##Expression Clusters
+data.mat <- lps.ratios[lps.6hr.ps,1:7]
+data.mat.w0 <- cbind(rep(0,length(lps.6hr.ps)),data.mat)
+colnames(data.mat.w0) <- c("min0",colnames(data.mat))
+
+cordist <- as.dist(1-cor(t(data.mat.w0)))
+hc <- hclust(cordist,method="complete")
+dendrorder.genes <- hc$labels[hc$order] ## Genes in dendrogram order
+## First (last) genes in this list appear
+## Left (Right) on dendrogram
+## Bottom (Top) on heatmap below
+
+all.cluster.members <- cutree(hc,5)
+c1 <- names(which(all.cluster.members==1))
+c2 <- names(which(all.cluster.members==2))
+c3 <- names(which(all.cluster.members==3))
+c4 <- names(which(all.cluster.members==4))
+c5 <- names(which(all.cluster.members==5))
+
+## this contains blocks of clusters 
+all.cluster.members[dendrorder.genes]
+
+profileplot(data.mat.w0[c1,],main="")
+
+
+
+library(MKmisc) ## Provides heatmapCol, which centers colors on according to a limit, lim
+## colorRampPalette returns a palette generating function like terrain.colors or heat.colors that takes an integer argument and generates a palette with that many colors.  E.g. RdBu has maximum 11 colors. ( To "keep" white at center of RdBu, must use odd number for brewer.pal )
+
+nrcol <- 127 ## was 128 in MKmisc example but that is not odd!
+farbe <- heatmapCol(data = data.plot, col =  rev(colorRampPalette(brewer.pal(11, "RdBu"))(nrcol)), lim = min(abs(range(data.plot)))-0.3)
+heatmap3(lps.ratios[lps.6hr.ps,1:7],do.dendro=c(TRUE,FALSE), main="",legend = 2, scale="none", legfrac=7, col = farbe,Colv=NA)
+
+## Set correlation distance instead of distances provided by dist
+heatmap3(data.mat.w0,do.dendro=c(TRUE,FALSE), main="",legend = 2, scale="none", legfrac=7, col = farbe,Colv=NA,Rowv=as.dendrogram(hc),labRow=NULL)
+
+## This gives an aligned heatmap but no legend
+heatmap(data.mat.w0,main="Expression Profiles", scale="none", col = farbe,Colv=NA,Rowv=as.dendrogram(hc),labRow=rep("",length(lps.6hr.ps)))
+
+png(file="ExpHeatMat.png",height=1200,width=800)
+
+## expression cluster membership of poised then run genes
+table(all.cluster.members)
+
+# As percentage
+round(as.vector(table(all.cluster.members))/length(lps.6hr.ps),3)*100
+
+tpr <- table(all.cluster.members[paste(pr,"_at",sep="")])
+
+tpr
+round(as.vector(tpr)/length(pr),3)*100
+
