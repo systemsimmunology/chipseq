@@ -403,3 +403,15 @@ tpr <- table(all.cluster.members[paste(pr,"_at",sep="")])
 tpr
 round(as.vector(tpr)/length(pr),3)*100
 
+## Possible NMs that are expressed, though we don't really know which transcript it is
+expressed.nms <- unlist(nms.of.eid[expressed.eids]) ## 1983 in number
+
+pr.nm <- intersect(expressed.nms,poised.then.run.nm)
+
+polIIgene.nm.fracolap[nms.of.eid[[gene.eid["Parp14"]]],]
+
+## fracolap in first time point. Ideally should be very small
+w <- polIIgene.nm.fracolap[pr.nm,1]
+
+## Oops, spreadsheet is simply in the order poised.then.run.nm
+w <- polIIgene.nm.fracolap[poised.then.run.nm,1]
