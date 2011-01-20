@@ -11,7 +11,7 @@ then
     mkdir ~/chipseq/processed_data/PolII
 fi
 cd ~/chipseq/processed_data/PolII
-~/chipseq/utils/GenomicFeatureChIPSeqOverlapMetaWrapper.sh ~/chipseq/auxfiles/PolIIbedfiles ~/chipseq/data/PolII/ ~/chipseq/annotation/refGene.mouse.bed NM_
+~/chipseq/utils/GenomicFeatureChIPSeqOverlapMetaWrapper.sh ~/chipseq/auxfiles/PolIIbedfiles ~/chipseq/data/PolII/bed ~/chipseq/annotation/refGene.mouse.bed NM_
 sed 's/bed/olap.tsv/g' ~/chipseq/auxfiles/PolIIbedfiles > infiles
 ~/bin/R/CombineColumnsToMatrix.sh infiles .olap.tsv 2 PolII-olap.tsv 0 RefSeq
 ~/chipseq/utils/expandNMannots.sh PolII-olap.tsv ~/chipseq/annotation/refGene.mouse.bed PolII-olap.annot.tsv

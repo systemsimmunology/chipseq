@@ -26,7 +26,6 @@ OUTDIR=$PWD
 
 for (( i=0 ; i<nb ; i++ )); do
     bfile_i=${bfiles[$i]}
-    echo "-----------Processing "$bed_dir$bfile_i" --------------"
+
     "$UTILDIR"GenomicFeatureChIPSeqOverlapWrapper.sh $bed_dir$bfile_i $featurefile $featureprefix
-##../utils/GenomicFeatureChIPSeqOverlapWrapper.sh ../data/PolII/20090529_1922_A_BMM_LPS_0240_PolII.bed
 done
