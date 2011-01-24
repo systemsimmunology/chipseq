@@ -30,7 +30,7 @@ bedID=`basename $1 .bed`
 
 ## Go to bedtools and run pybed.py
 pushd ~/chipseq/bedtools >& /dev/null
-$PY3 pybed.py strand -v 0 -f $1 $featurefileBridged > temp.bed
+$PY3 pybed.py nostrand -v 0 -f $1 $featurefileBridged > temp.bed
 cp -p temp.bed $startdir/. 
 popd >& /dev/null
 
@@ -38,8 +38,12 @@ popd >& /dev/null
 ofile=$bedID.neartss.tsv
 
 echo "Creating:" $ofile
-~/chipseq/utils/ChIPSeqNearCenter.py temp.bed $featurefile $featureprefix $bedID > $ofile
-rm -f temp.bed
+#~/chipseq/utils/ChIPSeqNearCenter.py temp.bed $featurefile $featureprefix $bedID > $ofile
+~/chipseq/utils/TransformPyBedFile.py temp.bed $featurefile $featureprefix $bedID > simplified.bed
+### not this ~/chipseq/utils/AnnotatedFeatureChIPSeqOverlap.py simplified.bed $featurefile > $ofile
+~/chipseq/utils/ChIPSeqTSSCentered.py simplified.bed $featurefile > $ofile
+
+##rm -f temp.bed
 
 ##
 ## Include mappings to Genes (Entrez genes or ENSMUSGs)

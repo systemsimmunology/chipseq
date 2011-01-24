@@ -38,9 +38,9 @@ ofile=$bedID.olap.tsv
 
 echo "Creating:" $ofile
 
-#~/chipseq/utils/TransformPyBedFile.py temp.bed $featurefile $featureprefix $bedID > simplified.bed
-#~/chipseq/utils/AnnotatedFeatureChIPSeqOverlap.py simplified.bed $featurefile > $ofile
-~/chipseq/utils/GenomicFeatureChIPSeqOverlap.py temp.bed $featurefile $featureprefix $bedID > $ofile
+~/chipseq/utils/TransformPyBedFile.py temp.bed $featurefile $featureprefix $bedID > simplified.bed
+~/chipseq/utils/AnnotatedFeatureChIPSeqOverlap.py simplified.bed $featurefile > $ofile
+#~/chipseq/utils/GenomicFeatureChIPSeqOverlap.py temp.bed $featurefile $featureprefix $bedID > $ofile
 rm -f temp.bed simplified.bed
 
 ##
