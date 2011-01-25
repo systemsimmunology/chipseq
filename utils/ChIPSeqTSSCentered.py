@@ -53,7 +53,8 @@ for gl in glines:
 fnames = fchromo.keys()
 
 ###
-segdist = {}
+segmiddist = {} ## distance to middle of segment
+segedgedist = {} ## distance to edge of segment
 seglength = {}
 for line in lines: ## loop over overlap segments
   toks = line.split('\t')
@@ -63,42 +64,51 @@ for line in lines: ## loop over overlap segments
   end = int(toks[3])
   middle = start + int((end-start)/2) ## middle of segment ( left of "midpoint" for an even number of base pairs) 
   bpolap = end - start + 1 
- 
   tstart = tss[feat] ## TSS of the feature
+
   # Option 1: segment to the left of TSS
   if ( end < tstart ):
-      dist2seg=tstart-end+1 ## to checked
-      dist2mid=tstart-middle+1  ## to checked
+      dist2seg=tstart-end+1
+      dist2mid=tstart-middle+1 
       if ( fstrand[feat]=='+'):
-          segmentdist=-dist2mid
+          segmentmiddist=-dist2mid
+          segmentedgedist=-dist2seg
       if ( fstrand[feat]=='-'):
-          segmentdist=dist2mid
+          segmentmiddist=dist2mid
+          segmentedgedist=dist2seg
   # Option 2: segment overlaps TSS
   elif ( (start <= tstart) & ( tstart <= end )):
+      dist2seg=0
       dist2mid=0
-      segmentdist=dist2mid
+      segmentmiddist=dist2mid
+      segmentedgedist=dist2seg
   # Option 3: segment right of TSS  
   elif ( tstart < start ):
       dist2seg=start-tstart+1 ## to checked
       dist2mid=middle-tstart+1  ## to checked
       if ( fstrand[feat]=='+'):
-          segmentdist=dist2mid
+          segmentmiddist=dist2mid
+          segmentedgedist=dist2seg
       if ( fstrand[feat]=='-'):
-          segmentdist=-dist2mid
+          segmentmiddist=-dist2mid
+          segmentedgedist=-dist2seg
   else:
       print "Trouble: logic error"
 
-  if ( segdist.has_key(feat) ): ## we have encountered this feature previously
+  if ( segmiddist.has_key(feat) ): ## we have encountered this feature previously
       # Need to check wether it "beats" the current entry
-      if ( abs(segmentdist) < abs(segdist[feat]) ):
-          segdist[feat]=segmentdist
+      if ( abs(segmentedgedist) < abs(segedgedist[feat]) ):## Favor by edge distance
+      ##if ( abs(segmentmiddist) < abs(segmiddist[feat]) ): ## Favor by midpoint distance
+          segmiddist[feat]=segmentmiddist
           seglength[feat]=bpolap
+          segedgedist[feat]=segmentedgedist
   else: ## first time we encounter this feature
-          segdist[feat]=segmentdist
+          segmiddist[feat]=segmentmiddist
           seglength[feat]=bpolap
+          segedgedist[feat]=segmentedgedist
 
-annotfeats  = segdist.keys()
-print "Genome Feature\tDistance to Midpoint\tSegment Length"
+annotfeats  = segmiddist.keys()
+print "Genome Feature\tDistance to Midpoint\tSegment Length\tDistance to Edge"
 for annotfeat in annotfeats:
-    print annotfeat + '\t' + str(segdist[annotfeat]) + '\t' + str(seglength[annotfeat])
+    print annotfeat + '\t' + str(segmiddist[annotfeat]) + '\t' + str(seglength[annotfeat]) + '\t' + str(segedgedist[annotfeat])
 
