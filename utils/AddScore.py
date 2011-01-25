@@ -91,10 +91,7 @@ for line in lines: ## loop over overlap segments
       segmentscore=scoreEndKey[segmentkeyEnd]
     else: ## From sampling, all cases not meeting the above criteria were
       ## genes lying within a large PolII region
-      ## The only method for extracting the score that I could come up with 
-      ## is to look for the next coordinate below and get the score from 
-      ## that region
-      vals=scoreStartCollection[chromo]
+      ## The only method for extrac      vals=scoreStartCollection[chromo]
       nextdown=findbelow(vals,int(start))
       segmentkeyStart=chromo+'-'+ str(nextdown)
       segmentscore=scoreStartKey[segmentkeyStart]
