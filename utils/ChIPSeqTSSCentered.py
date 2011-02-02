@@ -56,12 +56,14 @@ fnames = fchromo.keys()
 segmiddist = {} ## distance to middle of segment
 segedgedist = {} ## distance to edge of segment
 seglength = {}
+segscore = {}
 for line in lines: ## loop over overlap segments
   toks = line.split('\t')
   feat = toks[0]
   chromo = toks[1]
   start = int(toks[2])
   end = int(toks[3])
+  score = toks[4] # score is fine as string
   middle = start + int((end-start)/2) ## middle of segment ( left of "midpoint" for an even number of base pairs) 
   bpolap = end - start + 1 
   tstart = tss[feat] ## TSS of the feature
@@ -102,13 +104,15 @@ for line in lines: ## loop over overlap segments
           segmiddist[feat]=segmentmiddist
           seglength[feat]=bpolap
           segedgedist[feat]=segmentedgedist
+          segscore[feat]=score
   else: ## first time we encounter this feature
           segmiddist[feat]=segmentmiddist
           seglength[feat]=bpolap
           segedgedist[feat]=segmentedgedist
+          segscore[feat]=score
 
 annotfeats  = segmiddist.keys()
-print "Genome Feature\tDistance to Midpoint\tSegment Length\tDistance to Edge"
+print "Genome Feature\tDistance to Midpoint\tSegment Length\tDistance to Edge\tSegment Score"
 for annotfeat in annotfeats:
-    print annotfeat + '\t' + str(segmiddist[annotfeat]) + '\t' + str(seglength[annotfeat]) + '\t' + str(segedgedist[annotfeat])
+    print annotfeat + '\t' + str(segmiddist[annotfeat]) + '\t' + str(seglength[annotfeat]) + '\t' + str(segedgedist[annotfeat]) + '\t' + segscore[annotfeat]
 

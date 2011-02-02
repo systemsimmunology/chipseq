@@ -21,6 +21,7 @@ PY3="/Library/Frameworks/Python.framework/Versions/3.1/bin/python3.1"
 #featurefile="../annotation/refGene.mouse.bed"
 #featureprefix="NM_"
 
+chipseqbedfile=$1
 featurefile=$2
 featurefileBridged=$3
 featureprefix=$4
@@ -38,10 +39,9 @@ popd >& /dev/null
 ofile=$bedID.neartss.tsv
 
 echo "Creating:" $ofile
-#~/chipseq/utils/ChIPSeqNearCenter.py temp.bed $featurefile $featureprefix $bedID > $ofile
 ~/chipseq/utils/TransformPyBedFile.py temp.bed $featurefile $featureprefix $bedID > simplified.bed
-### not this ~/chipseq/utils/AnnotatedFeatureChIPSeqOverlap.py simplified.bed $featurefile > $ofile
-~/chipseq/utils/ChIPSeqTSSCentered.py simplified.bed $featurefile > $ofile
+~/chipseq/utils/AddScore.py simplified.bed $chipseqbedfile > simpwithscore
+~/chipseq/utils/ChIPSeqTSSCentered.py simpwithscore $featurefile > $ofile
 
 ##rm -f temp.bed
 
@@ -56,7 +56,7 @@ if [ $featureprefix = "NM_" ]; then
     awk -F "\t" '{OFS="\t"; print $2,$3,$4,$5,$6,$7,$8}' $ofile > t1
     paste refseqs enids gnames t1 > t2
     rm -f refseqs enids gnames
-    newheader="Genome Feature\tEntrez ID\tSymbol\tDistance to Midpoint\tSegment Length"
+    newheader="Genome Feature\tEntrez ID\tSymbol\tDistance to Midpoint\tSegment Length\tDistance to Segment Boundary\tSegment Score "
 #    newheader="Genome Feature\tEntrez ID\tSymbol\tFractional Overlap\tLength of Overlap\tLength of Genome Feature\tFeature Chromosome\tFeature Start\tFeature End\tFeature Strand"
     tail +2 t2 > t3
     echo -e $newheader > t4

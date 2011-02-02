@@ -91,11 +91,12 @@ for line in lines: ## loop over overlap segments
       segmentscore=scoreEndKey[segmentkeyEnd]
     else: ## From sampling, all cases not meeting the above criteria were
       ## genes lying within a large PolII region
-      ## The only method for extrac      vals=scoreStartCollection[chromo]
+      ## The only method for extrac      
+      vals=scoreStartCollection[chromo]
       nextdown=findbelow(vals,int(start))
       segmentkeyStart=chromo+'-'+ str(nextdown)
       segmentscore=scoreStartKey[segmentkeyStart]
 #    else:
 #      segmentscore=str(4000.)
-    print annotation + '\t' + chromo+'-'+str(start)+'-'+str(end)+'\t'+segmentscore
+    print annotation + '\t' + chromo+'\t'+str(start)+'\t'+str(end)+'\t'+segmentscore
 
