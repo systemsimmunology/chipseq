@@ -14,7 +14,7 @@
 import sys
 
 if (len (sys.argv) != 5):
-  print 'error!  usage: GeneflankCoords.py <gene .BED file> <region (out) length(bp)> <spill-in length(bp)> <upstream or downstream >\n'
+  print 'error!  usage: GeneflankCoords.py <gene .BED file> <region (out) length(bp)> <spill-in length(bp)> <upstream, downstream, or bothstream >\n'
   sys.exit ()
   
 infile = sys.argv[1]
@@ -76,6 +76,9 @@ for line in lines:
   if ( (strand=='-') & (region=='downstream' ) ):
     outstart = start - regionoutlength
     outend = start + spillinlength - 1
+  if region=='bothstream':
+    outstart = start - regionoutlength
+    outend = end + regionoutlength
 
   if ( CHROMO_LEN.has_key(chromo) ):
     if ( (outstart > 0) & (outend < CHROMO_LEN[chromo]) ):
