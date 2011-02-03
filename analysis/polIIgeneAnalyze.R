@@ -343,6 +343,7 @@ fracolap.jump.eid <- unique(as.character(eid.of.nm[fracolap.jump.nm]))
 poised.then.run.nm <- intersect(fracolap.jump.nm,poised.t0.nm)
 poised.then.run.eid <- unique(eid.of.nm[poised.then.run.nm])
 
+### Original Late 2010 version
 m <- cbind(eid.of.nm[poised.then.run.nm],
            gene.symbol[eid.of.nm[poised.then.run.nm]],
            (eid.of.nm[poised.then.run.nm] %in% ncbiID[rownames(lps.mus)])*1,
@@ -350,6 +351,16 @@ m <- cbind(eid.of.nm[poised.then.run.nm],
            )
 colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp")
 write.matrix(m,"RefSeq",file="PoisedThenRun.tsv")
+
+### Feb 2011, with scores
+m <- cbind(eid.of.nm[poised.then.run.nm],
+           gene.symbol[eid.of.nm[poised.then.run.nm]],
+           (eid.of.nm[poised.then.run.nm] %in% ncbiID[rownames(lps.mus)])*1,
+           (eid.of.nm[poised.then.run.nm] %in% expressed.eids)*1,
+           polII.nm.scoretss[poised.then.run.nm,1]
+           )
+colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp","Score")
+write.matrix(m,"RefSeq",file="PoisedThenRunWithScore.tsv")
 
 ##Expression Clusters
 data.mat <- lps.ratios[lps.6hr.ps,1:7]

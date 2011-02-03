@@ -4,7 +4,10 @@ load("~/chipseq/processed_data/PolIInearTSS/polII.nm.tsswidth.RData")
 
 load("~/chipseq/processed_data/PolIInearTSS/polII.tssdist.RData")
 load("~/chipseq/processed_data/PolIInearTSS/polII.nm.tssdist.RData")
-  
+
+load("~/chipseq/processed_data/PolIInearTSS/polII.scoretss.RData")
+load("~/chipseq/processed_data/PolIInearTSS/polII.nm.scoretss.RData")
+
 tplot <- function(nm){
   op <- par(mfrow=c(2,1))
   plot(polII.nm.tssdist[nm,c(1,2,4,5,7)],type='l',ylim=c(-1000,1000),ylab="Distance")
