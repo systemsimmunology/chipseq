@@ -78,3 +78,78 @@ save(polII.tsswidth,file="../processed_data/PolIInearTSS/polII.tsswidth.RData")
 ## 
 ##save(list=c("polII.nm.tssdist","polII.nm.fracolap","polIIdown5.bpolps","polIIdown5.bpolps"),file="../processed_data/polII/polII.nm.fracolap.RData")
 ##save(list=c("polII.tssdist","polIIdown5.fracolap","polIIup5.fracolap"),file="../processed_data/polII/polII.fracolap.RData")
+
+
+##### PolII Overlap Time course
+#### Creates polII.nm.tssbdist, rows are NM
+ao <- read.table("../processed_data/PolIInearTSS/PolII-boundarytotss.annot.tsv",sep="\t",as.is=TRUE,header=TRUE)
+nms <- ao[["Genome.Feature"]]
+chipseq.eids <- ao[["Entrez.ID"]]
+names(chipseq.eids) <- nms
+polII.nm.tssbdist <- as.matrix(ao[8:14])
+rownames(polII.nm.tssbdist) <- nms
+colnames(polII.nm.tssbdist) <- polII.csconds
+nmlengths <- ao[["End"]]-ao[["Start"]]+1
+names(nmlengths) <- nms
+
+### polII.tssbdist: EntrezID summarization
+### Take mean of values for available NMs
+### ( Borrowed from fractional coverage treatment - not such a good variable here )
+u.eids <- unique(chipseq.eids)
+nms <- rownames(polII.nm.tssbdist)
+nms.of.eid <- list()
+for ( eid in u.eids ){
+  nms.of.eid[[eid]] <- nms[which(chipseq.eids==eid)]
+} 
+polII.tssbdist <- numeric()
+for ( eid in u.eids ){
+  enems <- nms.of.eid[[eid]]
+  if ( length(enems) == 1 ){
+    vec <- polII.nm.tssbdist[enems,]
+  } else {
+    vec <- apply(polII.nm.tssbdist[enems,],2,mean)
+  }
+  polII.tssbdist <- rbind(polII.tssbdist,vec)
+}
+rownames(polII.tssbdist) <- u.eids
+## 
+
+#### Creates polII.nm.scoretss, rows are NM
+ao <- read.table("../processed_data/PolIInearTSS/PolII-scoreneartss.annot.tsv",sep="\t",as.is=TRUE,header=TRUE)
+nms <- ao[["Genome.Feature"]]
+chipseq.eids <- ao[["Entrez.ID"]]
+names(chipseq.eids) <- nms
+polII.nm.scoretss <- as.matrix(ao[8:14])
+rownames(polII.nm.scoretss) <- nms
+colnames(polII.nm.scoretss) <- polII.csconds
+nmlengths <- ao[["End"]]-ao[["Start"]]+1
+names(nmlengths) <- nms
+
+### polII.scoretss: EntrezID summarization
+### Take mean of values for available NMs
+### ( Borrowed from fractional coverage treatment - not such a good variable here )
+u.eids <- unique(chipseq.eids)
+nms <- rownames(polII.nm.scoretss)
+nms.of.eid <- list()
+for ( eid in u.eids ){
+  nms.of.eid[[eid]] <- nms[which(chipseq.eids==eid)]
+} 
+polII.scoretss <- numeric()
+for ( eid in u.eids ){
+  enems <- nms.of.eid[[eid]]
+  if ( length(enems) == 1 ){
+    vec <- polII.nm.scoretss[enems,]
+  } else {
+    vec <- apply(polII.nm.scoretss[enems,],2,mean)
+  }
+  polII.scoretss <- rbind(polII.scoretss,vec)
+}
+rownames(polII.scoretss) <- u.eids
+
+save(polII.nm.tssbdist,file="../processed_data/PolIInearTSS/polII.nm.tssbdist.RData")
+save(polII.tssbdist,file="../processed_data/PolIInearTSS/polII.tssbdist.RData")
+save(polII.nm.scoretss,file="../processed_data/PolIInearTSS/polII.nm.scoretss.RData")
+save(polII.scoretss,file="../processed_data/PolIInearTSS/polII.scoretss.RData")
+
+
+

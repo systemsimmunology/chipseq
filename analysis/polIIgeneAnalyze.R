@@ -352,14 +352,19 @@ m <- cbind(eid.of.nm[poised.then.run.nm],
 colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp")
 write.matrix(m,"RefSeq",file="PoisedThenRun.tsv")
 
+rt <- read.table("/Users/thorsson/chipseq/annotation/NM_hasnear.tsv",as.is=TRUE)
+near.logvec <- as.logical(rt$V2)
+names(near.logvec) <- rt$V1
+
 ### Feb 2011, with scores
 m <- cbind(eid.of.nm[poised.then.run.nm],
            gene.symbol[eid.of.nm[poised.then.run.nm]],
            (eid.of.nm[poised.then.run.nm] %in% ncbiID[rownames(lps.mus)])*1,
            (eid.of.nm[poised.then.run.nm] %in% expressed.eids)*1,
-           polII.nm.scoretss[poised.then.run.nm,1]
+           polII.nm.scoretss[poised.then.run.nm,1],
+           near.logvec[poised.then.run.nm]*1
            )
-colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp","Score")
+colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp","Score","Other Gene Near")
 write.matrix(m,"RefSeq",file="PoisedThenRunWithScore.tsv")
 
 ##Expression Clusters

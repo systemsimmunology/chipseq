@@ -1,4 +1,17 @@
 
+Feb 3 2011
+-------
+Overlap with adjacent genes
+cd annotation
+../utils/GeneflankCoords.py refGene.mouse.bed 1000 1000 bothstream > refGene.mouse.1kbflank.bed
+pushd ../bedtools
+$PY3 pybed.py nostrand -v 0 -f ../annotation/refGene.mouse.1kbflank.bed ../annotation/refGene.mouse.1kbflank.bed > nm_selfolap.bed 
+mv -f nm_selfolap.bed ../annotation/.
+popd
+../utils/genedist.py  nm_selfolap.bed ~/data/ncbi/gene2refseqSimplified_NM_mouse > NM_hasnear.tsv
+rm -f nm_selfolap.bed 
+
+
 Sep 24, 2010
 -------------
 

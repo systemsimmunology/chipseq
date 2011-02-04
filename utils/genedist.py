@@ -7,6 +7,7 @@ if (len (sys.argv) != 3):
 
 olapfile=sys.argv[1]  
 mapfile = sys.argv[2]
+featureprefix = 'NM_'
 
 ## Read in overlap file
 lines = open(olapfile).read().split('\n')
@@ -22,7 +23,6 @@ sys.stderr.write ('Found %d lines in mapping file\n' % nmaplines )
 
 gid = {} ## gene id of a refseq
 nms = {} ## refseqs of a gene ID
-
 for line in maplines:
     toks = line.split('\t')
     g = toks[0] 
@@ -47,7 +47,8 @@ def hasclash ( nmvec ):
     for target in nmvec:
         hasother=False
         for query in nmvec: ## dumb, and repetitive search. See if another gene occurs
-            if not(gid[query]==gid[target]):
+          if ( query.find(featureprefix) != -1):## we only consider a hit if it has the right prefix
+            if (gid[query] != gid[target]):
                 hasother=True
         hovec[target]=hasother
     return hovec
