@@ -7,6 +7,7 @@ load("~/data/ncbi/gene.symbol.RData")
 load("~/data/ncbi/gene.eid.RData")
 load("~/chipseq/processed_data/polII/polII.fracolap.RData")
 load("~/chipseq/processed_data/AcH4/ach4.fracolap.RData")
+load("~/chipseq/processed_data/AcH4/ach4.nm.fracolap.RData")
 load("~/chipseq/processed_data/polII/polII.nm.fracolap.RData")
 load("~/chipseq/processed_data/polII/polII.fracolap.cube.RData")
 load("~/chipseq/annotation/eidlength.RData")
@@ -366,6 +367,34 @@ m <- cbind(eid.of.nm[poised.then.run.nm],
            )
 colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp","Score","Other Gene Near")
 write.matrix(m,"RefSeq",file="PoisedThenRunWithScore.tsv")
+ 
+## Write out fracolaps at T>0 and ranks among them to compare with KK rankings
+em <- polIIgene.nm.fracolap[poised.then.run.nm,c(1,2,4,5)]
+rankmat <- matrix(9,nrow=length(poised.then.run.nm),ncol=4)
+colnames(rankmat) <- colnames(em)
+rownames(rankmat) <- poised.then.run.nm
+for ( nm in poised.then.run.nm ){
+  rankmat[nm,] <- 5-rank(em[nm,],ties.method=) ## 5- reverses the ranks which come out in the wrong order
+    ##sort(em[nm,],index.return=T,decreasing=T)$ix
+}
+write.matrix(em,"RefSeq",file="PoisedThenRunFracolap.tsv")
+write.matrix(rankmat,"RefSeq",file="PoisedThenRunFracolapRanks.tsv")
+ 
+## Write out fracolaps at T>0 and ranks among them to compare with KK rankings
+ach4conds <- colnames(ach4gene.nm.fracolap)
+cols.reduced <- ach4conds[c(2,3,5,8)]
+em <- matrix(0,nrow=length(poised.then.run.nm),ncol=4)
+colnames(em) <- cols.reduced
+rownames(em) <- poised.then.run.nm
+rankmat <- matrix(0,nrow=length(poised.then.run.nm),ncol=4)
+colnames(rankmat) <- cols.reduced
+rownames(rankmat) <- poised.then.run.nm
+for ( nm in intersect(poised.then.run.nm,rownames(ach4gene.nm.fracolap)) ){
+  em[nm,] <- ach4gene.nm.fracolap[nm,cols.reduced]
+  rankmat[nm,] <- 5-rank(em[nm,],ties.method=) ## 5- reverses the ranks which come out in the wrong order
+}
+write.matrix(em,"RefSeq",file="PoisedThenRunAcH4Fracolap.tsv")
+write.matrix(rankmat,"RefSeq",file="PoisedThenRunAcH4FracolapRanks.tsv")
 
 ##Expression Clusters
 data.mat <- lps.ratios[lps.6hr.ps,1:7]
@@ -390,7 +419,6 @@ c5 <- names(which(all.cluster.members==5))
 all.cluster.members[dendrorder.genes]
 
 profileplot(data.mat.w0[c1,],main="")
-
 
 
 library(MKmisc) ## Provides heatmapCol, which centers colors on according to a limit, lim

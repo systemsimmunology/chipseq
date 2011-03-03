@@ -7,7 +7,7 @@ downlength <- 5000
 
 ##### AcH4 Overlap Time course
 #### Creates ach4gene.nm.fracolap, rows are NM
-ao <- read.table("../processed_data/AcH4/AcH4-olap.annot.tsv",sep="\t",as.is=TRUE,header=TRUE)
+ao <- read.table("~/chipseq/processed_data/AcH4/AcH4-olap.annot.tsv",sep="\t",as.is=TRUE,header=TRUE)
 
 nms <- ao[["Genome.Feature"]]
 chipseq.eids <- ao[["Entrez.ID"]]
@@ -44,7 +44,7 @@ rownames(ach4gene.fracolap) <- u.eids
 #
 # 5 prime upstream
 #
-ao <- read.table("../processed_data/AcH4upstream5kb/AcH4upstream5kb-olap.annot.tsv",sep="\t",as.is=TRUE,header=TRUE)
+ao <- read.table("~/chipseq/processed_data/AcH4upstream5kb/AcH4upstream5kb-olap.annot.tsv",sep="\t",as.is=TRUE,header=TRUE)
 nms <- ao[["Genome.Feature"]]
 chipseq.eids <- ao[["Entrez.ID"]]
 names(chipseq.eids) <- nms
@@ -75,7 +75,7 @@ ach4up5.fracolap <- ach4up5.bpolp/uplength
 #
 # 5 prime downstream
 #
-ao <- read.table("../processed_data/AcH4downstream5kb/AcH4downstream5kb-olap.annot.tsv",sep="\t",as.is=TRUE,header=TRUE)
+ao <- read.table("~/chipseq/processed_data/AcH4downstream5kb/AcH4downstream5kb-olap.annot.tsv",sep="\t",as.is=TRUE,header=TRUE)
 nms <- ao[["Genome.Feature"]]
 chipseq.eids <- ao[["Entrez.ID"]]
 names(chipseq.eids) <- nms
@@ -103,8 +103,8 @@ for ( eid in u.eids ){
 rownames(ach4down5.bpolp) <- u.eids
 ach4down5.fracolap <- ach4down5.bpolp/downlength
 
-save(list=c("ach4gene.nm.bpolps","ach4gene.nm.fracolap","ach4down5.bpolps","ach4down5.bpolps"),file="../processed_data/AcH4/ach4.nm.fracolap.RData")
-save(list=c("ach4gene.fracolap","ach4down5.fracolap","ach4up5.fracolap"),file="../processed_data/AcH4/ach4.fracolap.RData")
+save(list=c("ach4gene.nm.bpolps","ach4gene.nm.fracolap","ach4down5.bpolps","ach4down5.bpolps"),file="~/chipseq/processed_data/AcH4/ach4.nm.fracolap.RData")
+save(list=c("ach4gene.fracolap","ach4down5.fracolap","ach4up5.fracolap"),file="~/chipseq/processed_data/AcH4/ach4.fracolap.RData")
 
 ##
 ## Data cube with eids, (upstream,gene,downstream) fracolaps, and conditions
@@ -120,5 +120,5 @@ ach4.fracolap.cube[rownames(ach4up5.fracolap),"5prime",] <- ach4up5.fracolap
 ach4.fracolap.cube[rownames(ach4gene.fracolap),"gene",] <- ach4gene.fracolap
 ach4.fracolap.cube[rownames(ach4down5.fracolap),"3prime",] <- ach4down5.fracolap
 
-save(ach4.fracolap.cube,file="../processed_data/AcH4/ach4.fracolap.cube.RData")
+save(ach4.fracolap.cube,file="~/chipseq/processed_data/AcH4/ach4.fracolap.cube.RData")
 
