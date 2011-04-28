@@ -88,6 +88,7 @@ polIIgene.nm.fracolap.max <- apply(polIIgene.nm.fracolap,1,max)
 ## Keep only profiles with fractional overlap above a certain threshold
 fracolap.nolo.eids <- names(which(polIIgene.fracolap.max>0.2))
 larger.changes.eids <- intersect(fracolap.nolo.eids,expchange.haveP2.eids)
+larger.changes.nms <- as.character(unlist(nms.of.eid[larger.changes.eids]))
 
 ## The distribution of fracolaps is j-shaped, and median is 0 for some timepoints!
 ## Could make use of quantiles?
@@ -395,6 +396,16 @@ for ( nm in intersect(poised.then.run.nm,rownames(ach4gene.nm.fracolap)) ){
 }
 write.matrix(em,"RefSeq",file="PoisedThenRunAcH4Fracolap.tsv")
 write.matrix(rankmat,"RefSeq",file="PoisedThenRunAcH4FracolapRanks.tsv")
+
+## Non-poised genes for comparison
+larger.changes.nonpoised.nm  <- setdiff(larger.changes.nms,poised.then.run.nm)
+m <- cbind(eid.of.nm[larger.changes.nonpoised.nm],
+           gene.symbol[eid.of.nm[larger.changes.nonpoised.nm]],
+           (eid.of.nm[larger.changes.nonpoised.nm] %in% ncbiID[rownames(lps.mus)])*1,
+           (eid.of.nm[larger.changes.nonpoised.nm] %in% expressed.eids)*1
+           )
+colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp")
+write.matrix(m,"RefSeq",file="ExpressedButNotPoisedRun.tsv")
 
 ##Expression Clusters
 data.mat <- lps.ratios[lps.6hr.ps,1:7]
