@@ -3,8 +3,8 @@
 ## 
 ## simplified condition names
 polII.csconds <- c("t=0","t=1hr (rep1)","t=1hr (rep2)","t=2hr","t=4hr (rep1)","t=4hr (rep2)","t=6hr")
-load("~/data/ncbi/gene.symbol.RData")
-load("~/data/ncbi/gene.eid.RData")
+load(paste(Sys.getenv("DATA_DIR"),"ncbi/gene.symbol.RData",sep="/"))
+load(paste(Sys.getenv("DATA_DIR"),"ncbi/gene.symbol.RData",sep="/"))
 load("~/chipseq/processed_data/polII/polII.fracolap.RData")
 load("~/chipseq/processed_data/AcH4/ach4.fracolap.RData")
 load("~/chipseq/processed_data/AcH4/ach4.nm.fracolap.RData")
@@ -15,7 +15,7 @@ load("~/chipseq/annotation/nmlength.RData")
 load("~/data/ncbi/nms.of.eid.RData")
 load("~/data/ncbi/eid.of.nm.RData")
 library(RColorBrewer)
-source("/Users/thorsson/chipseq/utils/heatmap3.R")
+source("~/chipseq/utils/heatmap3.R")
 source("~/bin/R/functions/plottingUtils.R")
 source("~/allarrays/utils/utilitiesPlot.R") ## required for plotCSS
 source("~/chipseq/utils/utilitiesPlot.R")
@@ -29,12 +29,12 @@ load("~/allarrays/data/20100407.curated.3prime/dm.RData")
 dm.lps.3prime <- dm
 CSSs.tc.3prime <- CSSs.tc
 ## Use for significance testing
-load("/Users/thorsson/allarrays/data/20100426.curated.3prime/all.lambdas.objects.RData")
-load("/Users/thorsson/allarrays/data/20100426.curated.3prime/all.ratios.objects.RData")
-load("/Users/thorsson/allarrays/data/20100426.curated.3prime/all.mus.objects.RData")
-load("/Users/thorsson/tfinf/annotations/annotation.objects.RData")
-load("/Users/thorsson/tfinf/annotations/all.ps.list.objects.RData")
-source("/Users/thorsson/tfinf/R/utilitiesExpression.R")
+load("~/allarrays/data/20100426.curated.3prime/all.lambdas.objects.RData")
+load("~/allarrays/data/20100426.curated.3prime/all.ratios.objects.RData")
+load("~/allarrays/data/20100426.curated.3prime/all.mus.objects.RData")
+load("~/tfinf/annotations/annotation.objects.RData")
+load("~/tfinf/annotations/all.ps.list.objects.RData")
+source("~/tfinf/R/utilitiesExpression.R")
 
 ##lambda.cutoff <- 57.2 # the older one
 ##lambda.cutoff <- 26.61275 ## 0.05% cutoff - leads to 4913 genes for full time-course, at mu.cutoff 100
@@ -124,7 +124,7 @@ c3 <- names(which(all.cluster.members==3))
 c4 <- names(which(all.cluster.members==4))
 
 ## Attempt to get plot including all but c1
-png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/Clusters234.png")
+png(file="~/fyrirlestrar/BethesdaMay2010/Clusters234.png")
 heatmap(polIIgene.fracolap[setdiff(larger.changes.eids,c1),],Colv=NA, margins=c(15,15),revC=TRUE,scale="none", col = brewer.pal(9,"Blues"),labRow=FALSE)
 dev.off()
 
@@ -176,30 +176,30 @@ colnames(dm.lps.3prime) <- simpcolheads
   
 goldratio <- (1+sqrt(5))/2
 
-png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/EarlyPolII.png",height=480,width=(goldratio*480))
+png(file="~/fyrirlestrar/BethesdaMay2010/EarlyPolII.png",height=480,width=(goldratio*480))
 op <- par(font=1,lwd=2,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
 profileplot(polIIgene.fracolap[c4,],main="",ylim=c(0,1))
 dev.off()
 
-png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/EarlyPolIIExpression.png",height=480,width=(2*480))
+png(file="~/fyrirlestrar/BethesdaMay2010/EarlyPolIIExpression.png",height=480,width=(2*480))
 op <- par(font=1,lwd=3,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
 profileplot(dm.lps.3prime[c4,1:8],main="",ylim=c(0,12000))
 dev.off()
 
-png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/LatePolII.png",height=480,width=(goldratio*480))
+png(file="~/fyrirlestrar/BethesdaMay2010/LatePolII.png",height=480,width=(goldratio*480))
 profileplot(polIIgene.fracolap[c2,],main="",ylim=c(0,1))
 dev.off()
 
-png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/LatePolIIExpression.png",height=480,width=(2*480))
+png(file="~/fyrirlestrar/BethesdaMay2010/LatePolIIExpression.png",height=480,width=(2*480))
 op <- par(font=1,lwd=3,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
 profileplot(dm.lps.3prime[c2,1:8],main="",ylim=c(0,12000))
 dev.off()
 
-png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/SustainedPolII.png",height=480,width=(goldratio*480))
+png(file="~/fyrirlestrar/BethesdaMay2010/SustainedPolII.png",height=480,width=(goldratio*480))
 profileplot(polIIgene.fracolap[c3,],main="",ylim=c(0,1))
 dev.off()
  
-png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/SustainedPolIIExpression.png",height=480,width=(2*480))
+png(file="~/fyrirlestrar/BethesdaMay2010/SustainedPolIIExpression.png",height=480,width=(2*480))
 op <- par(font=1,lwd=3,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
 profileplot(dm.lps.3prime[c3,1:8],main="",ylim=c(0,12000))
 dev.off()
@@ -217,11 +217,11 @@ cordist <- 1-cor(t(polIIgene.fracolap[larger.changes.eids,]))
 ##
 ## Gene Groups
 ##
-ca <- as.character(read.table("/Users/thorsson/data/GeneOntology/CytokineActivity.tsv")$V1)
+ca <- as.character(read.table("~/data/GeneOntology/CytokineActivity.tsv")$V1)
 
 ### Primary and Secondary response genes
 ### Need to separate into the subgroups
-rt <- as.character(read.table("/Users/thorsson/chipseq/annotation/Ramirez_Carozzi_gene_list_eid.txt")$V1)
+rt <- as.character(read.table("~/chipseq/annotation/Ramirez_Carozzi_gene_list_eid.txt")$V1)
 primary.response.eids <- rt[1:55]
 ## we will need to do more slicing to get the full list
 secondary.response.eids <- rt[56:67]
@@ -232,7 +232,7 @@ fit <- cmdscale(dist.genes,eig=TRUE,k=2)
 x <- fit$points[,1]
 y <- fit$points[,2]
  
-png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/PolIIMDS.png",height=750,width=750)
+png(file="~/fyrirlestrar/BethesdaMay2010/PolIIMDS.png",height=750,width=750)
 
 x11()
 
@@ -263,7 +263,7 @@ par(op)
 dev.off()
 setk <- intersect(larger.changes.eids, primary.response.eids)
 ## Cytokines emphasized 
-png(file="/Users/thorsson/fyrirlestrar/BethesdaMay2010/PolIIMDSCKines.png",height=750,width=750)
+png(file="~/fyrirlestrar/BethesdaMay2010/PolIIMDSCKines.png",height=750,width=750)
 ##x11()
 op <- par(font=1,lwd=1,font.axis=1,font.main=1,font.lab=1,font.sub=1,cex=1.5,las=1,mai=c(0.75,1.5,0.5,0.75))
 main <- ""
@@ -354,7 +354,7 @@ m <- cbind(eid.of.nm[poised.then.run.nm],
 colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp")
 write.matrix(m,"RefSeq",file="PoisedThenRun.tsv")
 
-rt <- read.table("/Users/thorsson/chipseq/annotation/NM_hasnear.tsv",as.is=TRUE)
+rt <- read.table("~/chipseq/annotation/NM_hasnear.tsv",as.is=TRUE)
 near.logvec <- as.logical(rt$V2)
 names(near.logvec) <- rt$V1
 
@@ -368,7 +368,17 @@ m <- cbind(eid.of.nm[poised.then.run.nm],
            )
 colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp","Score","Other Gene Near")
 write.matrix(m,"RefSeq",file="PoisedThenRunWithScore.tsv")
+
+for ( eid in poised.then.run.eid ){
+  label <- paste(c(gene.symbol[eid],"-",eid),collapse="")
+  filename <- paste(c("KinPlots/",label,".png"),collapse="")
+  png(filename)
+  kinplot(eid)
+  dev.off()
+}
  
+
+
 ## Write out fracolaps at T>0 and ranks among them to compare with KK rankings
 em <- polIIgene.nm.fracolap[poised.then.run.nm,c(1,2,4,5)]
 rankmat <- matrix(9,nrow=length(poised.then.run.nm),ncol=4)

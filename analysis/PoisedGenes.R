@@ -2,9 +2,9 @@
 #poised-genes.tab from roger
 #awk '{print $8}' poised-genes.tab | awk -F "/" '{print $1}' > poised_eid 
 
-poised.eid <-as.character(read.table("/Users/thorsson/chipseq/analysis/poised_eid")$V1)
+poised.eid <-as.character(read.table("~/chipseq/analysis/poised_eid")$V1)
 
-poised.eid.expressed <-as.character(read.table("/Users/thorsson/chipseq/analysis/expr_vs_poised.tab")$V1)[-1]
+poised.eid.expressed <-as.character(read.table("~/chipseq/analysis/expr_vs_poised.tab")$V1)[-1]
 poised.eid.expressed <- poised.eid[which(poised.eid.expressed=="T")]
 
 m1 <- as.character(read.table(file.path(Sys.getenv("DATA_DIR"),"MacPolarization/ClassicalM1.tsv"),as.is=TRUE,sep='\t',header=TRUE)$Gene.ID)
@@ -28,14 +28,14 @@ intersect(m2b,poised.eid) %in% poised.eid.expressed
 
 ## Poseid genes in rogers set
 ## awk '{print $5}' poised-genes.tab | awk -F "/" '{print $1}' > poised_eid
-poised.eid <-as.character(read.table("/Users/thorsson/chipseq/analysis/poised_eid")$V1)
+poised.eid <-as.character(read.table("~/chipseq/analysis/poised_eid")$V1)
 
 ## The code below is used in MDS plots
 
 ## Poised genes in red
 setj <- intersect(seth,poised.eid)
 points(x[setj],y[setj],col='red',pch=19)
-poised.eid <-as.character(read.table("/Users/thorsson/chipseq/analysis/poised_eid")$V1)
+poised.eid <-as.character(read.table("~/chipseq/analysis/poised_eid")$V1)
 setj <- intersect(seth,poised.eid)
 
 ### Poised Genes emphasized

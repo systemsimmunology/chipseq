@@ -8,7 +8,7 @@ names(glen) <- rt[["Entrez.ID"]][inds]
 
 plot(polII.fracolap,dm.lps.exon[names(polII.fracolap),"BMDM_Bl6_LPS_0240___Female"])
 x11()
-png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/LPS4hrsOlapVsTLength.png", width=800,height=600)
+#png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/LPS4hrsOlapVsTLength.png", width=800,height=600)
 
 main <- "PolII ChIPSeq 4hr LPS"
 xlab <- "PolII Fractional Coverage"
@@ -22,7 +22,7 @@ fs <- polII.fracolap[which(glen<20000)]
 plot(fs,log(dm.lps.exon[names(fs),"BMDM_Bl6_LPS_0240___Female"]))
 
 x11()
-png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/LPS4hrsOlapVsExp.png", height=800,width=600)
+#png(file="/Volumes/thorsson/Posters/ISBSymposium2010/EpiTransPoster/LPS4hrsOlapVsExp.png", height=800,width=600)
 
 par(mfrow=c(3,2))
 xlab <- "log2(expression)"

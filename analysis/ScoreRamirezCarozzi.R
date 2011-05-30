@@ -4,7 +4,7 @@
 
 ### Primary and Secondary response genes
 ### Need to separate into the subgroups
-rt <- as.character(read.table("/Users/thorsson/chipseq/annotation/Ramirez_Carozzi_gene_list_eid.txt")$V1)
+rt <- as.character(read.table("~/chipseq/annotation/Ramirez_Carozzi_gene_list_eid.txt")$V1)
 primary.response.eids <- rt[1:55]
 ## we will need to do more slicing to get the full list
 secondary.response.eids <- rt[56:67]

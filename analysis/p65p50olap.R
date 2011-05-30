@@ -37,7 +37,7 @@ rownames(fracdiff) <- bsimp
 colnames(fracdiff) <- bsimp
 
 png=FALSE
-source("/Users/thorsson/chipseq/utils/heatmap3.R")
+source("~/chipseq/utils/heatmap3.R")
 
 if (!png) {x11()} else {png("Overlap_bpairs.png", height=700, width=700)}
 main="Base pair overlap"
