@@ -1,8 +1,12 @@
 
+## Analysis of Poised Gene list from Roger K ~ July 2010
+
 #poised-genes.tab from roger
 #awk '{print $8}' poised-genes.tab | awk -F "/" '{print $1}' > poised_eid 
 
 poised.eid <-as.character(read.table("~/chipseq/analysis/poised_eid")$V1)
+
+## 
 
 poised.eid.expressed <-as.character(read.table("~/chipseq/analysis/expr_vs_poised.tab")$V1)[-1]
 poised.eid.expressed <- poised.eid[which(poised.eid.expressed=="T")]
@@ -24,7 +28,6 @@ gene.symbol[intersect(m2b,poised.eid)]
 intersect(m1,poised.eid) %in% poised.eid.expressed
 intersect(m2a,poised.eid) %in% poised.eid.expressed
 intersect(m2b,poised.eid) %in% poised.eid.expressed
-
 
 ## Poseid genes in rogers set
 ## awk '{print $5}' poised-genes.tab | awk -F "/" '{print $1}' > poised_eid

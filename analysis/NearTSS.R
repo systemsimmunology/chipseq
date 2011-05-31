@@ -1,3 +1,6 @@
+##
+## Load Information on peak nearest to TSS
+## 
 
 load("~/chipseq/processed_data/PolIInearTSS/polII.tsswidth.RData")
 load("~/chipseq/processed_data/PolIInearTSS/polII.nm.tsswidth.RData")
@@ -8,53 +11,35 @@ load("~/chipseq/processed_data/PolIInearTSS/polII.nm.tssdist.RData")
 load("~/chipseq/processed_data/PolIInearTSS/polII.scoretss.RData")
 load("~/chipseq/processed_data/PolIInearTSS/polII.nm.scoretss.RData")
 
-tplot <- function(nm){
-  op <- par(mfrow=c(2,1))
-  plot(polII.nm.tssdist[nm,c(1,2,4,5,7)],type='l',ylim=c(-1000,1000),ylab="Distance")
-  plot(polII.nm.tsswidth[nm,c(1,2,4,5,7)],type='l',ylim=c(0,1000),ylab="Width")
-}
-
-
-plot(polII.nm.tssdist[,1],polII.nm.tsswidth[,1],xlim=c(-1000,1000),ylim=c(0,1000))
-
 max.width <- 500
 max.dist <- 500
 
-length(which((polII.nm.tssdist[,1]==0)&(polII.nm.tsswidth[,1]<500)))
-
-## Most simple definition of poising, at t=0 only
-poised.t0.nm <- names(which((abs(polII.nm.tssdist[,1])<max.dist)&(polII.nm.tsswidth[,1]<max.width)))
-poised.t0.eid <- unique(eid.of.nm[poised.t0.nm])
-
-w <- intersect(poised.t0.eid,expchange.haveP2.eids)
-
+## Binary matrix for poising, at every time point
 poised.logmat <- (abs(polII.nm.tssdist)<max.dist) &  (polII.nm.tsswidth<max.width)
 poised.logmat <- replace(poised.logmat,which(is.na(poised.logmat)),FALSE) ## NA values also do not meet the criterion
 poised.logmat <- poised.logmat*1 ## convert to binary rep
 poised.logmat <- poised.logmat[,c(1,2,4,5,7)] ## restrict to A
 
-
+## Is there poising at t=0?
 poised.t0.nm <- names(which(poised.logmat[,1]==1))
 poised.t0.eid <- unique(eid.of.nm[poised.t0.nm])
-
-q <- apply(poised.logmat,1,sum)
-poised.anytime.nm <- names(which(q>=1))
-poised.anytime.eid <- unique(eid.of.nm[poised.anytime.nm])
-
 m <- cbind(eid.of.nm[poised.t0.nm],
            gene.symbol[eid.of.nm[poised.t0.nm]]
            )
 colnames(m) <- c("Entrez ID","Gene Symbol")
 write.matrix(m,"RefSeq",file="PoisedUnstim.tsv")
-## Study cases where gene is paused over most or all of time course
 
+## Is there poising at any time?
+q <- apply(poised.logmat,1,sum)
+poised.anytime.nm <- names(which(q>=1))
+poised.anytime.eid <- unique(eid.of.nm[poised.anytime.nm])
 m <- cbind(eid.of.nm[poised.anytime.nm],
            gene.symbol[eid.of.nm[poised.anytime.nm]],
            poised.logmat[poised.anytime.nm,])
 colnames(m)[c(1,2)] <- c("Entrez ID","Gene Symbol")
-write.matrix(m,"RefSeq",file="PoisedScore.tsv")
-## Study cases where gene is paused over most or all of time course
+write.matrix(m,"RefSeq",file="PoisedSometime.tsv")
 
+## Study cases where gene is paused over *all* of time course
 j.nm <- names(which(q==5))
 j.eid <- as.character(eid.of.nm[j.nm])
 m <- cbind(eid.of.nm[j.nm],
@@ -62,7 +47,24 @@ m <- cbind(eid.of.nm[j.nm],
            )
 colnames(m) <- c("Entrez ID","Gene Symbol")
 write.matrix(m,"RefSeq",file="AlwaysPoised.tsv")
-## Study cases where gene is paused over most or all of time course
+
+###
+### Data exploration 
+### 
+
+
+plot(polII.nm.tssdist[,1],polII.nm.tsswidth[,1],xlim=c(-1000,1000),ylim=c(0,1000))
+
+
+tplot <- function(nm){
+  op <- par(mfrow=c(2,1))
+  plot(polII.nm.tssdist[nm,c(1,2,4,5,7)],type='l',ylim=c(-1000,1000),ylab="Distance")
+  plot(polII.nm.tsswidth[nm,c(1,2,4,5,7)],type='l',ylim=c(0,1000),ylab="Width")
+}
+
+ 
+length(which((polII.nm.tssdist[,1]==0)&(polII.nm.tsswidth[,1]<500)))
+
 
 ## Saw a few cases of
 ## Multiple transcripts for a gene
