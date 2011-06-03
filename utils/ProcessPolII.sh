@@ -82,3 +82,15 @@ sed 's/bed/neartss.tsv/g' ~/chipseq/auxfiles/PolIIbedfiles > infiles
 ~/bin/R/CombineColumnsToMatrix.sh infiles .neartss.tsv 4 PolII-scoreneartss.tsv NA RefSeq
 ~/chipseq/utils/expandNMannots.sh PolII-scoreneartss.tsv ~/chipseq/annotation/refGene.mouse.bed PolII-scoreneartss.annot.tsv
 rm -f infiles
+
+##
+## Create RData versions of the above
+## 
+
+cd ~/chipseq/processed_data
+R --no-save < ../utils/polIIFracolap.R
+R --no-save < ../utils/polIInearTSS.R
+
+
+
+
