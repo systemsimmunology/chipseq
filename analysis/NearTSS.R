@@ -11,6 +11,11 @@ load("~/chipseq/processed_data/PolIInearTSS/polII.nm.tssdist.RData")
 load("~/chipseq/processed_data/PolIInearTSS/polII.scoretss.RData")
 load("~/chipseq/processed_data/PolIInearTSS/polII.nm.scoretss.RData")
 
+load("~/data/ncbi/eid.of.nm.RData")
+load("~/data/ncbi/nms.of.eid.RData")
+load("~/data/ncbi/gene.symbol.RData")
+load("~/data/ncbi/gene.eid.RData")
+
 max.width <- 500
 max.dist <- 500
 
