@@ -46,4 +46,10 @@ sed 's/bed/olap.tsv/g' ~/chipseq/auxfiles/AcH4bedfiles > infiles
 rm -f infiles
 
 
+##
+## Create RData versions of the above
+## 
+
+cd ~/chipseq/processed_data
+R --no-save < ../utils/AcH4Fracolap.R
 
