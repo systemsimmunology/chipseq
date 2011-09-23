@@ -10,7 +10,7 @@ load("~/chipseq/processed_data/polII/polII.nm.fracolap.RData")
 load("~/chipseq/processed_data/polII/polII.fracolap.cube.RData")
 load("~/chipseq/annotation/eidlength.RData")
 load("~/chipseq/annotation/nmlength.RData")
-load("~/data/ncbi/nms.of.eId.RData")
+load("~/data/ncbi/nms.of.eid.RData")
 load("~/data/ncbi/eid.of.nm.RData")
 load("~/data/ncbi/gene.symbol.RData")
 library(RColorBrewer)
@@ -176,6 +176,56 @@ m <- cbind(eid.of.nm[larger.changes.nonpoised.nm],
            )
 colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp")
 write.matrix(m,"RefSeq",file="ExpressedButNotPoisedRun.tsv")
+
+
+##
+## Poised at T=0, then not running
+##
+v <- setdiff(poised.t0.nm,fracolap.jump.nm)
+## Too many genes have low signal at T=0, and nearby genes confound interpretation
+## Cherry pick: threshold score and choose those with no genes nearby
+poised.not.run <- intersect(names(which(polII.nm.scoretss[v,1]>5)),names(which(!near.logvec[v])))
+m <- cbind(eid.of.nm[poised.not.run],
+           gene.symbol[eid.of.nm[poised.not.run]],
+           (eid.of.nm[poised.not.run] %in% ncbiID[rownames(lps.mus)])*1,
+           (eid.of.nm[poised.not.run] %in% expressed.eids)*1
+           )
+colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp")
+write.matrix(m,"RefSeq",file="PoisedNotRunning.tsv")
+
+##
+## Three-way comparison
+## 
+
+library(limma)
+
+## In terms of RefSeqs
+v1 <- poised.t0.nm
+v2 <- fracolap.jump.nm
+v3 <- as.character(unlist(nms.of.eid[expressed.eids]))
+all.nm <- union(v1,union(v2,v3))
+v1.logvec <- all.nm %in% v1
+v2.logvec <- all.nm %in% v2
+v3.logvec <- all.nm %in% v3
+c123 <- cbind(v1.logvec,v2.logvec,v3.logvec)
+a.nm <- vennCounts(c123)
+colnames(a.nm)[1:3] <- c("Poised at T=0","Running","Expressed")
+
+## In terms of Entrez IDs
+v1 <- poised.t0.eid
+v2 <- fracolap.jump.eid
+v3 <- expressed.eids
+all.nm <- union(v1,union(v2,v3))
+v1.logvec <- all.nm %in% v1
+v2.logvec <- all.nm %in% v2
+v3.logvec <- all.nm %in% v3
+c123 <- cbind(v1.logvec,v2.logvec,v3.logvec)
+a.eid <- vennCounts(c123)
+colnames(a.eid)[1:3] <- c("Poised at T=0","Running","Expressed")
+
+par(mfrow=c(1,2))
+vennDiagram(a.nm,main="RefSeq IDs")
+vennDiagram(a.eid,main="Entrez IDs")
 
 ##
 ## Data exploration

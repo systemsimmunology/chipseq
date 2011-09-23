@@ -45,10 +45,10 @@ colnames(m)[c(1,2)] <- c("Entrez ID","Gene Symbol")
 write.matrix(m,"RefSeq",file="PoisedSometime.tsv")
 
 ## Study cases where gene is paused over *all* of time course
-j.nm <- names(which(q==5))
-j.eid <- as.character(eid.of.nm[j.nm])
-m <- cbind(eid.of.nm[j.nm],
-           gene.symbol[eid.of.nm[j.nm]]
+alwayspoised.nm <- names(which(q==5))
+alwayspoised.eid <- as.character(eid.of.nm[alwayspoised.nm])
+m <- cbind(eid.of.nm[alwayspoised.nm],
+           gene.symbol[eid.of.nm[alwayspoised.nm]]
            )
 colnames(m) <- c("Entrez ID","Gene Symbol")
 write.matrix(m,"RefSeq",file="AlwaysPoised.tsv")
