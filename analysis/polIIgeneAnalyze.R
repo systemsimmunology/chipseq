@@ -74,6 +74,10 @@ fracolap.nolo.eids <- names(which(polIIgene.fracolap.max>0.2))
 larger.changes.eids <- intersect(fracolap.nolo.eids,expchange.haveP2.eids)
 larger.changes.nms <- as.character(unlist(nms.of.eid[larger.changes.eids]))
 
+fracolap.nolo.nms <- as.character(unlist(nms.of.eid[fracolap.nolo.eids]))
+expchange.haveP2.nms <- as.character(unlist(nms.of.eid[expchange.haveP2.eids]))
+
+
 ## set of substantial overlaps
 sigo <- t(apply(polIIgene.nm.fracolap,1,'>',0.2))
 sigo <- sigo[,c(1,2,4,5,7)] ## keep just A samples
@@ -84,52 +88,6 @@ expnochange.eids <- intersect(names(which(max.abs<300 & abs(max.rats)<log10(1.5)
 expnochange.haveP2.eids <- intersect(row.names(polIIgene.fracolap),expnochange.eids)
 changes.butno.expression <- intersect(fracolap.nolo.eids,expnochange.haveP2.eids)
 
-##
-## Poised and then "running" 
-##
-## From Katy's spreadsheet Socs3, and Peli1 as examples of this
-##Criterion: Poised at time 0, then shows increased coverage over time.
-##First identify genes in the "increased coverage over time" category
-
-##polIIgene.nm.fracolap from polII.nm.fracolap.RData
-
-## A simple criterion for PolII occupancy after time 0 
-## See above for sigo, a logical matrix of gene overlap above a certain threshold
-fracolap.jump.nm <- names(which( (apply(sigo[,2:5]*1,1,sum)>0)&(!sigo[,1]) ))
-## No sig overlap at time zero. Has sigoverlap at some later time.
-##Both of these are true
-##nms.of.eid[[gene.eid["Peli1"]]]  %in% fracolap.jump.nm
-##nms.of.eid[[gene.eid["Socs3"]]]  %in% fracolap.jump.nm
-fracolap.jump.eid <- unique(as.character(eid.of.nm[fracolap.jump.nm]))
-
-## Poised then run intersection of the poised at 0, with occupancy after that 
-poised.then.run.nm <- intersect(fracolap.jump.nm,poised.t0.nm)
-poised.then.run.eid <- unique(eid.of.nm[poised.then.run.nm])
-
-### Original Late 2010 version
-m <- cbind(eid.of.nm[poised.then.run.nm],
-           gene.symbol[eid.of.nm[poised.then.run.nm]],
-           (eid.of.nm[poised.then.run.nm] %in% ncbiID[rownames(lps.mus)])*1,
-           (eid.of.nm[poised.then.run.nm] %in% expressed.eids)*1
-           )
-colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp")
-write.matrix(m,"RefSeq",file="PoisedThenRun.tsv")
-
-rt <- read.table("~/chipseq/annotation/NM_hasnear.tsv",as.is=TRUE)
-near.logvec <- as.logical(rt$V2)
-names(near.logvec) <- rt$V1
-
-### Feb 2011, with scores
-m <- cbind(eid.of.nm[poised.then.run.nm],
-           gene.symbol[eid.of.nm[poised.then.run.nm]],
-           (eid.of.nm[poised.then.run.nm] %in% ncbiID[rownames(lps.mus)])*1,
-           (eid.of.nm[poised.then.run.nm] %in% expressed.eids)*1,
-           polII.nm.scoretss[poised.then.run.nm,1],
-           near.logvec[poised.then.run.nm]*1
-           )
-colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp","Score","Other Gene Near")
-write.matrix(m,"RefSeq",file="PoisedThenRunWithScore.tsv")
-
 for ( eid in poised.then.run.eid ){
   label <- paste(c(gene.symbol[eid],"-",eid),collapse="")
   filename <- paste(c("KinPlots/",label,".png"),collapse="")
@@ -138,60 +96,6 @@ for ( eid in poised.then.run.eid ){
   dev.off()
 }
  
-
-## Write out fracolaps at T>0 and ranks among them to compare with KK rankings
-em <- polIIgene.nm.fracolap[poised.then.run.nm,c(1,2,4,5)]
-rankmat <- matrix(9,nrow=length(poised.then.run.nm),ncol=4)
-colnames(rankmat) <- colnames(em)
-rownames(rankmat) <- poised.then.run.nm
-for ( nm in poised.then.run.nm ){
-  rankmat[nm,] <- 5-rank(em[nm,],ties.method=) ## 5- reverses the ranks which come out in the wrong order
-    ##sort(em[nm,],index.return=T,decreasing=T)$ix
-}
-write.matrix(em,"RefSeq",file="PoisedThenRunFracolap.tsv")
-write.matrix(rankmat,"RefSeq",file="PoisedThenRunFracolapRanks.tsv")
- 
-## Write out fracolaps at T>0 and ranks among them to compare with KK rankings
-ach4conds <- colnames(ach4gene.nm.fracolap)
-cols.reduced <- ach4conds[c(2,3,5,8)]
-em <- matrix(0,nrow=length(poised.then.run.nm),ncol=4)
-colnames(em) <- cols.reduced
-rownames(em) <- poised.then.run.nm
-rankmat <- matrix(0,nrow=length(poised.then.run.nm),ncol=4)
-colnames(rankmat) <- cols.reduced
-rownames(rankmat) <- poised.then.run.nm
-for ( nm in intersect(poised.then.run.nm,rownames(ach4gene.nm.fracolap)) ){
-  em[nm,] <- ach4gene.nm.fracolap[nm,cols.reduced]
-  rankmat[nm,] <- 5-rank(em[nm,],ties.method=) ## 5- reverses the ranks which come out in the wrong order
-}
-write.matrix(em,"RefSeq",file="PoisedThenRunAcH4Fracolap.tsv")
-write.matrix(rankmat,"RefSeq",file="PoisedThenRunAcH4FracolapRanks.tsv")
-
-## Non-poised genes for comparison
-larger.changes.nonpoised.nm  <- setdiff(larger.changes.nms,poised.then.run.nm)
-m <- cbind(eid.of.nm[larger.changes.nonpoised.nm],
-           gene.symbol[eid.of.nm[larger.changes.nonpoised.nm]],
-           (eid.of.nm[larger.changes.nonpoised.nm] %in% ncbiID[rownames(lps.mus)])*1,
-           (eid.of.nm[larger.changes.nonpoised.nm] %in% expressed.eids)*1
-           )
-colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp")
-write.matrix(m,"RefSeq",file="ExpressedButNotPoisedRun.tsv")
-
-
-##
-## Poised at T=0, then not running
-##
-v <- setdiff(poised.t0.nm,fracolap.jump.nm)
-## Too many genes have low signal at T=0, and nearby genes confound interpretation
-## Cherry pick: threshold score and choose those with no genes nearby
-poised.not.run <- intersect(names(which(polII.nm.scoretss[v,1]>5)),names(which(!near.logvec[v])))
-m <- cbind(eid.of.nm[poised.not.run],
-           gene.symbol[eid.of.nm[poised.not.run]],
-           (eid.of.nm[poised.not.run] %in% ncbiID[rownames(lps.mus)])*1,
-           (eid.of.nm[poised.not.run] %in% expressed.eids)*1
-           )
-colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","DiffExp")
-write.matrix(m,"RefSeq",file="PoisedNotRunning.tsv")
 
 ##
 ## Three-way comparison
@@ -202,7 +106,7 @@ library(limma)
 ## In terms of RefSeqs
 v1 <- poised.t0.nm
 v2 <- fracolap.jump.nm
-v3 <- as.character(unlist(nms.of.eid[expressed.eids]))
+v3 <- expressed.nm
 all.nm <- union(v1,union(v2,v3))
 v1.logvec <- all.nm %in% v1
 v2.logvec <- all.nm %in% v2
