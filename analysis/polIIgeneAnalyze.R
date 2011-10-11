@@ -27,66 +27,6 @@ load("~/allarrays/data/20100407.curated.3prime/CSSs.tc.RData")
 load("~/allarrays/data/20100407.curated.3prime/dm.RData")
 dm.lps.3prime <- dm
 CSSs.tc.3prime <- CSSs.tc
-## Use for significance testing
-load("~/allarrays/data/20100426.curated.3prime/all.lambdas.objects.RData")
-load("~/allarrays/data/20100426.curated.3prime/all.ratios.objects.RData")
-load("~/allarrays/data/20100426.curated.3prime/all.mus.objects.RData")
-load("~/tfinf/annotations/annotation.objects.RData")
-load("~/tfinf/annotations/all.ps.list.objects.RData")
-source("~/tfinf/R/utilitiesExpression.R")
-
-##lambda.cutoff <- 57.2 # the older one
-##lambda.cutoff <- 26.61275 ## 0.05% cutoff - leads to 4913 genes for full time-course, at mu.cutoff 100
-lambda.cutoff <- 66.31579 ## 0.01% cutoff - leads to 3069 genes for full time-course, at mu.cutoff 100
-mu.cutoff <- 300
-imax <- 8 ## imax=8 <-> 6 hrs 
-lps.6hr.ps <- rownames(sigSlice(lambda.cutoff,lps.ratios[,1:(imax-1)],lps.lambdas[,1:(imax-1)]))
-low.expressors <- names(which(apply(lps.mus[lps.6hr.ps,1:imax]<mu.cutoff,1,sum)==imax))
-lps.6hr.ps <- setdiff(lps.6hr.ps,low.expressors)
-expressed.eids <- as.character(ncbiID[lps.6hr.ps])
-
-##
-## Maximum expression values and ratios
-##
-cs <- colnames(dm.lps.3prime)[1:8] ## up to 6hrs only
-max.abs <- apply(dm.lps.3prime[,cs],1,max)
-rats <- log10(dm.lps.3prime[,cs[2:8]]/dm.lps.3prime[,1])
-max.rats <- apply(rats,1,max)
-
-cs.exon <- colnames(dm.lps.exon)[1:4] ## up to 4hrs only
-max.abs.exon <- apply(dm.lps.exon[,cs.exon],1,max)
-rats.exon <- log10(dm.lps.exon[,cs.exon[2:4]]/dm.lps.exon[,1])
-max.rats.exon <- apply(rats.exon,1,max)
- 
-## Keep only genes exceeding an absolute and log ratio treshold
-## 
-expchange.eids <- names(which(max.abs>=300 & abs(max.rats)>=log10(3.)))
-## Make sure we have binding measurements (in gene only)
-expchange.haveP2.eids <- intersect(row.names(polIIgene.fracolap),expchange.eids)
-
-## how do we define "interesting" fracolaps?
-## Compute maximum overlap that a gene exhibits over the timecourse
-polIIgene.fracolap.max <- apply(polIIgene.fracolap,1,max)
-polIIgene.nm.fracolap.max <- apply(polIIgene.nm.fracolap,1,max)
-
-## Keep only profiles with fractional overlap above a certain threshold
-fracolap.nolo.eids <- names(which(polIIgene.fracolap.max>0.2))
-larger.changes.eids <- intersect(fracolap.nolo.eids,expchange.haveP2.eids)
-larger.changes.nms <- as.character(unlist(nms.of.eid[larger.changes.eids]))
-
-fracolap.nolo.nms <- as.character(unlist(nms.of.eid[fracolap.nolo.eids]))
-expchange.haveP2.nms <- as.character(unlist(nms.of.eid[expchange.haveP2.eids]))
-
-
-## set of substantial overlaps
-sigo <- t(apply(polIIgene.nm.fracolap,1,'>',0.2))
-sigo <- sigo[,c(1,2,4,5,7)] ## keep just A samples
-
-## Strong binding signatures but no expression 
-expnochange.eids <- intersect(names(which(max.abs<300 & abs(max.rats)<log10(1.5))),
-                              names(which(max.abs.exon<300 & abs(max.rats.exon)<log10(1.5))))
-expnochange.haveP2.eids <- intersect(row.names(polIIgene.fracolap),expnochange.eids)
-changes.butno.expression <- intersect(fracolap.nolo.eids,expnochange.haveP2.eids)
 
 for ( eid in poised.then.run.eid ){
   label <- paste(c(gene.symbol[eid],"-",eid),collapse="")
