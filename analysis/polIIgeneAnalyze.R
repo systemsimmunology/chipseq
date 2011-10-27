@@ -41,35 +41,68 @@ for ( eid in poised.then.run.eid ){
 ## Three-way comparison
 ## 
 
+
+## Possible NMs that are expressed, though we don't really know which transcript it is
+diffexp.nm <- unlist(nms.of.eid[diffexp.eid]) ## 1983 in number
+
 library(limma)
 
 ## In terms of RefSeqs
 v1 <- poised.t0.nm
 v2 <- fracolap.jump.nm
-v3 <- expressed.nm
+v3 <- diffexp.nm
 all.nm <- union(v1,union(v2,v3))
 v1.logvec <- all.nm %in% v1
 v2.logvec <- all.nm %in% v2
 v3.logvec <- all.nm %in% v3
 c123 <- cbind(v1.logvec,v2.logvec,v3.logvec)
+c123 <- c123*1
+colnames(c123) <- c("Poised at T=0","Running","Expressed")
+rownames(c123) <- all.nm
 a.nm <- vennCounts(c123)
-colnames(a.nm)[1:3] <- c("Poised at T=0","Running","Expressed")
 
 ## In terms of Entrez IDs
 v1 <- poised.t0.eid
 v2 <- fracolap.jump.eid
-v3 <- expressed.eids
+v3 <- diffexp.eid
 all.nm <- union(v1,union(v2,v3))
 v1.logvec <- all.nm %in% v1
 v2.logvec <- all.nm %in% v2
 v3.logvec <- all.nm %in% v3
 c123 <- cbind(v1.logvec,v2.logvec,v3.logvec)
+c123 <- c123*1
+colnames(c123) <- c("Poised at T=0","Running","Expressed")
+rownames(c123) <- all.eid
 a.eid <- vennCounts(c123)
-colnames(a.eid)[1:3] <- c("Poised at T=0","Running","Expressed")
 
 par(mfrow=c(1,2))
 vennDiagram(a.nm,main="RefSeq IDs")
 vennDiagram(a.eid,main="Entrez IDs")
+
+##
+## Gene lists
+##
+
+for ( pvar in c(0,1) ){
+  for ( rvar in c(0,1) ){
+    for ( evar in c(0,1) ){
+      vec <- c(pvar,rvar,evar)
+      vv <- vec+1
+      stringrep <- paste(c(b[vv[1],1],b[vv[2],2],b[vv[3],3]),collapse="")  ## string represnetation of group 
+      nms <- names(which(apply(c123,1,paste,collapse="")==paste(vec,collapse=""))) ## members of group
+      cat(stringrep,length(ids),"\n")
+      if ( length(nms) > 1 ){
+        m <- cbind(eid.of.nm[nms],
+                   gene.symbol[eid.of.nm[nms]],
+                   (eid.of.nm[nms] %in% ncbiID[rownames(lps.mus)])*1
+        )
+        colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray")
+        ofile <- paste(c(stringrep,".tsv"),collapse="")
+        write.matrix(m,"RefSeq",file=ofile)
+      }
+    }
+  }
+}
 
 ##
 ## Data exploration
@@ -78,7 +111,7 @@ vennDiagram(a.eid,main="Entrez IDs")
 ## evaluated below using only threshold-based methods
 ##expchange.eids
 
-##compareSets(expressed.eids,expchange.eids)
+##compareSets(diffexp.eid,expchange.eids)
 ##   a    b  a^b  a-b  b-a  a+b 
 ## 1517  577  573  944    4 1521 
 
@@ -301,8 +334,8 @@ length(intersect(poised.t0.eid,expchange.eids))
 length(intersect(poised.anytime.eid,expchange.eids))
 
 ## Here are ones that have expression changes but not scoring much with fracolap
-little.fracolap.but.expressed.eids <- setdiff(expchange.haveP2.eids,fracolap.nolo.eids)
-b <- setdiff(little.fracolap.but.expressed.eids,poised.t0.eid) ## not poised
+little.fracolap.but.diffexp.eid <- setdiff(expchange.haveP2.eids,fracolap.nolo.eids)
+b <- setdiff(little.fracolap.but.diffexp.eid,poised.t0.eid) ## not poised
 gene.symbol[names(sort(polIIgene.fracolap.max[b],decreasing=T))] ## sorted by fracolap
 
 ##Expression Clusters
@@ -356,10 +389,7 @@ tpr <- table(all.cluster.members[paste(pr,"_at",sep="")])
 tpr
 round(as.vector(tpr)/length(pr),3)*100
 
-## Possible NMs that are expressed, though we don't really know which transcript it is
-expressed.nms <- unlist(nms.of.eid[expressed.eids]) ## 1983 in number
-
-pr.nm <- intersect(expressed.nms,poised.then.run.nm)
+pr.nm <- intersect(diffexp.nm,poised.then.run.nm)
 
 polIIgene.nm.fracolap[nms.of.eid[[gene.eid["Parp14"]]],]
 
