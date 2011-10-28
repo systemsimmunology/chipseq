@@ -41,48 +41,88 @@ for ( eid in poised.then.run.eid ){
 ## Three-way comparison
 ## 
 
-
-## Possible NMs that are expressed, though we don't really know which transcript it is
-diffexp.nm <- unlist(nms.of.eid[diffexp.eid]) ## 1983 in number
+have.polII.signal.nm <- union(rownames(polIIgene.nm.fracolap),rownames(polII.nm.scoretss))
+have.polII.signal.eid <- as.character(eid.of.nm[have.polII.signal.nm])
 
 library(limma)
+ 
+case <- 3
 
 ## In terms of RefSeqs
 v1 <- poised.t0.nm
 v2 <- fracolap.jump.nm
 v3 <- diffexp.nm
-all.nm <- union(v1,union(v2,v3))
+
+if ( case==1 ){
+  all.nm <- union(v1,union(v2,v3))
+}
+if ( case==2 ){
+  all.nm <- on.3prime.array.nm
+}
+if ( case==3){
+  all.nm <- intersect(on.3prime.array.nm,have.polII.signal.nm)
+}
+
 v1.logvec <- all.nm %in% v1
 v2.logvec <- all.nm %in% v2
 v3.logvec <- all.nm %in% v3
 c123 <- cbind(v1.logvec,v2.logvec,v3.logvec)
 c123 <- c123*1
-colnames(c123) <- c("Poised at T=0","Running","Expressed")
+colnames(c123) <- c("Poised at T=0","Running","Diff. Expressed")
 rownames(c123) <- all.nm
 a.nm <- vennCounts(c123)
+
 
 ## In terms of Entrez IDs
 v1 <- poised.t0.eid
 v2 <- fracolap.jump.eid
 v3 <- diffexp.eid
-all.nm <- union(v1,union(v2,v3))
-v1.logvec <- all.nm %in% v1
-v2.logvec <- all.nm %in% v2
-v3.logvec <- all.nm %in% v3
+
+
+if ( case == 1 ) {
+  all.eid <- union(v1,union(v2,v3))
+}
+if ( case == 2){
+  all.eid <- on.3prime.array.eid
+}
+if ( case == 3 ){
+  all.eid <- intersect(on.3prime.array.eid,have.polII.signal.eid)
+}
+
+v1.logvec <- all.eid %in% v1
+v2.logvec <- all.eid %in% v2
+v3.logvec <- all.eid %in% v3
 c123 <- cbind(v1.logvec,v2.logvec,v3.logvec)
 c123 <- c123*1
-colnames(c123) <- c("Poised at T=0","Running","Expressed")
+colnames(c123) <- c("Poised at T=0","Running","Diff. Expressed")
 rownames(c123) <- all.eid
 a.eid <- vennCounts(c123)
 
+
+if ( case==1 ){
+  txt <- "Universe: Union of the three sets"
+}
+
+if ( case==2 ){
+  txt <- "Universe: On 3' Array"
+}
+
+if ( case==3 ){
+  txt <- "Universe: On 3\' Array AND has some PolII signal"
+}
+
+
 par(mfrow=c(1,2))
+
 vennDiagram(a.nm,main="RefSeq IDs")
 vennDiagram(a.eid,main="Entrez IDs")
+mtext(txt,outer=TRUE,line=-3,cex=2)
 
 ##
 ## Gene lists
 ##
 
+b <- rbind(c("nP","nR","nE"),c("P","R","E"))
 for ( pvar in c(0,1) ){
   for ( rvar in c(0,1) ){
     for ( evar in c(0,1) ){
@@ -90,13 +130,19 @@ for ( pvar in c(0,1) ){
       vv <- vec+1
       stringrep <- paste(c(b[vv[1],1],b[vv[2],2],b[vv[3],3]),collapse="")  ## string represnetation of group 
       nms <- names(which(apply(c123,1,paste,collapse="")==paste(vec,collapse=""))) ## members of group
-      cat(stringrep,length(ids),"\n")
+      cat(stringrep,length(nms),"\n")
       if ( length(nms) > 1 ){
+        scorevec <- rep(NA,length(nms))
+        names(scorevec) <- nms
+        haveval <- intersect(nms,rownames(polII.nm.scoretss))
+        scorevec[haveval] <- polII.nm.scoretss[haveval,1]
         m <- cbind(eid.of.nm[nms],
                    gene.symbol[eid.of.nm[nms]],
-                   (eid.of.nm[nms] %in% ncbiID[rownames(lps.mus)])*1
-        )
-        colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray")
+                   (eid.of.nm[nms] %in% ncbiID[rownames(lps.mus)])*1,
+                   scorevec,
+                   near.logvec[nms]*1
+                   )
+        colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","Score","Other Gene Near")
         ofile <- paste(c(stringrep,".tsv"),collapse="")
         write.matrix(m,"RefSeq",file=ofile)
       }
@@ -361,7 +407,6 @@ c5 <- names(which(all.cluster.members==5))
 all.cluster.members[dendrorder.genes]
 
 profileplot(data.mat.w0[c1,],main="")
-
 
 library(MKmisc) ## Provides heatmapCol, which centers colors on according to a limit, lim
 ## colorRampPalette returns a palette generating function like terrain.colors or heat.colors that takes an integer argument and generates a palette with that many colors.  E.g. RdBu has maximum 11 colors. ( To "keep" white at center of RdBu, must use odd number for brewer.pal )

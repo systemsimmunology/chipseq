@@ -66,6 +66,10 @@ low.expressors <- names(which(apply(lps.mus[lps.6hr.ps,1:imax]<mu.cutoff,1,sum)=
 lps.6hr.ps <- setdiff(lps.6hr.ps,low.expressors)
 diffexp.eid <- as.character(ncbiID[lps.6hr.ps])
 diffexp.nm <- as.character(unlist(nms.of.eid[diffexp.eid]))
+ 
+on.3prime.array.eid <- as.character(ncbiID[rownames(lps.mus)])
+on.3prime.array.nm <- as.character(unlist(nms.of.eid[on.3prime.array.eid]))
+
 
 ##
 ## Combinations of three sets: Poised at T=0, Running, Differentially Expressed
