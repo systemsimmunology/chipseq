@@ -119,38 +119,6 @@ vennDiagram(a.eid,main="Entrez IDs")
 mtext(txt,outer=TRUE,line=-3,cex=2)
 
 ##
-## Gene lists
-##
-
-b <- rbind(c("nP","nR","nE"),c("P","R","E"))
-for ( pvar in c(0,1) ){
-  for ( rvar in c(0,1) ){
-    for ( evar in c(0,1) ){
-      vec <- c(pvar,rvar,evar)
-      vv <- vec+1
-      stringrep <- paste(c(b[vv[1],1],b[vv[2],2],b[vv[3],3]),collapse="")  ## string represnetation of group 
-      nms <- names(which(apply(c123,1,paste,collapse="")==paste(vec,collapse=""))) ## members of group
-      cat(stringrep,length(nms),"\n")
-      if ( length(nms) > 1 ){
-        scorevec <- rep(NA,length(nms))
-        names(scorevec) <- nms
-        haveval <- intersect(nms,rownames(polII.nm.scoretss))
-        scorevec[haveval] <- polII.nm.scoretss[haveval,1]
-        m <- cbind(eid.of.nm[nms],
-                   gene.symbol[eid.of.nm[nms]],
-                   (eid.of.nm[nms] %in% ncbiID[rownames(lps.mus)])*1,
-                   scorevec,
-                   near.logvec[nms]*1
-                   )
-        colnames(m) <- c("Entrez ID","Gene Symbol","OnThreePrimeArray","Score","Other Gene Near")
-        ofile <- paste(c(stringrep,".tsv"),collapse="")
-        write.matrix(m,"RefSeq",file=ofile)
-      }
-    }
-  }
-}
-
-##
 ## Data exploration
 ##
 

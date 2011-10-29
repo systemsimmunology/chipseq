@@ -152,3 +152,93 @@ for ( nm in intersect(poised.then.run.nm,rownames(ach4gene.nm.fracolap)) ){
 }
 write.matrix(em,"RefSeq",file="PoisedThenRunAcH4Fracolap.tsv")
 write.matrix(rankmat,"RefSeq",file="PoisedThenRunAcH4FracolapRanks.tsv")
+
+##
+## Gene lists for each subgroup
+##
+
+## In terms of RefSeqs
+v1 <- poised.t0.nm
+v2 <- fracolap.jump.nm
+v3 <- diffexp.nm
+have.polII.signal.nm <- union(rownames(polIIgene.nm.fracolap),rownames(polII.nm.scoretss))
+all.nm <- intersect(on.3prime.array.nm,have.polII.signal.nm)
+v1.logvec <- all.nm %in% v1
+v2.logvec <- all.nm %in% v2
+v3.logvec <- all.nm %in% v3
+c123 <- cbind(v1.logvec,v2.logvec,v3.logvec)
+c123 <- c123*1
+colnames(c123) <- c("Poised at T=0","Running","Diff. Expressed")
+rownames(c123) <- all.nm
+
+prestring <- "=HYPERLINK(\"http://www.ncbi.nlm.nih.gov/gene?term="
+suffix <- "\",\"NCBI Gene Page\")"
+## Works but is hardcoded
+fileprestring <- "=HYPERLINK(\"file:///Users/thorsson/Dropbox/Vinna/EpiGenomeLandscape/KinPlots/"
+filesuffix <- "\",\"KinPlot\")"
+## this should within a folder at same levels as KinPlots -
+fileprestring <- "=HYPERLINK(\"../KinPlots/"
+##fileprestring <- "=HYPERLINK(\"file://../KinPlots/"
+filesuffix <- "\",\"KinPlot\")"
+## Doesn't work:
+##fileprestring <- "/Users/thorsson/Dropbox/Vinna/EpiGenomeLandscape/KinPlots/"
+##filesuffix <- ""
+maxexpval <- apply(lps.mus[lps.6hr.ps,1:imax],1,max)
+names(maxexpval) <- ncbiID[names(maxexpval)]
+maxlambdaval <- apply(lps.lambdas[lps.6hr.ps,1:imax],1,max)
+names(maxlambdaval) <- ncbiID[names(maxlambdaval)]
+b <- rbind(c("nP","nR","nE"),c("P","R","E"))
+load("~/chipseq/annotation/nmlength.RData")
+
+for ( pvar in c(0,1) ){
+  for ( rvar in c(0,1) ){
+    for ( evar in c(0,1) ){
+      vec <- c(pvar,rvar,evar)
+      vv <- vec+1
+      stringrep <- paste(c(b[vv[1],1],b[vv[2],2],b[vv[3],3]),collapse="")  ## string represnetation of group 
+      nms <- names(which(apply(c123,1,paste,collapse="")==paste(vec,collapse=""))) ## members of group
+      cat(stringrep,length(nms),"\n")
+      if ( length(nms) > 1 ){
+
+        ## Peak characteristics
+        peakmat <- matrix(1*NA,nrow=length(nms),ncol=3) ## trick for making *numeric* NA
+        colnames(peakmat) <- c("Peak Score","Peak Distance","Peak Width") 
+        rownames(peakmat) <- nms
+        haveval <- intersect(nms,rownames(polII.nm.scoretss))
+        peakmat[haveval,"Peak Score"] <- signif(polII.nm.scoretss[haveval,1],3)
+        peakmat[haveval,"Peak Distance"] <- polII.nm.tssdist[haveval,1]
+        peakmat[haveval,"Peak Width"] <- polII.nm.tsswidth[haveval,1]
+        ## Fracolap chararacteristics
+        fracolapmat <- matrix(1*NA,nrow=length(nms),ncol=5) ## trick for making *numeric* NA
+        colnames(fracolapmat) <- paste("Fracolap",colnames(sigo))
+        rownames(fracolapmat) <- nms
+        haveval <- intersect(nms,rownames(sigo))
+        fracolapmat[haveval,]<-polIIgene.nm.fracolap[haveval,colnames(sigo)]
+        fracolapmat <- round(fracolapmat,3)
+        ## Expression characteristics
+        expmat <- matrix(1*NA,nrow=length(nms),ncol=2) ## trick for making *numeric* NA
+        colnames(expmat) <- c("Max Exp Value","Max DiffExp Stat")
+        rownames(expmat) <- nms
+        haveval <- intersect(nms,unlist(nms.of.eid[ncbiID[rownames(lps.mus)]]))
+        expmat[haveval,"Max Exp Value"] <- maxexpval[eid.of.nm[haveval]]
+        expmat[haveval,"Max DiffExp Stat"] <- maxlambdaval[eid.of.nm[haveval]]
+        expmat <- round(expmat,1)
+
+        m <- cbind(eid.of.nm[nms],
+                   gene.symbol[eid.of.nm[nms]],
+                   round(nmlength[nms]/100,1),
+                   near.logvec[nms]*1,
+                   paste(prestring,eid.of.nm[nms],suffix,sep=""),
+                   paste(fileprestring,gene.symbol[eid.of.nm[nms]],"-",eid.of.nm[nms],".png",filesuffix,sep="")
+                   )
+        colnames(m) <- c("Entrez ID","Gene Symbol","Length (kb)","Other Gene Near","NCBI Link","Kinetic Plot")
+        m <- cbind(m,peakmat,expmat,fracolapmat)
+        ofile <- paste(c(stringrep,".tsv"),collapse="")
+        write.matrix(m,"RefSeq",file=ofile)        
+      }
+    }
+  }
+}
+
+
+
