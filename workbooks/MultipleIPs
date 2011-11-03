@@ -1,0 +1,16 @@
+
+Nov 2000
+--------
+
+Look into methods for getting multiple IP results, from larger set of TFs
+
+in
+ /solexa/aderem/ChIPSeq_Analysis/PeakFiles
+/bin/ls *bed > ~/bedlist
+
+elsewhere
+awk '{FS="_"; OFS="\t"; print $1, $2, $3, $4, $5, $6, $7}' bedlist | sort -nr > try.tsv
+
+may need some hand cleanup.
+
+File names seem to break down near 2010
