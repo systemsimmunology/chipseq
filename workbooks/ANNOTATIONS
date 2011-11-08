@@ -1,4 +1,24 @@
 
+
+Nov 7, 2011
+----------
+( Noticed that some of the annotation files might be gettting a bit old but will keep as is for now)
+
+In preparation for possibly working with ChIP seq for TFs, want annotation to be compatible with this months tfinf scans
+
+Obtained from Ensembl version 64
+
+Dataset 37681 / 37681 Genes
+Mus musculus genes (NCBIM37)
+Filters
+[None selected]
+Attributes
+Ensembl Gene ID
+Associated Gene Name
+Gene Start (bp)
+Gene End (bp)
+Strand
+
 Oct 12, 2010
 -------------
 Possible procedure for identifying overlapping or near overlapping genes
