@@ -1,4 +1,9 @@
 #!/usr/bin/env python
+## Uses overlap file to determine if another gene is nearby
+## Overlap is in terms of RefSeqs
+## Need to distinguish
+##   self-gene: overlapping RefSeq has identical Entrez ID ( ignored )
+##   other gene: overlapping RefSeq has different Entrez ID ( flagged )
 import sys
 
 if (len (sys.argv) != 3):
@@ -53,6 +58,32 @@ def hasclash ( nmvec ):
         hovec[target]=hasother
     return hovec
 
+def unique ( inlist ):
+  return list(set(inlist))
+
+def mappableNMs ( enems ):
+  ennemms = []
+  for enem in enems:
+      for enem in enems:if gid.has_key(enem):
+          ennemms.append(enem)
+  return ennemms
+
+def gidvec ( nmvec ):
+  gidvec = []
+  for enem in nmvec:
+    gidvec.append(gid[enem])
+  return gidvec
+
+def conflictors ( nmvec ):
+  cvec = {}
+  for enem in nmvec:
+    eid = gid[enem]
+    otros = nmvec[:]
+    otros.remove(enem)
+    oeids = gidvec(otros)
+    countem = oeids.count(eid)
+    cvec[enem] = countem
+  return cvec
 
 clashall = {} ## total set of clashes of NMs with other genes    
 for line in lines:
@@ -65,7 +96,7 @@ for line in lines:
   ## This is no the case for some obsolete NMs
   ennemms = []
   for enem in enems:
-      if gid.has_key(enem):
+      for enem in enems:if gid.has_key(enem):
           ennemms.append(enem)
   enems=ennemms
 

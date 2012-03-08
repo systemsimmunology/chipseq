@@ -64,12 +64,52 @@ sigSlice <- function( lambdaCutoff , ratioMatrix, lambdaMatrix){
 lps.6hr.ps <- rownames(sigSlice(lambda.cutoff,lps.ratios[,1:(imax-1)],lps.lambdas[,1:(imax-1)]))
 low.expressors <- names(which(apply(lps.mus[lps.6hr.ps,1:imax]<mu.cutoff,1,sum)==imax))
 lps.6hr.ps <- setdiff(lps.6hr.ps,low.expressors)
-diffexp.eid <- as.character(ncbiID[lps.6hr.ps])
-diffexp.nm <- as.character(unlist(nms.of.eid[diffexp.eid]))
+diffexp.3prime.eid <- as.character(ncbiID[lps.6hr.ps])
+diffexp.3prime.nm <- as.character(unlist(nms.of.eid[diffexp.3prime.eid]))
  
 on.3prime.array.eid <- as.character(ncbiID[rownames(lps.mus)])
 on.3prime.array.nm <- as.character(unlist(nms.of.eid[on.3prime.array.eid]))
 
+
+load("~/allarrays/data/20100407.curated.exon/CSSs.tc.RData")
+load("~/allarrays/data/20100407.curated.exon/dm.RData")
+## For differential "test", use cutoffs as per timecourse
+## binarization, with max time six hours
+abs.cutoff <- 200 ## Same as used for timecourse binarization
+rat.cutoff <- 2.5 ## Same as used for timecourse binarization
+dm.lps.exon <- dm
+nt <- 5 ## corresponds to six hours
+maxabs <- apply(dm.lps.exon[,1:nt],1,max)
+abs.logvec <- ( maxabs > abs.cutoff )
+
+tcs <- dm.lps.exon
+ratmat <- (tcs/tcs[,1])[,2:nt]
+maxrats <- apply(ratmat,1,max)
+rat.logvec <- ( maxrats > rat.cutoff )
+diffexp.exon.eid <- names(which(abs.logvec & rat.logvec))
+
+ 
+on.exon.array.eid <- rownames(dm.lps.exon)
+on.exon.array.nm <- as.character(unlist(nms.of.eid[on.exon.array.eid]))
+
+diffexp.exon.only.eid <- setdiff(diffexp.exon.eid,diffexp.3prime.eid)
+only.on.exon.eid <- setdiff(on.exon.array.eid,on.3prime.array.eid)
+
+diffexp.3prime.only.eid <- setdiff(diffexp.3prime.eid,diffexp.exon.eid)
+only.on.3prime.eid <- setdiff(on.3prime.array.eid,on.exon.array.eid)
+
+## About 34% of the diffexp are "new" genes
+#length(intersect(diffexp.exon.only.eid,only.on.exon.eid))/length(diffexp.exon.only.eid)
+## less than 0.6% of difexp on 3prime array but not exon
+#length(intersect(diffexp.3prime.only.eid,only.on.3prime.eid))/length(diffexp.3prime.only.eid)
+
+## Use the "benefit of the doubt" method to identify diffexp
+diffexp.eid <- intersect(diffexp.3prime.eid,diffexp.exon.eid)
+diffexp.eid <- c(diffexp.eid,diffexp.exon.only.eid)
+diffexp.eid <- c(diffexp.eid,diffexp.3prime.only.eid)
+diffexp.nm <-  as.character(unlist(nms.of.eid[diffexp.eid]))
+exp.universe.eid <- union(on.3prime.array.eid,on.exon.array.eid)
+exp.universe.nm <- as.character(unlist(nms.of.eid[exp.universe.eid]))
 
 ##
 ## Combinations of three sets: Poised at T=0, Running, Differentially Expressed

@@ -58,8 +58,14 @@ write.matrix(m,"RefSeq",file="AlwaysPoised.tsv")
 ### 
 
 
-plot(polII.nm.tssdist[,1],polII.nm.tsswidth[,1],xlim=c(-1000,1000),ylim=c(0,1000))
+baddies <- names(which(polII.nm.tssdist[,1] < -10000))
+## Gene NM_001142963 appears twice in RefSeq. Who knows why.
+goodies <- setdiff(rownames(polII.nm.tssdist),baddies)
+polII.nm.tssdist <- polII.nm.tssdist[goodies,]
+polII.nm.scoretss <- polII.nm.scoretss[goodies,]
+polII.nm.tsswidth <- polII.nm.tsswidth[goodies,]
 
+plot(polII.nm.tssdist[,1],polII.nm.tsswidth[,1],xlim=c(-1000,1000),ylim=c(0,1000))
 
 tplot <- function(nm){
   op <- par(mfrow=c(2,1))
