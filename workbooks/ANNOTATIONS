@@ -1,4 +1,22 @@
 
+March 16, 2012
+-------------
+Updating Refseq Gene information 
+
+Download from 
+
+http://hgdownload.cse.ucsc.edu/goldenPath/mm9/database/
+
+refGene.txt.gz (11-Mar-2012), unzip
+
+awk '{OFS="\t"; print $3,$5,$6,$2,"",$4}' refGene.txt > refGene.mouse.bed
+
+R --no-restore --no-save < ../utils/refGeneLengths.R 
+
+../utils/GeneflankCoords.py refGene.mouse.bed 1000 1000 bothstream > refGene.mouse.1kbflank.bed
+../utils/GeneflankCoords.py refGene.mouse.bed 5000 upstream > refGene.mouse.upstream5kb.bed
+../utils/GeneflankCoords.py refGene.mouse.bed 5000 downstream > refGene.mouse.downstream5kb.bed
+../utils/GeneflankCoords.py ../annotation/refGene.mouse.bed 5000 5000 upstream > refGene.mouse.10kbridge.bed
 
 Nov 7, 2011
 ----------
