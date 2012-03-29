@@ -1,3 +1,17 @@
+March 28, 2012
+--------------
+For Aayush calculation, need +-3kb upstream 
+
+../utils/GeneflankCoords.py ../annotation/refGene.mouse.bed 3000 3000 upstream > refGene.mouse.6kbridge.bed
+
+March 23, 2012
+--------------
+
+Error in March 16 for upstream downstream. The "spill-in length" is was missing (was not needed in original verson of code)
+
+../utils/GeneflankCoords.py refGene.mouse.bed 5000 0 upstream > refGene.mouse.upstream5kb.bed
+../utils/GeneflankCoords.py refGene.mouse.bed 5000 0 downstream > refGene.mouse.downstream5kb.bed
+
 
 March 16, 2012
 -------------

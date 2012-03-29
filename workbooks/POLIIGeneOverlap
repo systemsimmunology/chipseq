@@ -1,9 +1,37 @@
 
+March 28, 2012
+----------------
+
+March 23, 2012
+-------------
+March 16 run failed in the upstream/downstream part as orginal files were wrong (see ANNOTATION worksheet) 
+
+Reran the upstream and downstream components of processed_data manually
+and redid 
+
+cd ~/chipseq/processed_data
+R --no-save < ../utils/polIIFracolap.R ## seems not to have completed
+R --no-save < ../utils/polIInearTSS.R  ## seems to have completed
+
+Also ran:
+
+~/chipseq/utils/ProcessAcH4.sh
+
+March 19,2012
+-------------
+
+../utils/neargene.py nm_selfolap.bed ~/data/ncbi/gene2refseqSimplified_mouse  > conflicts.tsv
+
+convert conflicts to R
+
+Run, interactively, after loading recent Rstate
+prototype_near_gene.R
+
+
 March 16, 2012
 ---------------
 RefSeq annotation updated, as per worksheet ANNOTATION
 
-Then reran
 ~/chipseq/utils/ProcessPolII.sh
 
 Feb 3 2011

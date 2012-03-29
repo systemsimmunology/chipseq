@@ -44,8 +44,13 @@ for ( eid in poised.then.run.eid ){
 have.polII.signal.nm <- union(rownames(polIIgene.nm.fracolap),rownames(polII.nm.scoretss))
 have.polII.signal.eid <- as.character(eid.of.nm[have.polII.signal.nm])
 
-library(limma)
- 
+
+library(limma) ## for vennCounts
+## limma not available in R 2.14!
+## retreived vennCounts and vennDiagram and copied into a utils file
+
+source("~/bin/R/functions/vennUtils.R")
+
 case <- 3
 
 ## In terms of RefSeqs
@@ -71,7 +76,6 @@ c123 <- c123*1
 colnames(c123) <- c("Poised at T=0","Running","Diff. Expressed")
 rownames(c123) <- all.nm
 a.nm <- vennCounts(c123)
-
 
 ## In terms of Entrez IDs
 v1 <- poised.t0.eid
@@ -364,17 +368,60 @@ dendrorder.genes <- hc$labels[hc$order] ## Genes in dendrogram order
 ## Left (Right) on dendrogram
 ## Bottom (Top) on heatmap below
 
-all.cluster.members <- cutree(hc,5)
+labRow <- gene.symbol[ncbiID[dendrorder.genes]]
+
+matforplot <- data.mat.w0[dendrorder.genes,]
+
+heatmap.2(matforplot,col=bluered,
+          breaks=seq(-2,2,0.05),
+          Rowv=NULL,
+          Colv=NULL,
+          trace="none",
+          density.info="none",
+          cexCol=1.0,
+          cexRow=0.7,
+          labRow=labRow,
+          labCol=colnames(data.mat.w0),
+          scale="none",
+##          margin=c(15,15),
+          font=2,
+          dendrogram="none",
+##          key="false",
+##          family="sans",
+          symbreaks=TRUE)
+
+all.cluster.members <- cutree(hc,4)
 c1 <- names(which(all.cluster.members==1))
 c2 <- names(which(all.cluster.members==2))
 c3 <- names(which(all.cluster.members==3))
 c4 <- names(which(all.cluster.members==4))
+
 c5 <- names(which(all.cluster.members==5))
+c6 <- names(which(all.cluster.members==6))
+c7 <- names(which(all.cluster.members==7))
+c8 <- names(which(all.cluster.members==8))
 
 ## this contains blocks of clusters 
 all.cluster.members[dendrorder.genes]
 
-profileplot(data.mat.w0[c1,],main="")
+par(mfrow=c(2,2))
+profileplot(data.mat.w0[c1,],main="c1")
+profileplot(data.mat.w0[c2,],main="c2")
+profileplot(data.mat.w0[c3,],main="c3")
+profileplot(data.mat.w0[c4,],main="c4")
+
+## signal integral
+
+imax <- 8
+m <- lps.mus[,1:imax]
+mm <- (m[,2:imax]+m[,1:(imax-1)])/2
+tvec <- c(0,20,40,60,80,120,240,360)
+tchange <- tvec[2:length(tvec)]-tvec[1:(length(tvec)-1)]
+mmm <- t(t(mm) * tchange)
+intvec <- apply(mmm,1,sum)
+lps.mic <- intvec/(tvec[length(tvec)]-tvec[1]) - m[,1]
+
+si <- lps.mic[lps.6hr.ps]
 
 library(MKmisc) ## Provides heatmapCol, which centers colors on according to a limit, lim
 ## colorRampPalette returns a palette generating function like terrain.colors or heat.colors that takes an integer argument and generates a palette with that many colors.  E.g. RdBu has maximum 11 colors. ( To "keep" white at center of RdBu, must use odd number for brewer.pal )
@@ -411,3 +458,7 @@ w <- polIIgene.nm.fracolap[pr.nm,1]
 
 ## Oops, spreadsheet is simply in the order poised.then.run.nm
 w <- polIIgene.nm.fracolap[poised.then.run.nm,1]
+
+
+
+

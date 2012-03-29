@@ -33,7 +33,9 @@ names(near.logvec) <- rt$V1
 ## First: binary matrix for poising, at every time point
 max.width <- 500
 max.dist <- 500
-poised.logmat <- (abs(polII.nm.tssdist)<max.dist) &  (polII.nm.tsswidth<max.width)
+min.score <- 3
+
+poised.logmat <- (abs(polII.nm.tssdist)<max.dist) &  (polII.nm.tsswidth<max.width) & (polII.nm.scoretss >min.score)
 poised.logmat <- replace(poised.logmat,which(is.na(poised.logmat)),FALSE) ## NA values also do not meet the criterion
 poised.logmat <- poised.logmat*1 ## convert to binary rep
 poised.logmat <- poised.logmat[,c(1,2,4,5,7)] ## restrict to A samples
@@ -49,6 +51,8 @@ sigo <- t(apply(polIIgene.nm.fracolap,1,'>',0.2)) ## set of substantial overlaps
 sigo <- sigo[,c(1,2,4,5,7)] ## keep just A samples
 fracolap.jump.nm <- names(which( (apply(sigo[,2:5]*1,1,sum)>0)&(!sigo[,1]) ))
 ## No sig overlap at time zero. Has sigoverlap at some later time.
+fracolap.jump.nm <- names(which(polIIgene.nm.fracolap[fracolap.jump.nm,1] < 0.05))
+## March 23, 2010: Be more restrictive about zero time point
 fracolap.jump.eid <- unique(as.character(eid.of.nm[fracolap.jump.nm]))
 
 ##
@@ -70,7 +74,6 @@ diffexp.3prime.nm <- as.character(unlist(nms.of.eid[diffexp.3prime.eid]))
 on.3prime.array.eid <- as.character(ncbiID[rownames(lps.mus)])
 on.3prime.array.nm <- as.character(unlist(nms.of.eid[on.3prime.array.eid]))
 
-
 load("~/allarrays/data/20100407.curated.exon/CSSs.tc.RData")
 load("~/allarrays/data/20100407.curated.exon/dm.RData")
 ## For differential "test", use cutoffs as per timecourse
@@ -85,9 +88,8 @@ abs.logvec <- ( maxabs > abs.cutoff )
 tcs <- dm.lps.exon
 ratmat <- (tcs/tcs[,1])[,2:nt]
 maxrats <- apply(ratmat,1,max)
-rat.logvec <- ( maxrats > rat.cutoff )
+rat.logvec <- ( abs(maxrats) > rat.cutoff )
 diffexp.exon.eid <- names(which(abs.logvec & rat.logvec))
-
  
 on.exon.array.eid <- rownames(dm.lps.exon)
 on.exon.array.nm <- as.character(unlist(nms.of.eid[on.exon.array.eid]))
@@ -104,9 +106,7 @@ only.on.3prime.eid <- setdiff(on.3prime.array.eid,on.exon.array.eid)
 #length(intersect(diffexp.3prime.only.eid,only.on.3prime.eid))/length(diffexp.3prime.only.eid)
 
 ## Use the "benefit of the doubt" method to identify diffexp
-diffexp.eid <- intersect(diffexp.3prime.eid,diffexp.exon.eid)
-diffexp.eid <- c(diffexp.eid,diffexp.exon.only.eid)
-diffexp.eid <- c(diffexp.eid,diffexp.3prime.only.eid)
+diffexp.eid <- union(diffexp.3prime.eid,diffexp.exon.eid)
 diffexp.nm <-  as.character(unlist(nms.of.eid[diffexp.eid]))
 exp.universe.eid <- union(on.3prime.array.eid,on.exon.array.eid)
 exp.universe.nm <- as.character(unlist(nms.of.eid[exp.universe.eid]))

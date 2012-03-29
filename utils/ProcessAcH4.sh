@@ -45,6 +45,19 @@ sed 's/bed/olap.tsv/g' ~/chipseq/auxfiles/AcH4bedfiles > infiles
 ~/chipseq/utils/expandNMannots.sh AcH4downstream5kb-olap.tsv ~/chipseq/annotation/refGene.mouse.bed AcH4downstream5kb-olap.annot.tsv
 rm -f infiles
 
+#
+# AcH4 overlap with 3kb upstream and 3kb downstream
+#
+if [ ! -e ~/chipseq/processed_data/AcH4bridge6kb ]
+then
+    mkdir ~/chipseq/processed_data/AcH4bridge6kb
+fi
+cd ~/chipseq/processed_data/AcH4bridge6kb
+~/chipseq/utils/GenomicFeatureChIPSeqOverlapMetaWrapper.sh ~/chipseq/auxfiles/AcH4bedfiles ~/chipseq/data/AcH4/ ~/chipseq/annotation/refGene.mouse.6kbridge.bed NM_
+sed 's/bed/olap.tsv/g' ~/chipseq/auxfiles/AcH4bedfiles > infiles
+~/bin/R/CombineColumnsToMatrix.sh infiles .olap.tsv 2 AcH4bridge6kb-olap.tsv 0 RefSeq
+~/chipseq/utils/expandNMannots.sh AcH4bridge6kb-olap.tsv ~/chipseq/annotation/refGene.mouse.bed AcH4bridge6kb-olap.annot.tsv
+rm -f infiles
 
 ##
 ## Create RData versions of the above

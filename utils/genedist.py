@@ -1,9 +1,4 @@
 #!/usr/bin/env python
-## Uses overlap file to determine if another gene is nearby
-## Overlap is in terms of RefSeqs
-## Need to distinguish
-##   self-gene: overlapping RefSeq has identical Entrez ID ( ignored )
-##   other gene: overlapping RefSeq has different Entrez ID ( flagged )
 import sys
 
 if (len (sys.argv) != 3):
@@ -13,7 +8,6 @@ if (len (sys.argv) != 3):
 olapfile=sys.argv[1]  
 mapfile = sys.argv[2]
 featureprefix = 'NM_'
-genelocfile = os.getenv('HOME')+'/chipseq/annotation/refGene.mouse.bed'
 
 ## Read in overlap file
 lines = open(olapfile).read().split('\n')
@@ -27,12 +21,6 @@ maplines = maplines[0:-1]
 nmaplines = len(maplines)
 sys.stderr.write ('Found %d lines in mapping file\n' % nmaplines )
 
-## Read in overlap file
-glines = open(genelocfile).read().split('\n')
-glines = glines[0:-1]
-nglines = len(glines)
-sys.stderr.write ('Found %d lines in gene location file\n' % nglines )
-
 gid = {} ## gene id of a refseq
 nms = {} ## refseqs of a gene ID
 for line in maplines:
@@ -45,17 +33,6 @@ for line in maplines:
     else:
         nms[g]=[]
         nms[g].append(r)
-
-
-start = {} ## gene start
-stop = {} ## gene end
-strand = {} ## gene strand
-for line in glines:
-  toks = line.split('\t')
-  nm = toks[3]
-  start[nm] = int(toks[1])
-  stop[nm] = int(toks[2])
-  strand[nm] = toks[5]
 
 # NM_028181 has a both a 'self-gene' and 'other gene' overlap
 #self:NM_028181,NM_001114328,NM_028181,NM_001114328
@@ -76,50 +53,6 @@ def hasclash ( nmvec ):
         hovec[target]=hasother
     return hovec
 
-def unique ( inlist ):
-  return list(set(inlist))
-
-def mappableNMs ( enems ):
-  ennemms = []
-  for enem in enems:
-      for enem in enems:
-        if gid.has_key(enem):
-          ennemms.append(enem)
-  return ennemms
-
-def gidvec ( nmvec ):
-  if ( isinstance(nmvec,list) ):
-    gidvec = []
-    for enem in nmvec:
-      gidvec.append(gid[enem])
-  elif ( isinstance(nmvec,str) ):
-    gidvec = gid[nmvec]
-  return gidvec
-
-def conflictors ( nmvec ):
-  cvec = {}
-  for enem in nmvec:
-    eid = gid[enem]
-    otros = nmvec[:]
-    otros.remove(enem)
-    if ( isinstance(otros,str) ):
-      otros = [otros] ## change string to list with length one if needed. I don't think it is.
-    oeids = gidvec(otros)
-    differentgene = notmatches(enem,otros)
-    countem = oeids.count(eid)
-    cvec[enem] = differentgene
-  return cvec
-
-## return list of nms in testvec whose geneID that do not match query nm
-## test must be list. Length 1 is OK.
-def notmatches ( nmquery, nmtestvec ):
-  outlist = []
-  gidquery=gid[nmquery]
-  gidtestvec=gidvec(nmtestvec)
-  for i in range(len(nmtestvec)):
-    if ( gidquery != gidtestvec[i] ):
-      outlist.append(nmtestvec[i])
-  return outlist
 
 clashall = {} ## total set of clashes of NMs with other genes    
 for line in lines:
@@ -132,8 +65,7 @@ for line in lines:
   ## This is no the case for some obsolete NMs
   ennemms = []
   for enem in enems:
-      for enem in enems:
-        if gid.has_key(enem):
+      if gid.has_key(enem):
           ennemms.append(enem)
   enems=ennemms
 
@@ -146,70 +78,6 @@ for line in lines:
           else:
               clashall[nm] = clashvec[nm]
 
-clashednms = {} ## total set of clashes of NMs with other genes    
-for line in lines:
-  toks = line.split('\t')
-  chromo = toks[0]
-  start = toks[1]
-  end = toks[2]
-  enems = toks[3].split(',')
-  ## Need to check  that nm has a key in the gid vector
-  ## This is no the case for some obsolete NMs
-  ennemms = []
-  for enem in enems:
-      for enem in enems:
-        if gid.has_key(enem):
-          ennemms.append(enem)
-  enems=ennemms
-  enems=unique(enems)
 
-  if (len(enems)>1):
-    conflictList = conflictors(enems)
-    for nm in conflictList.keys():    
-      if ( len(conflictList[nm]) >= 1):
-        if clashednms.has_key(nm):
-          clashednms[nm].extend(conflictList[nm]) ## append does not work in this case
-        else:
-          clashednms[nm] = conflictList[nm]
-        clashednms[nm] = unique(clashednms[nm])
-          
 for nm in clashall.keys():
     print nm + '\t' + str(clashall[nm])
-
-print "-------------------------"
-
-for nm in clashednms.keys():
-    print nm + '\t' + strand[nm] + + str(clashednms[nm])
-
-
-nm='NM_172442'
-
-for nm in clashednms.keys():
-  nmsNear=clashednms[nm]
-  wc=strand[nm] ## wc watson crick
-  b=start[nm] ## beginning of gene
-  e=stop[nm] ## end of gene
-  for near in nmsNear :
-    wcN=strand[near]
-    bN=start[near]
-    eN=stop[near]
-    conflictCode='OK'
-    if ( bN > e ): ## near gene is to the right of goi
-      if ( (wc=='+') & (wcN=='-') ):
-        conflictCode='Downstream can conflict'
-      if ( (wc=='-') & (wcN=='-') ):
-        conflictCode='Upstream can conflict'
-    if ( b > eN ): ## near gene is to the left of goi
-      if ( (wc=='+') & (wcN=='+') ):
-        conflictCode='Upstream can conflict'
-      if ( (wc=='-') & (wcN=='+') ):
-        conflictCode='Downstream can conflict'
-    if ( (b<bN) & (bN<e) & (e<eN) ):
-      conflictCode='Left overhang can conflict'
-    if ( (bN> b) & (b<eN) & (e>eN)):
-      conflictCode='Right overhang can conflict'
-    if ( (bN<b) & (e<eN) ):
-      conflictCode='Completely overlapping gene can conflict'
-    if ( (b<bN) & (eN<e) ):
-      conflictCode='Internal gene can conflict'
-    print nm + '\t' + near + '\t' + conflictCode
