@@ -72,6 +72,10 @@ refSeqMat <- function(emat){
   outmat
 }
 
+## Poised at T=0
+load("~/chipseq/results/20120323/poised.t0.nm.RData")
+pin <- as.matrix(poised.t0.nm)
+
 ## 3' array clusters
 load("~/chipseq/results/20120323/clusters.3prime.RData")
 clustersin <- as.matrix(clusters.3prime)
@@ -92,9 +96,6 @@ fm.eid.new <- addmat(fm.eid,clustersin)
 fm.eid <- fm.eid.new
 fm.nm.new <- addmat(fm.nm,refSeqMat(clustersin))
 fm.nm <- fm.nm.new
-
-
-
 
 ## c123 is one start to a feature matrix
 

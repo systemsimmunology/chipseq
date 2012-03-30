@@ -13,7 +13,6 @@ load("~/chipseq/processed_data/PolIInearTSS/polII.nm.tssdist.RData")
 load("~/chipseq/processed_data/PolIInearTSS/polII.scoretss.RData")
 load("~/chipseq/processed_data/PolIInearTSS/polII.nm.scoretss.RData")
 load("~/chipseq/processed_data/polII/polII.nm.fracolap.RData")
-load("~/chipseq/processed_data/ach4/ach4.nm.fracolap.RData")
 load("~/data/ncbi/eid.of.nm.RData")
 load("~/data/ncbi/nms.of.eid.RData")
 load("~/data/ncbi/gene.symbol.RData")
@@ -41,6 +40,7 @@ poised.logmat <- poised.logmat*1 ## convert to binary rep
 poised.logmat <- poised.logmat[,c(1,2,4,5,7)] ## restrict to A samples
 poised.t0.nm <- names(which(poised.logmat[,1]==1))
 poised.t0.eid <- unique(eid.of.nm[poised.t0.nm])
+save(poised.t0.nm,file="poised.t0.nm.RData")
 
 ##
 ## "Running" 
