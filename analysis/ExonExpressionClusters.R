@@ -18,14 +18,16 @@ CSSs.tc.exon <- CSSs.tc
 abs.cutoff <- 200 ## Same as used for timecourse binarization
 rat.cutoff <- 2.5 ## Same as used for timecourse binarization
 
-nt <- 5 ## corresponds to six hours
+## nt=5 corresponds to 12 hours, nt=4 to 4 hours
+nt <- 4 
 maxabs <- apply(dm.lps.exon[,1:nt],1,max)
 abs.logvec <- ( maxabs > abs.cutoff )
 
 tcs <- dm.lps.exon
 ratmat <- (tcs/tcs[,1])[,2:nt]
 maxrats <- apply(ratmat,1,max)
-rat.logvec <- ( abs(maxrats) > rat.cutoff )
+minrats <- apply(ratmat,1,min)
+rat.logvec <- ( maxrats > rat.cutoff ) | ( minrats < (1/rat.cutoff) )
 diffexp.exon.eid <- names(which(abs.logvec & rat.logvec))
 
 data.mat <- ratmat[diffexp.exon.eid,]

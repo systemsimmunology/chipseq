@@ -8,7 +8,7 @@ library(clusterCons)
 
 load("~/chipseq/processed_data/PolII/polII.nm.fracolap.RData")
 
-binarized <- t(apply(polIIgene.nm.fracolap,1,'>',0.05))
+binarized <- t(apply(polIIgene.nm.fracolap,1,'>',0.10))
 binarized <- binarized[,c(1,2,4,5,7)] 
 counts <- apply(binarized,1,sum)
 keepers <- which(counts>0)
@@ -44,7 +44,7 @@ y4.ps <- rownames(y4@mrl) ## labels
 y4.membrob <- y4@mrl[["mem_rob"]] ## values
 names(y4.membrob) <- y4.ps
 rob1 <- c(y1.membrob,y2.membrob,y3.membrob,y4.membrob)
-rob <- rob1[lps.6hr.ps]
+rob <- rob1[keepers]
 
 clusters.p2fracolap <- cbind(clusters,rob)
 colnames(clusters.p2fracolap) <- c("Cluster","Robustness")

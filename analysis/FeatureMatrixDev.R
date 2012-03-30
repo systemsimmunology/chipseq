@@ -21,11 +21,17 @@ all.eid <- names(nms.of.eid)
 load("~/chipseq/annotation/nmlength.RData")
 load("~/chipseq/annotation/eidlength.RData")
 
-fm.nm <- as.matrix(nmlength[all.nm])
+fm.nm <- matrix(NA,ncol=1,nrow=length(all.nm))
 colnames(fm.nm) <- "Length"
+rownames(fm.nm) <- all.nm
+keepers <- intersect(all.nm,names(nmlength)) ## some, e.g. "NR_029786" have length but not mapping, includes MIRs
+fm.nm[keepers,] <- nmlength[keepers]
 
-fm.eid <- as.matrix(eidlength[all.eid])
+fm.eid <- matrix(NA,ncol=1,nrow=length(all.eid))
 colnames(fm.eid) <- "Length"
+rownames(fm.eid) <- all.eid
+keepers <- intersect(all.eid,names(eidlength)) ## some, e.g. "NR_029786" have length but not mapping, includes MIRs
+fm.eid[keepers,] <- eidlength[keepers]
 
 ## Add one matrix, column-wise to another
 ## Fill in NAs when row not available
@@ -40,6 +46,10 @@ addmat <- function(nowmat,itermat){
   cols.now <- colnames(nowmat)
   cols.iter <- colnames(itermat)
   out.rows <- union(rows.now,rows.iter)
+  n.newrows <- length(setdiff(out.rows,rows.now))
+  if ( n.newrows > 0 ){
+    cat("Adding ",n.newrows,"new rows\n")
+  }
   out.cols <- c(cols.now,cols.iter)
   outmat <- matrix(NA,nrow=length(out.rows),ncol=length(out.cols))
   rownames(outmat) <- out.rows
@@ -48,9 +58,43 @@ addmat <- function(nowmat,itermat){
   outmat[rows.iter,cols.iter] <- itermat
   outmat
 }  
+ 
+## From matrix of EntrezIDs, create matrix of RefSeqs
+refSeqMat <- function(emat){
+  eids <- rownames(emat)
+  nms <- unlist(nms.of.eid[eids])
+  outmat <- matrix(nrow=length(nms),ncol=ncol(emat))
+  rownames(outmat) <- nms
+  colnames(outmat) <- colnames(emat)
+  for ( nm in nmks ){
+    outmat[nm,] <- emat[eid.of.nm[nm],]
+  }
+  outmat
+}
 
-clustersin <- as.matrix(gexpcluster)
-colnames(clustersin) <- "Clusters"
+## 3' array clusters
+load("~/chipseq/results/20120323/clusters.3prime.RData")
+clustersin <- as.matrix(clusters.3prime)
+rownames(clustersin)  <- as.character(unlist(sapply(rownames(clustersin),strsplit,split="_at")))
+colnames(clustersin) <- c("Three Prime Array Cluster","Three Prime Array Cluster Robustness")
+clustersin <- clustersin[intersect(rownames(clustersin),all.eid),]
+fm.eid.new <- addmat(fm.eid,clustersin)
+fm.eid <- fm.eid.new
+fm.nm.new <- addmat(fm.nm,refSeqMat(clustersin))
+fm.nm <- fm.nm.new
+
+## exon clusters
+load("~/chipseq/results/20120323/clusters.exon.RData")
+clustersin <- as.matrix(clusters.exon)
+colnames(clustersin) <- c("Exon Array Cluster","Exon Array Cluster Robustness")
+clustersin <- clustersin[intersect(rownames(clustersin),all.eid),]
+fm.eid.new <- addmat(fm.eid,clustersin)
+fm.eid <- fm.eid.new
+fm.nm.new <- addmat(fm.nm,refSeqMat(clustersin))
+fm.nm <- fm.nm.new
+
+
+
 
 ## c123 is one start to a feature matrix
 
