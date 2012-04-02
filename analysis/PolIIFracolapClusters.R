@@ -44,7 +44,7 @@ y4.ps <- rownames(y4@mrl) ## labels
 y4.membrob <- y4@mrl[["mem_rob"]] ## values
 names(y4.membrob) <- y4.ps
 rob1 <- c(y1.membrob,y2.membrob,y3.membrob,y4.membrob)
-rob <- rob1[keepers]
+rob <- rob1[names(keepers)]
 
 clusters.p2fracolap <- cbind(clusters,rob)
 colnames(clusters.p2fracolap) <- c("Cluster","Robustness")

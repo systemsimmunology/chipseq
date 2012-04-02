@@ -40,7 +40,15 @@ poised.logmat <- poised.logmat*1 ## convert to binary rep
 poised.logmat <- poised.logmat[,c(1,2,4,5,7)] ## restrict to A samples
 poised.t0.nm <- names(which(poised.logmat[,1]==1))
 poised.t0.eid <- unique(eid.of.nm[poised.t0.nm])
-save(poised.t0.nm,file="poised.t0.nm.RData")
+
+poised.t0.nm.binvec <- poised.logmat[,1]
+save(poised.t0.nm.binvec,file="poised.t0.nm.binvec.RData")
+
+eid.with.data <- unique(eid.of.nm[rownames(polII.nm.scoretss)])
+poised.t0.eid.binvec <- rep(0,length(eid.with.data))
+names(poised.t0.eid.binvec) <- eid.with.data
+poised.t0.eid.binvec[poised.t0.eid]
+
 
 ##
 ## "Running" 
