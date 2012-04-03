@@ -48,7 +48,7 @@ eid.with.data <- unique(eid.of.nm[rownames(polII.nm.scoretss)])
 poised.t0.eid.binvec <- rep(0,length(eid.with.data))
 names(poised.t0.eid.binvec) <- eid.with.data
 poised.t0.eid.binvec[poised.t0.eid]
-
+save(poised.t0.eid.binvec,file="poised.t0.eid.binvec.RData")
 
 ##
 ## "Running" 
@@ -62,6 +62,18 @@ fracolap.jump.nm <- names(which( (apply(sigo[,2:5]*1,1,sum)>0)&(!sigo[,1]) ))
 fracolap.jump.nm <- names(which(polIIgene.nm.fracolap[fracolap.jump.nm,1] < 0.05))
 ## March 23, 2010: Be more restrictive about zero time point
 fracolap.jump.eid <- unique(as.character(eid.of.nm[fracolap.jump.nm]))
+
+running.nm.binvec <- rep(0,length=nrow(polIIgene.nm.fracolap))
+names(running.nm.binvec) <- rownames(polIIgene.nm.fracolap)
+running.nm.binvec[fracolap.jump.nm] <- 1
+save(running.nm.binvec,file="running.nm.binvec.RData")
+
+eid.with.data <- unique(eid.of.nm[rownames(polIIgene.nm.fracolap)])
+running.eid.binvec <- rep(0,length=length(eid.with.data))
+names(running.eid.binvec) <- eid.with.data
+running.eid.binvec[fracolap.jump.eid] <- 1
+save(running.eid.binvec,file="running.eid.binvec.RData")
+
 
 ##
 ## Differentially Expresssed

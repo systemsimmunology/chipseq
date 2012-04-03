@@ -8,6 +8,7 @@
 ##
 ## Strategy: iteratively build up matrix.
 ## in one round, use either RefSeq or GeneID, then covert
+source("~/chipseq/utils/fmutils.R")
 
 load("~/data/ncbi/nms.of.eid.RData")
 load("~/data/ncbi/eid.of.nm.RData")
@@ -41,6 +42,19 @@ pin <- as.matrix(poised.t0.eid.binvec)
 colnames(pin) <- "Poised at T=0"
 fm.eid.new <- addmat(fm.eid,pin)
 fm.eid <- fm.eid.new
+
+## Running at T=0
+load("~/chipseq/results/20120323/running.nm.binvec.RData")
+pin <- as.matrix(running.nm.binvec)
+colnames(pin) <- "Running"
+fm.nm.new <- addmat(fm.nm,pin)
+fm.nm <- fm.nm.new
+load("~/chipseq/results/20120323/running.eid.binvec.RData")
+pin <- as.matrix(running.eid.binvec)
+colnames(pin) <- "Running"
+fm.eid.new <- addmat(fm.eid,pin)
+fm.eid <- fm.eid.new
+
 
 ## Fracolap clusters
 load("~/chipseq/results/20120323/clusters.p2fracolap.RData")
@@ -78,6 +92,6 @@ write.matrix(fm.eid,file="FeatMatGeneID.tsv",topLeftString="Gene ID")
 
 write.matrix(fm.nm,file="FeatMatRefSeq.tsv",topLeftString="RefSeq")
 
-
-
+save(fm.nm, file="fm.nm.RData")
+save(fm.eid,file="fm.eid.RData")
 

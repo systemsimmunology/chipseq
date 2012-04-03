@@ -1,27 +1,4 @@
 
-
-data.mat <- lps.ratios[lps.6hr.ps,1:7]
-data.mat.w0 <- cbind(rep(0,length(lps.6hr.ps)),data.mat)
-colnames(data.mat.w0) <- c("min0",colnames(data.mat))
-m.3prime <- data.mat.w0
-
-
-quartz()
-
-matr <- fm.eid
-col <- "Three Prime Array Cluster"
-plotmat <- m.3prime
-
-par(mfrow=c(1,4))
-for ( i in 1:4 ){
-  ids <- names(which(matr[,col]==i))
-  ids <- paste(ids,"_at",sep="")
-  profileplot(plotmat[ids,],main="",ylim=c(-2,2))
-}
-
-
-
-
 ## c123 is one start to a feature matrix
 
 ## universe: all.nm, the rownames of c123
