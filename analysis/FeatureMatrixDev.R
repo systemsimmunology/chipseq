@@ -55,11 +55,10 @@ colnames(pin) <- "Running"
 fm.eid.new <- addmat(fm.eid,pin)
 fm.eid <- fm.eid.new
 
-
 ## Fracolap clusters
-load("~/chipseq/results/20120323/clusters.p2fracolap.RData")
-clustersin <- as.matrix(clusters.p2fracolap)
-colnames(clustersin) <- c("PolII FracOlap Cluster","PolII FracOlap Cluster Robustness")
+p2 <- read.matrix("~/chipseq/results/20120323/PolIIFracolapCluster.tsv")
+clustersin <- p2
+colnames(clustersin) <- "PolII Fracolap Cluster"
 fm.nm.new <- addmat(fm.nm,clustersin)
 fm.nm <- fm.nm.new
 ## Need something for the Eids
@@ -67,25 +66,26 @@ res <- eidMat(clustersin,method="mean") ## choise "mean" has its problems
 fm.eid.new <- addmat(fm.eid,res)
 fm.eid <- fm.eid.new
 
-## 3' array clusters
-load("~/chipseq/results/20120323/clusters.3prime.RData")
-clustersin <- as.matrix(clusters.3prime)
-rownames(clustersin)  <- as.character(unlist(sapply(rownames(clustersin),strsplit,split="_at")))
-colnames(clustersin) <- c("Three Prime Array Cluster","Three Prime Array Cluster Robustness")
-clustersin <- clustersin[intersect(rownames(clustersin),all.eid),]
-fm.eid.new <- addmat(fm.eid,clustersin)
+##
+## 3' array Categories
+## 
+threeprime <- read.matrix("~/chipseq/results/20120323/ThreePrimeArrayExpression.tsv")
+rownames(threeprime)  <- as.character(unlist(sapply(rownames(threeprime),strsplit,split="_at")))
+threeprime <- threeprime[intersect(rownames(threeprime),all.eid),]
+fm.eid.new <- addmat(fm.eid,threeprime)
 fm.eid <- fm.eid.new
-fm.nm.new <- addmat(fm.nm,refSeqMat(clustersin))
+fm.nm.new <- addmat(fm.nm,refSeqMat(threeprime))
 fm.nm <- fm.nm.new
 
-## exon clusters
-load("~/chipseq/results/20120323/clusters.exon.RData")
-clustersin <- as.matrix(clusters.exon)
-colnames(clustersin) <- c("Exon Array Cluster","Exon Array Cluster Robustness")
-clustersin <- clustersin[intersect(rownames(clustersin),all.eid),]
-fm.eid.new <- addmat(fm.eid,clustersin)
+
+##
+## Exon Array Categories
+## 
+exon <- read.matrix("~/chipseq/results/20120323/ExonArrayExpression.tsv")
+exon <- exon[intersect(rownames(exon),all.eid),]
+fm.eid.new <- addmat(fm.eid,exon)
 fm.eid <- fm.eid.new
-fm.nm.new <- addmat(fm.nm,refSeqMat(clustersin))
+fm.nm.new <- addmat(fm.nm,refSeqMat(exon))
 fm.nm <- fm.nm.new
 
 write.matrix(fm.eid,file="FeatMatGeneID.tsv",topLeftString="Gene ID")

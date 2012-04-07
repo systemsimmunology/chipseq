@@ -1,3 +1,18 @@
+load("fm.eid.RData")
+load("fm.nm.RData")
+
+table(fm.eid[,"Cluster - Three Prime"],fm.eid[,"Cluster - Exon"])
+
+table(fm.eid[,"Differential Expression - Three Prime"],fm.eid[,"Differential Expression - Exon"])
+
+v <- names(which((fm.eid[,"Differential Expression - Three Prime"]==1)&(fm.eid[,"Differential Expression - Exon"]==0)))
+
+
+table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Cluster - Three Prime"])
+
+table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Running"])
+
+table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Poised at T=0"])
 
 ## c123 is one start to a feature matrix
 
