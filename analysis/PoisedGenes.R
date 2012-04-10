@@ -42,13 +42,16 @@ poised.t0.nm <- names(which(poised.logmat[,1]==1))
 poised.t0.eid <- unique(eid.of.nm[poised.t0.nm])
 
 poised.t0.nm.binvec <- poised.logmat[,1]
-save(poised.t0.nm.binvec,file="poised.t0.nm.binvec.RData")
+peak.scores.nm <- poised.t0.nm.binvec*polII.nm.scoretss[,1]
+poised.t0.mat.nm <- cbind(poised.t0.nm.binvec,peak.scores.nm)
+colnames(poised.t0.mat.nm) <- c("Poised at T=0","Poised Peak Score")
+save(poised.t0.mat.nm,file="poised.t0.mat.nm.RData")
 
-eid.with.data <- unique(eid.of.nm[rownames(polII.nm.scoretss)])
-poised.t0.eid.binvec <- rep(0,length(eid.with.data))
-names(poised.t0.eid.binvec) <- eid.with.data
-poised.t0.eid.binvec[poised.t0.eid]
-save(poised.t0.eid.binvec,file="poised.t0.eid.binvec.RData")
+#eid.with.data <- unique(eid.of.nm[rownames(polII.nm.scoretss)])
+#poised.t0.eid.binvec <- rep(0,length(eid.with.data))
+#names(poised.t0.eid.binvec) <- eid.with.data
+#poised.t0.eid.binvec[poised.t0.eid]
+#save(poised.t0.eid.binvec,file="poised.t0.eid.binvec.RData")
 
 ##
 ## "Running" 

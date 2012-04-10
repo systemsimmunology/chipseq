@@ -49,6 +49,8 @@ refSeqMat <- function(emat){
 library(modeest) ## contains mfv ~ most frequent value ~ mode
 ## assuming integer usage here
 
+## we have an "all NA" detector for the vector results but not the vector one
+
 eidMat <- function(nmat,method="mean"){
   nms.all <- rownames(nmat)
   eids <- unique(eid.of.nm[nms.all])
@@ -60,16 +62,23 @@ eidMat <- function(nmat,method="mean"){
     wehavethese.nm <- intersect(nms,nms.all) ## we need this because of NM members for eid that are not in original matrix
     nhaves <-length(wehavethese.nm)
     if ( nhaves == 1){
-      outmat[eid,] <- nmat[nhaves,]
+      outmat[eid,] <- nmat[wehavethese.nm,]
     } else { ## more than one
       smallmat <- nmat[wehavethese.nm,]
       if ( is.matrix(smallmat) ){
-        if ( method=="mean" ){ reduced <- apply(smallmat,2,mean)}
-        if ( method=="mode" ){ reduced <- apply(smallmat,2,mfv)}
+        if ( method=="mean" ){ reduced <- apply(smallmat,2,mean,na.rm=T)}
+        if ( method=="mode" ){ reduced <- apply(smallmat,2,mfv,na.rm=T)}
+        if ( method=="max" ){ reduced <- apply(smallmat,2,max,na.rm=T)}
       }
       else { ## not a matrix
-        if ( method=="mean" ){ reduced <- mean(smallmat) }
-        if ( method=="mode" ){ reduced <- mfv(smallmat) }
+        na.count <- length(which(is.na(smallmat)))
+        if ( na.count==length(smallmat)){
+          reduced <- NA
+        } else {
+          if ( method=="mean" ){ reduced <- mean(smallmat,na.rm=T) }
+          if ( method=="mode" ){ reduced <- mfv(smallmat,na.rm=T) }
+          if ( method=="max" ){ reduced <- max(smallmat,na.rm=T) }
+        }
       }
       outmat[eid,] <- reduced
     } ## end conditional on nhaves

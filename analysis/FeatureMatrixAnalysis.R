@@ -1,11 +1,26 @@
 load("fm.eid.RData")
 load("fm.nm.RData")
+## these are matrices of type character.
+## It will also be useful to have data frames
+
+df.nm <- as.data.frame(fm.nm)
+##df.nm <- as.data.frame(fm.nm,stringsAsFactor=F)
+h <- as.numeric(as.vector(df.nm[,"Poised Peak Score"]))
+df.nm[,"Poised Peak Score"] <- h
+
+
+df.eid <- as.data.frame(fm.eid)
+##df.eid <- as.data.frame(fm.eid,stringsAsFactor=F)
+h <- as.numeric(as.vector(df.eid[,"Poised Peak Score"]))
+df.eid[,"Poised Peak Score"] <- h
+
+
 
 table(fm.eid[,"Cluster - Three Prime"],fm.eid[,"Cluster - Exon"])
 
 table(fm.eid[,"Differential Expression - Three Prime"],fm.eid[,"Differential Expression - Exon"])
 
-v <- names(which((fm.eid[,"Differential Expression - Three Prime"]==1)&(fm.eid[,"Differential Expression - Exon"]==0)))
+v <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
 
 
 table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Cluster - Three Prime"])
@@ -13,6 +28,26 @@ table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Cluster - Three Prime"])
 table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Running"])
 
 table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Poised at T=0"])
+
+table(fm.nm[,"Constitutive Expression - Three Prime"],fm.nm[,"Constitutive Expression - Exon"])
+
+v <- names(which((fm.eid[,"Constitutive Expression - Exon"]==1)&(fm.eid[,"Constitutive Expression - Three Prime"]==0)))
+v <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
+
+
+v <- names(which((fm.nm[,"Cluster - Exon"]=="Down")&(fm.nm[,"Poised at T=0"]==1)))
+
+##can also filter on peak score. Example gene Tfrc
+v <- names(which((fm.eid[,"Cluster - Exon"]=="Down")&(fm.eid[,"Poised at T=0"]==1)&(fm.eid[,"Poised Peak Score"]>7)))
+
+
+v <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
+
+plot(dm.lps.exon[canplot,1],df.eid[canplot,"Poised Peak Score"])
+boxplot.funnylabel("Poised Peak Score","Cluster - Exon",df.nm)
+ 
+
+
 
 ## c123 is one start to a feature matrix
 
@@ -84,4 +119,23 @@ fisher.test(table(fm[,"Poised at T=0"],fm[,"Up Later"]))
 fisher.test(table(fm[,"Poised at T=0"],fm[,"Down"]))
 
 
+
+
+expectedcount <- function(m) {
+  rn <- rownames(m)
+  cn <- colnames(m)
+  v1 <-  apply(m,1,sum)/sum(m)
+  v2 <-  apply(m,2,sum)/sum(m)
+  all1s <- matrix(1,nrow=nrow(m),ncol=ncol(m))
+  m1 <- v1 * all1s
+  ##m2 <- t( all1s * v2) doesn't work - I miss MATLAB
+  m2 <- numeric()
+  for ( j in 1:nrow(all1s) ){
+    m2 <- rbind(m2,v2)
+  }
+  outmat <- m1*m2*sum(m)
+  rownames(outmat) <-rn
+  colnames(outmat) <-cn
+  outmat
+}
 

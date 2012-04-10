@@ -32,15 +32,20 @@ keepers <- intersect(all.eid,names(eidlength)) ## some, e.g. "NR_029786" have le
 fm.eid[keepers,] <- eidlength[keepers]
 
 ## Poised at T=0
-load("~/chipseq/results/20120323/poised.t0.nm.binvec.RData")
-pin <- as.matrix(poised.t0.nm.binvec)
-colnames(pin) <- "Poised at T=0"
+
+load("~/chipseq/results/20120323/poised.t0.mat.nm.RData")
+pin <- as.matrix(poised.t0.mat.nm)
 fm.nm.new <- addmat(fm.nm,pin)
 fm.nm <- fm.nm.new
-load("~/chipseq/results/20120323/poised.t0.eid.binvec.RData")
-pin <- as.matrix(poised.t0.eid.binvec)
-colnames(pin) <- "Poised at T=0"
-fm.eid.new <- addmat(fm.eid,pin)
+## This needs work :
+inmat <- as.matrix(pin[,"Poised at T=0"])
+colnames(inmat) <- "Poised at T=0"
+res1 <- eidMat(inmat,method="max")
+inmat <- as.matrix(pin[,"Poised Peak Score"])
+colnames(inmat) <- "Poised Peak Score"
+res2 <- eidMat(inmat,method="max")
+res <- cbind(res1,res2)
+fm.eid.new <- addmat(fm.eid,res)
 fm.eid <- fm.eid.new
 
 ## Running at T=0
