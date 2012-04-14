@@ -13,17 +13,17 @@ quartz()
 par(mfrow=c(2,3))
 for ( i in 1:6){
   ids <- clustered.nms[which( (clustmat[,"Cluster"]==i)&(clustmat[,"Robustness"]>0.90))]
-  profileplot(plotmat[ids,],main=i,ylim=c(0,1))
+  profileplot(plotmat[ids,],main=i,ylim=c(0,1),legend='none')
 }
  
 ## Visual Assessment gives
-clabels.p2 <- c("High","Immediate Drop From Full","Immediate drop from High","Peak at Hour 1","Mostly Low","Late Peak (4hr)")
+clabels.p2 <- c("High","Immediate Drop From Full","Immediate drop from Medium","Peak at Hour 1","Mostly Low","Late Peak (4hr)")
 
 par(mfrow=c(2,3))
 for ( i in 1:6 ){
   ids <- clustered.nms[which( (clustmat[,"Cluster"]==i)&(clustmat[,"Robustness"]>0.90))]
   ##ids <- paste(ids,"_at",sep="")
-  profileplot(plotmat[ids,],main=clabels.p2[i],ylim=c(0,1))
+  profileplot(plotmat[ids,],main=clabels.p2[i],ylim=c(0,1),legend='none')
 }
 
 ##

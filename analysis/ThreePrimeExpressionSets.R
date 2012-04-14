@@ -4,9 +4,18 @@
 ## charcterization of diffexp, nonchanging,
 ## cluster shapes
 
+
+load("~/data/ncbi/nms.of.eid.RData")
+load("~/data/ncbi/eid.of.nm.RData")
+load("~/chipseq/annotation/nmlength.RData")
+load("~/chipseq/annotation/eidlength.RData")
+all.nm <- names(eid.of.nm)
+all.eid <- names(nms.of.eid)
+
 load("~/allarrays/data/20100426.curated.3prime/all.lambdas.objects.RData")
 load("~/allarrays/data/20100426.curated.3prime/all.ratios.objects.RData")
 load("~/allarrays/data/20100426.curated.3prime/all.mus.objects.RData")
+ncbiID <- as.character(unlist(sapply(rownames(lps.mus),strsplit,split="_at")))
 
 ##
 ## Overall, keep in mind 
@@ -53,7 +62,7 @@ setmat[,3]=(rownames(lps.mus) %in%  lps.6hr.ps )*1
 ## Plot clusters and characterize patterns
 ##
 ## 3' array clusters
-load("~/chipseq/results/20120323/attic/clusters.3prime.RData")
+load("~/chipseq/results/20120323/clusters.3prime.RData")
 clustmat <- clusters.3prime
 clustered.ps <- rownames(clustmat)
 data.mat <- lps.ratios[clustered.ps,1:7]
@@ -66,7 +75,7 @@ par(mfrow=c(2,2))
 for ( i in 1:4){
   ids <- clustered.ps[which( (clustmat[,"Cluster"]==i)&(clustmat[,"Robustness"]>0.80))]
   ##ids <- paste(ids,"_at",sep="")
-  profileplot(plotmat[ids,],main=i,ylim=c(-2,2))
+  profileplot(plotmat[ids,],main=i,ylim=c(-2,2),legend='none')
 }
  
 ## Visual Assessment gives
@@ -76,7 +85,7 @@ par(mfrow=c(2,2))
 for ( i in 1:4 ){
   ids <- clustered.ps[which( (clustmat[,"Cluster"]==i)&(clustmat[,"Robustness"]>0.85))]
   ##ids <- paste(ids,"_at",sep="")
-  profileplot(plotmat[ids,],main=clabels.3prime[i],ylim=c(-2,2))
+  profileplot(plotmat[ids,],main=clabels.3prime[i],ylim=c(-2,2),legend='none')
 }
 
 ##
