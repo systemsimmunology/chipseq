@@ -55,7 +55,7 @@ for line in lines:
   chromo = toks[1]
   start = int(toks[2])
   end = int(toks[3])
-  bpolap = end - start   ## see comment * below
+  bpolap = end - start + 1
   if ( olaps.has_key(feat) ):
     olaps[feat] = olaps[feat] + bpolap
   else:
@@ -64,9 +64,7 @@ for line in lines:
 annotfeats  = olaps.keys()
 print "Genome Feature\tFractional Overlap\tLength of Overlap\tLength of Genome Feature\tFeature Chromosome\tFeature Start\tFeature End\tFeature Strand"
 for annotfeat in annotfeats:
-    reglength=olaps[annotfeat] +1 
-    # * we overcount if we have the +1 in bpolap
-    # in rare cases were flanking regions begin and end at same point
+    reglength=olaps[annotfeat] 
     flength = fend[annotfeat]-fstart[annotfeat]+1
     fracolap=float(reglength)/float(flength)
     print annotfeat + '\t' + str(round(fracolap,8)) + '\t' + str(reglength) + '\t' + \

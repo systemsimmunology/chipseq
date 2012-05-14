@@ -17,6 +17,12 @@ sed 's/bed/olap.tsv/g' ~/chipseq/auxfiles/PolIIbedfiles > infiles
 ~/chipseq/utils/expandNMannots.sh PolII-olap.tsv ~/chipseq/annotation/refGene.mouse.bed PolII-olap.annot.tsv
 rm -f infiles
 
+~/chipseq/utils/SignalSummaryWrapper.sh ~/chipseq/auxfiles/PolIIbedfiles /Volumes/CancerRegulome9/workspaces/users/vthorsson/ChIPSeq_Analysis/PeakFiles/ ~/chipseq/annotation/refGene.mouse.bed NM_
+sed 's/bed/signalsummary.tsv/g' ~/chipseq/auxfiles/PolIIbedfiles > infiles
+~/bin/R/CombineColumnsToMatrix.sh infiles .signalsummary.tsv 2 PolII-signal.tsv NA RefSeq
+~/chipseq/utils/expandNMannots.sh PolII-signal.tsv ~/chipseq/annotation/refGene.mouse.bed PolII-signal.annot.tsv
+rm -f infiles
+
 #
 # PolII overlap with 5kb upstream
 #
@@ -74,6 +80,7 @@ rm -f infiles
 
 cd ~/chipseq/processed_data
 R --no-save < ../utils/polIIFracolap.R
+R --no-save < ../utils/polIISignal.R
 R --no-save < ../utils/polIInearTSS.R
 
 
