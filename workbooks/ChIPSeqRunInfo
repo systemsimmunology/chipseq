@@ -1,0 +1,251 @@
+
+May 11, 2012
+------------
+
+Rerunning ProcessChIPSeqData with a modified FindChIPSeqPeaks.m
+
+Includes, area of peak as output
+
+maxPeakArea = 10 * trapz(peakBarHeights(lastPeakStart:(p-1)));
+
+Resulting bedfiles in
+/titan/cancerregulome9/workspaces/users/vthorsson/ChIPSeq_Analysis/PeakFiles
+
+May 7, 2012
+------------
+
+Hooray, have reproduced the final bed files produced in the original run
+cd /titan/cancerregulome9/workspaces/users/vthorsson/ChIPSeq_Analysis/PeakFiles
+
+diff  /solexa/aderem/ChIPSeq_Analysis/PeakFiles/20090611_1919_A_BMM_NoStim_0000_PolII.bed .
+
+Problem last Friday was due to minimum peak distance parameter. Now set on a per sample basis
+
+%Aderem Sample Number	Full Sample Name	IP Target	Cycles	Frag. size avg. (bp)	Neg Control	MinInterPeakDist
+1919	20090611_1919_A_BMM_NoStim_0000_PolII	PolII	36	158	NRS_Average_5_DynaBeads.tpm.bar	1000
+
+in the absence of last column, this parameter defaults to 0 and produced many peaks of length one.
+
+One thing that is painful in terms of replicating runs: Putting in symbolic links for each sample, to the /solexa/aderem location works, but we need to go all the way back to 
+
+PreferredGeraldRuns and AlignedReadFiles and populate those symbolic links
+
+Follow this sequence
+
+ls -alt /solexa/aderem/ChIPSeq_Analysis/AlignedReadFiles/20090625_1920_A_BMM_LPS_0060_PolII.txt
+
+gives
+
+lrwxrwxrwx 1 sramsey aalab 64 Sep  4  2009 /solexa/aderem/ChIPSeq_Analysis/AlignedReadFiles/20090625_1920_A_BMM_LPS_0060_PolII.txt -> PreferredGeraldRuns/090625_HWI-EAS427_FC42B1PAAXX/s_1_export.txt
+
+Then
+
+ls -alt /solexa/aderem/ChIPSeq_Analysis/PreferredGeraldRuns/090625_HWI-EAS427_FC42B1PAAXX
+
+gives 
+
+lrwxrwxrwx 1 sramsey aalab 118 Sep  5  2009 /solexa/aderem/ChIPSeq_Analysis/PreferredGeraldRuns/090625_HWI-EAS427_FC42B1PAAXX -> ../../ChipSeq/090625_HWI-EAS427_FC42B1PAAXX/Data/Intensities/Bustard1.4.0_29-06-2009_sbsuser/GERALD_29-06-2009_sbsuser
+
+So we do 
+
+cd PreferredGeraldRuns
+ln -s /solexa/aderem/ChipSeq/090625_HWI-EAS427_FC42B1PAAXX/Data/Intensities/Bustard1.4.0_29-06-2009_sbsuser/GERALD_29-06-2009_sbsuser 090625_HWI-EAS427_FC42B1PAAXX
+cd ../AlignedReadFiles
+ln -s ../PreferredGeraldRuns/090625_HWI-EAS427_FC42B1PAAXX/s_1_export.txt 20090625_1920_A_BMM_LPS_0060_PolII.txt
+
+
+May 4, 2012
+-----------
+
+After analysis below, and in preparation for peak integral, getting clean runs 
+
+ChipSeqConfig: Use Attic subfolder. diff analysis reveals that parameters ChIPSeqConfig_20100210 and ChIPSeqConfig_20100415 are identical.  For the newest one, from ChIPSeqConfig_20120417, needed to use eyeballing as file format is odd and could not be converted
+
+Follow instructions in Steve's guidelines to create local copy on 
+
+/titan/cancerregulome9/workspaces/users/vthorsson/ChIPSeq_Analysis
+
+
+svn co http://svn.systemsbiology.net/repos/compbio/Microarray/ProcessingMethods/ChIPSeq_MATLAB Matlab
+
+PreferredGeraldRuns $ ln -s  /solexa/aderem/ChipSeq/090611_HWI-EAS427_FC42A77AAXX/Data/Intensities/Bustard1.4.0_14-06-2009_sbsuser/GERALD_14-06-2009_sbsuser 090611_HWI-EAS427_FC42A77AAXX
+
+AlignedReadFiles $ ln -s $CSA/PreferredGeraldRuns/090611_HWI-EAS427_FC42A77AAXX/s_8_export.txt 20090611_1919_A_BMM_NoStim_0000_PolII.txt
+
+
+Start Run 
+
+ChIPSeq_Analysis $ /tools/bin/matlab -nodisplay
+>> addpath('Matlab')
+>> ProcessChIPSeqData
+
+Number of aligned reads: 5213740 agrees with earlier logfile 
+
+this is zero
+diff $CSA/ExtendedFragmentFiles/20090611_1919_A_BMM_NoStim_0000_PolII.bed ExtendedFragmentFiles/.
+
+
+May 3, 2012
+----------
+
+Do date analysis of files in 
+/Volumes/aderem/ChIPSeq_Analysis/LogFiles
+
+
+****************************
+Fragment Count Files
+****************************
+
+Seems to be that the relevant file is 
+ProcessChIPSeqData_13-Oct-2009_12_36_51.log
+
+
+ample: 20090611_1919_A_BMM_NoStim_0000_PolII
+Aligned read file exists: AlignedReadFiles/20090611_1919_A_BMM_NoStim_0000_PolII.txt
+Aligned read file has newer modification time than extended fragment file
+Generating extended fragment file
+initial pass through file completed; beginning second pass
+Number of aligned reads: 5213740
+Number of reads that passed alignment score filter: 5213740
+Extended fragment file has newer modification time than fragment count file
+Computing fragment counts for sample: 20090611_1919_A_BMM_NoStim_0000_PolII
+....
+Number of unique tags: 2646138
+Fragment count file has newer modification time than fragment count TPM file
+Computing TPM fragment counts for sample: 20090611_1919_A_BMM_NoStim_0000_PolII, rescaling with: 0.377909
+
+Have reproduced tag count 2646138 using Aayush's version of FindChIPSeqPeaks.m
+Yay.
+
+minAbsPeakHeight=minAbsPeakHeightTPM=2.2675
+
+Below this was reported as 2.265251
+
+****************************
+Peak Finding
+****************************
+
+Backtrace from 'peak-finding is up-to-date' tags and find that most recent peak finding for 
+
+20090611_1919_A_BMM_NoStim_0000_PolII
+
+is 
+
+ProcessChIPSeqData_15-Apr-2010_14_48_10.log
+
+Most recent time stamp 
+
+-rw-rw-r--  1 thorsson  thorsson  1185896 May 17  2010 ../PeakFiles/20090611_1919_A_BMM_NoStim_0000_PolII.bed
+-rw-rw-r--  1 thorsson  thorsson  3911846 May 17  2010 ../PeakFiles/20090611_1919_A_BMM_NoStim_0000_PolII.bar
+
+Not clear why that date, as the log file from that day says
+Sample 20090611_1919_A_BMM_NoStim_0000_PolII peak-finding is up-to-date
+
+
+rw-rw-r--  1 thorsson  thorsson  94507408 Oct 14  2009 ../ExtendedFragmentFiles/20090611_1919_A_BMM_NoStim_0000_PolII.bed
+-rw-rw-r--  1 thorsson  thorsson  216679243 Oct 14  2009 ../FragCountTPMFiles/20090611_1919_A_BMM_NoStim_0000_PolII.tpm.bar
+
+This is a little suprising too. Is the tpm.bar file not regenerated in the runs?
+
+Top of ProcessChIPSeqData_15-Apr-2010_14_48_10.log
+
+--------------------------------------------------
+Processing started:           15-Apr-2010 14:48:10
+--------------------------------------------------
+Config file:                   ChIPSeqConfig.txt
+Current directory:             /solexa/aderem/ChIPSeq_Analysis
+Run by user:                   sramsey
+Hostname:                      romulus.systemsbiology.net
+
+Genome chrom sizes:            GenomeChromSizesM37.txt
+Chrom sample interval:         10
+Minimum alignment score:       0.000000
+Min abs peak height, TPM:      2.000000
+Min abs peak height, counts:   6.000000
+Aligned read files dir:        AlignedReadFiles
+Extended fragment files dir:   ExtendedFragmentFiles
+Fragment count files dir:      FragmentCountFiles
+Peak files dir:                PeakFiles
+Frag count param record file:  FragCountParams.txt
+Peak find params record file:  PeakFindParams.txt
+Annotation features file:      GenomeAnnotationsM37.gff
+Annotated peak files dir:      PeakFiles_Annot
+Annotation window size (bp):   20000
+Max annotations per peak:      6
+Log file name:                 LogFiles/ProcessChIPSeqData_15-Apr-2010_14_48_10.log
+Frag count TPM files dir:      FragCountTPMFiles
+Scratch directory:             /local/ChIPSeq_Scratch
+Max neg control peak height:   1.000000
+Min peak height ratio to ctrl: 5.000000
+ 
+Other relevant lines in file
+
+for sample 20090611_1919_A_BMM_NoStim_0000_PolII, previous min interpeak distance was: 0; new interpeak distance is: 1000
+Finding peaks for sample: 20090611_1919_A_BMM_NoStim_0000_PolII
+comparing sample to negative control: FragCountTPMFiles/NRS_Average_5_DynaBeads.tpm.bar
+minAbsPeakHeightCountsTPM: 2.265251
+minAbsPeakHeight: 2.265251
+Number of ChIP-seq peaks found: 16700
+
+for sample 20090805_1958_B_BMM_LPS_0060_PolII, previous min interpeak distance was: 0; new interpeak distance is: 1000
+Finding peaks for sample: 20090805_1958_B_BMM_LPS_0060_PolII
+comparing sample to negative control: FragCountTPMFiles/NRS_Average_5_DynaBeads.tpm.bar
+minAbsPeakHeightCountsTPM: 0.951666
+minAbsPeakHeight: 2.000000
+Number of ChIP-seq peaks found: 5371
+ 
+for sample 20090625_1921_A_BMM_LPS_0120_PolII, previous min interpeak distance was: 0; new interpeak distance is: 1000
+Finding peaks for sample: 20090625_1921_A_BMM_LPS_0120_PolII
+comparing sample to negative control: FragCountTPMFiles/NRS_Average_5_DynaBeads.tpm.bar
+minAbsPeakHeightCountsTPM: 3.387121
+minAbsPeakHeight: 3.387121
+Number of ChIP-seq peaks found: 9181
+ 
+for sample 20090529_1922_A_BMM_LPS_0240_PolII, previous min interpeak distance was: 0; new interpeak distance is: 1000
+Finding peaks for sample: 20090529_1922_A_BMM_LPS_0240_PolII
+comparing sample to negative control: FragCountTPMFiles/NRS_Average_5_DynaBeads.tpm.bar
+minAbsPeakHeightCountsTPM: 2.265100
+minAbsPeakHeight: 2.265100
+Number of ChIP-seq peaks found: 14524
+
+for sample 20090805_1960_B_BMM_LPS_0240_PolII, previous min interpeak distance was: 0; new interpeak distance is: 1000
+Finding peaks for sample: 20090805_1960_B_BMM_LPS_0240_PolII
+comparing sample to negative control: FragCountTPMFiles/NRS_Average_5_DynaBeads.tpm.bar
+minAbsPeakHeightCountsTPM: 0.763000
+minAbsPeakHeight: 2.000000
+Number of ChIP-seq peaks found: 5176
+
+for sample 20090625_1923_A_BMM_LPS_0360_PolII, previous min interpeak distance was: 0; new interpeak distance is: 1000
+Finding peaks for sample: 20090625_1923_A_BMM_LPS_0360_PolII
+comparing sample to negative control: FragCountTPMFiles/NRS_Average_5_DynaBeads.tpm.bar
+minAbsPeakHeightCountsTPM: 10.161827
+minAbsPeakHeight: 10.161827
+Number of ChIP-seq peaks found: 1867
+
+Attempt to reproduce final bed file from Aayush's code yielded a file with 
+
+16625 Peaks
+Which  differs somewhat from the original  16700
+
+Am also seeing some slight differences in the region boundaries
+
+head -3 /solexa/aderem/ChIPSeq_Analysis/PeakFiles/*1919*bed
+track name=20090611_1919_A_BMM_NoStim_0000_PolII description="ChIPSeq Data for 20090611_1919_A_BMM_NoStim_0000_PolII" useScore=1
+chr1	4798010	4798051	20090611_1919_A_BMM_NoStim_0000_PolII	2.645365
+ls chr1	4848370	4848461	20090611_1919_A_BMM_NoStim_0000_PolII	2.645365
+
+Downloads $ head -3 /titan/cancerregulome9/workspaces/users/vthorsson/ChIPSeq.bed 
+track name=Unstim PolII description="ChIPSeq Data for Unstim PolII" useScore=1
+chr1	4798020	4798041	Unstim PolII	2.645365
+chr1	4848400	4848441	Unstim PolII	2.645365
+
+
+These difference appears in part due to that some positions are borderline AND small differences in count?
+
+Position 4798010, index 9391,  has sampleBarHeights  2.2675
+Position 4798020, index 9392,  has sampleBarHeight 2.6454
+
+sampleBarHeights(9391)-1000000*minAbsPeakHeightCounts/numTags =  -9.5629e-07
+
+1000000*minAbsPeakHeightCounts/numTags is absMin, the threshold value
+
