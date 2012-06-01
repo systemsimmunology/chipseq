@@ -48,8 +48,9 @@ constitutive.3prime.eid <- as.character(ncbiID[constitutive.3prime.ps])
 
 on.3prime.array.eid <- as.character(ncbiID[rownames(lps.mus)])
 on.3prime.array.nm <- as.character(unlist(nms.of.eid[on.3prime.array.eid]))
-
-## decide if we want eids for this
+##
+## setmat - 
+##
 setmat <- matrix(0,nrow=nrow(lps.mus),ncol=4)
 rownames(setmat) <- rownames(lps.mus)
 colnames(setmat) <- c("On Three Prime Array","Constitutive Expression - Three Prime","Differential Expression - Three Prime","Cluster - Three Prime")
@@ -103,6 +104,21 @@ setmat[clustered.ps,4] <- cvec1
 ## Tests on fake reclassification of original cluster membership gave
 ## 93%, 97%,100%,99.8%
 ## correctly classfied
+
+y1.ps <- clustered.nms[which(clustmat[,1]==1)] ## checked that it agrees with original computation modulo order
+y1.membrob <- clustmat[y1.ps,2]
+y2.ps <- clustered.nms[which(clustmat[,1]==2)] ## checked that it agrees with original computation modulo order
+y2.membrob <- clustmat[y2.ps,2]
+y3.ps <- clustered.nms[which(clustmat[,1]==3)] ## checked that it agrees with original computation modulo order
+y3.membrob <- clustmat[y3.ps,2]
+y4.ps <- clustered.nms[which(clustmat[,1]==4)] ## checked that it agrees with original computation modulo order
+y4.membrob <- clustmat[y4.ps,2]
+
+##
+## Warning: Had missing definitions that need to be checked, below
+##
+cormat <- 1-cor(t(lps.ratios[,1:7])) ## Check this!!!
+
 new.ps <- setdiff(lps.6hr.ps,clustered.ps) ## 735 genes
 new.dist.y1 <- apply(t(t(cormat[new.ps,y1.ps])*y1.membrob),1,mean)
 new.dist.y2 <- apply(t(t(cormat[new.ps,y2.ps])*y2.membrob),1,mean)

@@ -203,6 +203,134 @@ plot(apply(polIIgene.fracolap[c4,],2,median),type='l')
 plot(apply(dm.lps.3prime[c4,],2,median),type='l')
 
 
+
+##
+## PAM
+##
+p4 <- pam(dm,diss=T,k=4)
+all.cluster.members <- p4$clustering
+
+all.nm <- rownames(polIIgene.nm.fracolap)
+binarized <- t(apply(polIIgene.nm.fracolap,1,'>',0.10))
+binarized <- binarized[,c(1,2,4,5)]
+#binarized <- binarized[,c(1,2,4,5,7)] 
+counts <- apply(binarized,1,sum)
+overthreshold <- names(which(counts>0))
+ones <- names(which(apply(polIIgene.nm.fracolap[,c(1,2,4,5)],1,sum)==4)) ## Have full PollII at all timepoints
+#ones <- names(which(apply(polIIgene.nm.fracolap[,c(1,2,4,5,7)],1,sum)==5)) ## Have full PollII at all timepoints
+binarized.high <- t(apply(polIIgene.nm.fracolap,1,'>',0.8))
+binarized.high <- binarized.high[,c(1,2,4,5)] 
+counts <- apply(binarized.high,1,sum)
+alwayson <- names(which(counts==4))
+baddies <- all.nm[which(polIIgene.nm.fracolap[,1]>1.5)] ## should not be happening,so filter out for now
+keepers <- setdiff(overthreshold,union(ones,baddies))
+
+data.mat <- polIIgene.nm.fracolap[keepers,c(1,2,4,5)]
+#data.mat <- polIIgene.nm.fracolap[keepers,c(1,2,4,5,7)]
+
+m <- data.mat
+
+distmat <- 1-cor(t(m))
+
+lenz <- sqrt(apply(m^2,1,sum))
+uncentcor <- ( as.matrix(m) %*% t(as.matrix(m)) )/(lenz %o% lenz)
+distmat <- 1-uncentcor
+
+plotmat <- polIIgene.nm.fracolap[,colnames(data.mat)]
+
+p6 <- pam(distmat,diss=T,k=6)
+all.cluster.members <- p6$clustering
+c1 <- names(which(all.cluster.members==1))
+c2 <- names(which(all.cluster.members==2))
+c3 <- names(which(all.cluster.members==3))
+c4 <- names(which(all.cluster.members==4))
+c5 <- names(which(all.cluster.members==5))
+c6 <- names(which(all.cluster.members==6))
+par(mfrow=c(2,3))
+profileplot(plotmat[c1,],main="c1",legend="none")
+profileplot(plotmat[c2,],main="c2",legend="none")
+profileplot(plotmat[c3,],main="c3",legend="none")
+profileplot(plotmat[c4,],main="c4",legend="none")
+profileplot(plotmat[c5,],main="c5",legend="none")
+profileplot(plotmat[c6,],main="c6",legend="none")
+
+
+p4 <- pam(distmat,diss=T,k=4)
+all.cluster.members <- p4$clustering
+c1 <- names(which(all.cluster.members==1))
+c2 <- names(which(all.cluster.members==2))
+c3 <- names(which(all.cluster.members==3))
+c4 <- names(which(all.cluster.members==4))
+par(mfrow=c(2,2))
+plotmat <- as.matrix(data.mat)
+profileplot(plotmat[c1,],main="c1",legend="none")
+profileplot(plotmat[c2,],main="c2",legend="none")
+profileplot(plotmat[c3,],main="c3",legend="none")
+profileplot(plotmat[c4,],main="c4",legend="none")
+
+
+
+p9 <- pam(distmat,diss=T,k=9)
+all.cluster.members <- p9$clustering
+c1 <- names(which(all.cluster.members==1))
+c2 <- names(which(all.cluster.members==2))
+c3 <- names(which(all.cluster.members==3))
+c4 <- names(which(all.cluster.members==4))
+c5 <- names(which(all.cluster.members==5))
+c6 <- names(which(all.cluster.members==6))
+c7 <- names(which(all.cluster.members==7))
+c8 <- names(which(all.cluster.members==8))
+c9 <- names(which(all.cluster.members==9))
+par(mfrow=c(3,3))
+plotmat <- as.matrix(data.mat)
+profileplot(plotmat[c1,],main="c1",legend="none")
+profileplot(plotmat[c2,],main="c2",legend="none")
+profileplot(plotmat[c3,],main="c3",legend="none")
+profileplot(plotmat[c4,],main="c4",legend="none")
+profileplot(plotmat[c5,],main="c5",legend="none")
+profileplot(plotmat[c6,],main="c6",legend="none")
+profileplot(plotmat[c7,],main="c7",legend="none")
+profileplot(plotmat[c8,],main="c8",legend="none")
+profileplot(plotmat[c9,],main="c9",legend="none")
+
+
+p12 <- pam(distmat,diss=T,k=12)
+all.cluster.members <- p12$clustering
+plotmat <- as.matrix(data.mat)
+par(mfrow=c(3,4))
+for ( i in 1:12 ){
+  cmems <- names(which(all.cluster.members==i))
+  main <- paste("c",i,sep="")
+  profileplot(plotmat[cmems,],main=main,legend="none")
+}
+
+
+p16 <- pam(distmat,diss=T,k=16)
+all.cluster.members <- p16$clustering
+plotmat <- as.matrix(data.mat)
+quartz()
+par(mfrow=c(4,4))
+for ( i in 1:16 ){
+  cmems <- names(which(all.cluster.members==i))
+  main <- paste("c",i,sep="")
+  profileplot(plotmat[cmems,],main=main,legend="none")
+}
+
+
+## Euclidian again
+p16 <- pam(as.matrix(data.mat),diss=F,k=16)
+all.cluster.members <- p16$clustering
+plotmat <- as.matrix(data.mat)
+quartz()
+par(mfrow=c(4,4))
+for ( i in 1:16 ){
+  cmems <- names(which(all.cluster.members==i))
+  main <- paste("c",i,sep="")
+  profileplot(plotmat[cmems,],main=main,legend="none")
+}
+
+
+
 ##
 simpcolheads <- c("0","20 min","40 min","1 hr","80 min","2 hr","4 hr","6 hr","8 hr","12 hr","18 hr", "24 hr")
 colnames(dm.lps.3prime) <- simpcolheads
@@ -460,5 +588,73 @@ w <- polIIgene.nm.fracolap[pr.nm,1]
 w <- polIIgene.nm.fracolap[poised.then.run.nm,1]
 
 
+## Randomly plot out a bunch of profiles
+clustmat <- clusters.p2fracolap
+clustered.nms <- rownames(clustmat)
+
+quartz()
+randnms <- sample(clustered.nms,25)
+for ( enem in randnms ){
+  plot(c(0,1,2,4),plotmat[enem,1:4],type='l',ylim=c(0,1),xlab="",ylab="",main=enem)
+
+}
+
+
+##
+## Signal Integral
+##
+
+load("../processed_data/polII/polII.sigint.RData")
+
+maxsig <- apply(polIIgene.nm.sigint[,c(1,2,4,5)],1,max,na.rm=T)
+
+mediansig <- apply(polIIgene.nm.sigint[,c(1,2,4,5)],1,median,na.rm=T)
+madsig <- apply(polIIgene.nm.sigint[,c(1,2,4,5)],1,mad,na.rm=T)
+
+meansig <- apply(polIIgene.nm.sigint[,c(1,2,4,5)],1,mean,na.rm=T)
+sdsig <- apply(polIIgene.nm.sigint[,c(1,2,4,5)],1,sd,na.rm=T)
+cvsig <- sdsig/meansig
+
+
+
+
+#misnomer
+randnms <- names(sort(maxsig,decreasing=T))[1:25]
+
+quartz()
+par(mfrow=c(5,5))
+for ( enem in randnms ){
+  plot(c(0,1,2,4),polIIgene.nm.sigint[enem,c(1,2,4,5)],xlab="",ylab="",ylim=c(0,max(polIIgene.nm.sigint[enem,c(1,2,4,5)])),main=enem,pch=19,col='blue',type='l')
+}
+
+keepers <- names(which(maxsig>3.779092))
+
+## To start with, let's use "keepers" from fracolap
+data.mat <- polIIgene.nm.sigint[keepers,c(1,2,4,5)]
+#data.mat <- polIIgene.nm.sigint[keepers,c(1,2,4,5,7)]
+
+highervars <- names(which(cvsig[keepers]>=0.5))
+data.mat <- polIIgene.nm.sigint[highervars,c(1,2,4,5)]
+
+m <- data.mat
+
+distmat <- 1-cor(t(m))
+
+#uncentered correlation
+#lenz <- sqrt(apply(m^2,1,sum))
+#uncentcor <- ( as.matrix(m) %*% t(as.matrix(m)) )/(lenz %o% lenz)
+#distmat <- 1-uncentcor
+ 
+plotmat <- polIIgene.nm.sigint[,colnames(data.mat)]
+
+p6 <- pam(distmat,diss=T,k=6)
+all.cluster.members <- p6$clustering
+plotmat <- as.matrix(data.mat)
+par(mfrow=c(2,3))
+for ( i in 1:6 ){
+  cmems <- names(which(all.cluster.members==i))
+  main <- paste("c",i,sep="")
+  profileplot(plotmat[cmems,],main=main,legend="none")
+}
 
 

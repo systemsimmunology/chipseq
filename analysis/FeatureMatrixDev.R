@@ -60,10 +60,10 @@ colnames(pin) <- "Running"
 fm.eid.new <- addmat(fm.eid,pin)
 fm.eid <- fm.eid.new
 
-## Fracolap clusters
-p2 <- read.matrix("~/chipseq/results/20120323/PolIIFracolapCluster.tsv")
+## Sigint clusters
+p2 <- read.matrix("~/chipseq/results/20120531/PolIISigintCluster.tsv")
 clustersin <- p2
-colnames(clustersin) <- "PolII Fracolap Cluster"
+colnames(clustersin) <- "PolII Signal Intensity Cluster"
 fm.nm.new <- addmat(fm.nm,clustersin)
 fm.nm <- fm.nm.new
 ## Need something for the Eids

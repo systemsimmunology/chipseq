@@ -19,7 +19,7 @@ rm -f infiles
 
 ~/chipseq/utils/SignalSummaryWrapper.sh ~/chipseq/auxfiles/PolIIbedfiles /Volumes/CancerRegulome9/workspaces/users/vthorsson/ChIPSeq_Analysis/PeakFiles/ ~/chipseq/annotation/refGene.mouse.bed NM_
 sed 's/bed/signalsummary.tsv/g' ~/chipseq/auxfiles/PolIIbedfiles > infiles
-~/bin/R/CombineColumnsToMatrix.sh infiles .signalsummary.tsv 2 PolII-signal.tsv NA RefSeq
+~/bin/R/CombineColumnsToMatrix.sh infiles .signalsummary.tsv 2 PolII-signal.tsv 0 RefSeq
 ~/chipseq/utils/expandNMannots.sh PolII-signal.tsv ~/chipseq/annotation/refGene.mouse.bed PolII-signal.annot.tsv
 rm -f infiles
 
