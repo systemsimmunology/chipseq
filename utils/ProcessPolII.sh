@@ -17,6 +17,10 @@ sed 's/bed/olap.tsv/g' ~/chipseq/auxfiles/PolIIbedfiles > infiles
 ~/chipseq/utils/expandNMannots.sh PolII-olap.tsv ~/chipseq/annotation/refGene.mouse.bed PolII-olap.annot.tsv
 rm -f infiles
 
+
+#
+# PolII gene signal intensity
+#
 ~/chipseq/utils/SignalSummaryWrapper.sh ~/chipseq/auxfiles/PolIIbedfiles /Volumes/CancerRegulome9/workspaces/users/vthorsson/ChIPSeq_Analysis/PeakFiles/ ~/chipseq/annotation/refGene.mouse.bed NM_
 sed 's/bed/signalsummary.tsv/g' ~/chipseq/auxfiles/PolIIbedfiles > infiles
 ~/bin/R/CombineColumnsToMatrix.sh infiles .signalsummary.tsv 2 PolII-signal.tsv 0 RefSeq

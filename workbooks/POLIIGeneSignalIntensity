@@ -1,0 +1,16 @@
+
+June 4, 2012
+-----------
+Signal intensity for NR_ prefixed RefSeq, e.g non-coding RNAs.
+Done utils/ProcessPolII_NR.sh,
+results in 
+
+processed_data_nr
+
+The final .RData creation steps are not functional, as "processed_data" is hardcoded into much utils code 
+
+May 2012
+--------
+
+See ProcessPolII.sh, signal intensity section for final version of this. 
+

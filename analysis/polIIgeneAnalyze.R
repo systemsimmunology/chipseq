@@ -615,9 +615,6 @@ meansig <- apply(polIIgene.nm.sigint[,c(1,2,4,5)],1,mean,na.rm=T)
 sdsig <- apply(polIIgene.nm.sigint[,c(1,2,4,5)],1,sd,na.rm=T)
 cvsig <- sdsig/meansig
 
-
-
-
 #misnomer
 randnms <- names(sort(maxsig,decreasing=T))[1:25]
 
