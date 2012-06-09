@@ -1,6 +1,7 @@
 ##
 ## Plot clusters and characterize patterns
 ##
+library(RColorBrewer)
 
 load("~/chipseq/results/20120531/clusters.p2sigint.RData")
 
@@ -8,8 +9,12 @@ clustmat <- clusters.p2sigint
 clustered.nms <- rownames(clustmat)
 
 load("~/chipseq/processed_data/PolII/polII.sigint.RData")
-plotmat <- polIIgene.nm.sigint[,c(1,2,4,5)]
-datamat <- plotmat
+datamat <- polIIgene.nm.sigint[,c(1,2,4,5)]
+maxsig <- apply(datamat,1,max,na.rm=T)
+meansig <- apply(datamat,1,mean,na.rm=T)
+sdsig <- apply(datamat,1,sd,na.rm=T)
+cvsig <- sdsig/meansig
+plotmat <- datamat
 
 quartz()
 par(mfrow=c(2,3))

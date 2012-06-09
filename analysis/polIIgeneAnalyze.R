@@ -37,6 +37,20 @@ for ( eid in poised.then.run.eid ){
 }
  
 
+library("RSvgDevice")
+
+system.time(
+for ( eid in eid.of.nm[nms[1:500]] ){
+  label <- paste(c(gene.symbol[eid],"-",eid),collapse="")
+  filename <- paste(c("KinPlots/",label,".svg"),collapse="")
+##  png(filename)
+  devSVG(filename)
+  kinplot(eid)
+  dev.off()
+}
+)
+
+
 ##
 ## Three-way comparison
 ## 
@@ -538,18 +552,6 @@ profileplot(data.mat.w0[c2,],main="c2")
 profileplot(data.mat.w0[c3,],main="c3")
 profileplot(data.mat.w0[c4,],main="c4")
 
-## signal integral
-
-imax <- 8
-m <- lps.mus[,1:imax]
-mm <- (m[,2:imax]+m[,1:(imax-1)])/2
-tvec <- c(0,20,40,60,80,120,240,360)
-tchange <- tvec[2:length(tvec)]-tvec[1:(length(tvec)-1)]
-mmm <- t(t(mm) * tchange)
-intvec <- apply(mmm,1,sum)
-lps.mic <- intvec/(tvec[length(tvec)]-tvec[1]) - m[,1]
-
-si <- lps.mic[lps.6hr.ps]
 
 library(MKmisc) ## Provides heatmapCol, which centers colors on according to a limit, lim
 ## colorRampPalette returns a palette generating function like terrain.colors or heat.colors that takes an integer argument and generates a palette with that many colors.  E.g. RdBu has maximum 11 colors. ( To "keep" white at center of RdBu, must use odd number for brewer.pal )

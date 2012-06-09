@@ -15,7 +15,7 @@ load("~/chipseq/processed_data/PolII/polII.nm.fracolap.RData")
 fothresh <- 0.2
 
 ## mayconflict object generated from geneConfictToR.R
-load("~/chipseq/annoation/mayconflict.RData")
+load("~/chipseq/annotation/mayconflict.RData")
 ## mayconflict is a list, indexed by NM
 ## Each element is a matrix. Each row is a refseq and type of conflict
 ##     [,1]        [,2]                     

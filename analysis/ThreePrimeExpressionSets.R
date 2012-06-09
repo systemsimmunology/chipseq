@@ -48,16 +48,38 @@ constitutive.3prime.eid <- as.character(ncbiID[constitutive.3prime.ps])
 
 on.3prime.array.eid <- as.character(ncbiID[rownames(lps.mus)])
 on.3prime.array.nm <- as.character(unlist(nms.of.eid[on.3prime.array.eid]))
+
+
+## signal integral to 4hrs, 3' array
+imax <- 7
+m <- lps.mus[,1:imax]
+mm <- (m[,2:imax]+m[,1:(imax-1)])/2
+tvec <- c(0,20,40,60,80,120,240)
+tchange <- tvec[2:length(tvec)]-tvec[1:(length(tvec)-1)]
+mmm <- t(t(mm) * tchange)
+intvec <- apply(mmm,1,sum)
+lps.mic <- intvec/(tvec[length(tvec)]-tvec[1]) - m[,1]
+si4 <- lps.mic[lps.6hr.ps]
+ivec <- (sign(si4)+3)/2
+b <- c("Repressed","Induced")
+bb <- b[ivec] ## vector of Repressed, Induced for diffexp.exon.eid
+names(bb) <- lps.6hr.ps
+
 ##
 ## setmat - 
 ##
-setmat <- matrix(0,nrow=nrow(lps.mus),ncol=4)
+setmat <- matrix(0,nrow=nrow(lps.mus),ncol=6)
 rownames(setmat) <- rownames(lps.mus)
-colnames(setmat) <- c("On Three Prime Array","Constitutive Expression - Three Prime","Differential Expression - Three Prime","Cluster - Three Prime")
+colnames(setmat) <- c("On Three Prime Array","Constitutive Expression - Three Prime","Differential Expression - Three Prime","Quantitative Change - Three Prime","Qualitative Change - Three Prime","Cluster - Three Prime")
 
 setmat[,1]=1
 setmat[,2]=(rownames(lps.mus) %in%  constitutive.3prime.ps )*1
 setmat[,3]=(rownames(lps.mus) %in%  lps.6hr.ps )*1
+setmat[,4]=NA
+setmat[lps.6hr.ps,4]=round(lps.mic[lps.6hr.ps],2)
+setmat[,5]=NA
+setmat[lps.6hr.ps,5]=bb[lps.6hr.ps]
+setmat[constitutive.3prime.ps,5]="Constitutive"
 
 ##
 ## Plot clusters and characterize patterns
@@ -92,9 +114,9 @@ for ( i in 1:4 ){
 ##
 ## From here, fill in cluster assignments
 ## 
-setmat[,4] <- NA
+setmat[,6] <- NA
 cvec1 <- clabels.3prime[clusters.3prime[,"Cluster"]]
-setmat[clustered.ps,4] <- cvec1
+setmat[clustered.ps,6] <- cvec1
 
 ## For genes that were not used in clustering, we can
 ## assign them to clusters based on minimal distance to cluster.
@@ -105,29 +127,47 @@ setmat[clustered.ps,4] <- cvec1
 ## 93%, 97%,100%,99.8%
 ## correctly classfied
 
-y1.ps <- clustered.nms[which(clustmat[,1]==1)] ## checked that it agrees with original computation modulo order
+load("~/chipseq/results/20120323/clusters.3prime.RData")
+## gives clusters.3prime
+clustmat <- clusters.3prime
+clustered.pss <- rownames(clustmat)
+y1.ps <- clustered.pss[which(clustmat[,1]==1)] ## checked that it agrees with original computation modulo order
 y1.membrob <- clustmat[y1.ps,2]
-y2.ps <- clustered.nms[which(clustmat[,1]==2)] ## checked that it agrees with original computation modulo order
+y2.ps <- clustered.pss[which(clustmat[,1]==2)] ## checked that it agrees with original computation modulo order
 y2.membrob <- clustmat[y2.ps,2]
-y3.ps <- clustered.nms[which(clustmat[,1]==3)] ## checked that it agrees with original computation modulo order
+y3.ps <- clustered.pss[which(clustmat[,1]==3)] ## checked that it agrees with original computation modulo order
 y3.membrob <- clustmat[y3.ps,2]
-y4.ps <- clustered.nms[which(clustmat[,1]==4)] ## checked that it agrees with original computation modulo order
+y4.ps <- clustered.pss[which(clustmat[,1]==4)] ## checked that it agrees with original computation modulo order
 y4.membrob <- clustmat[y4.ps,2]
 
 ##
 ## Warning: Had missing definitions that need to be checked, below
 ##
-cormat <- 1-cor(t(lps.ratios[,1:7])) ## Check this!!!
+#new.ps <- setdiff(lps.6hr.ps,clustered.ps) ## 735 genes
+#cormat <- 1-cor(t(lps.ratios[,1:7])) ## Check this!!!
+#new.dist.y1 <- apply(t(t(cormat[new.ps,y1.ps])*y1.membrob),1,mean)
+#new.dist.y2 <- apply(t(t(cormat[new.ps,y2.ps])*y2.membrob),1,mean)
+#new.dist.y3 <- apply(t(t(cormat[new.ps,y3.ps])*y3.membrob),1,mean)
+#new.dist.y4 <- apply(t(t(cormat[new.ps,y4.ps])*y4.membrob),1,mean)
+#dists <- cbind(new.dist.y1,new.dist.y2,new.dist.y3,new.dist.y4)
+#new.labels <- clabels.3prime[apply(dists,1,which.min)]
+#names(new.labels) <- new.ps
+#setmat[new.ps,6] <- new.labels
 
 new.ps <- setdiff(lps.6hr.ps,clustered.ps) ## 735 genes
-new.dist.y1 <- apply(t(t(cormat[new.ps,y1.ps])*y1.membrob),1,mean)
-new.dist.y2 <- apply(t(t(cormat[new.ps,y2.ps])*y2.membrob),1,mean)
-new.dist.y3 <- apply(t(t(cormat[new.ps,y3.ps])*y3.membrob),1,mean)
-new.dist.y4 <- apply(t(t(cormat[new.ps,y4.ps])*y4.membrob),1,mean)
-dists <- cbind(new.dist.y1,new.dist.y2,new.dist.y3,new.dist.y4)
+m <- lps.ratios[,1:7]
+b <- 1-cor(t(m[new.ps,]),t(m[y1.ps,]))
+dist1 <- apply(t(t(b)*y1.membrob),1,mean)
+b <- 1-cor(t(m[new.ps,]),t(m[y2.ps,]))
+dist2 <- apply(t(t(b)*y2.membrob),1,mean)
+b <- 1-cor(t(m[new.ps,]),t(m[y3.ps,]))
+dist3 <- apply(t(t(b)*y3.membrob),1,mean)
+b <- 1-cor(t(m[new.ps,]),t(m[y4.ps,]))
+dist4 <- apply(t(t(b)*y4.membrob),1,mean)
+dists <- cbind(dist1,dist2,dist3,dist4)
 new.labels <- clabels.3prime[apply(dists,1,which.min)]
 names(new.labels) <- new.ps
-setmat[new.ps,4] <- new.labels
+setmat[new.ps,6] <- new.labels
 
 write.matrix(setmat,"RefSeq",file="ThreePrimeArrayExpression.tsv")
 
