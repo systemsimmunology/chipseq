@@ -216,4 +216,6 @@ write.matrix(fm.nm.new,file="FeatMatRefSeq.tsv",topLeftString="RefSeq")
 save(fm.nm, file="fm.nm.RData")
 save(fm.eid,file="fm.eid.RData")
 
-
+## Post filtering
+## awk '{FS="\t" ; if( ($25!="NA") && ($25!="nPnRnI") ) print }' FeatMatRefSeq.tsv > FeatMatRefSeq.2.tsv
+## awk '{FS="\t" ; if($9 > 3) print }' FeatMatRefSeq.2.tsv > FeatMatRefSeq.3.tsv

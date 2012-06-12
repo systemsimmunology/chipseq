@@ -24,65 +24,69 @@ addmat <- function(nowmat,itermat){
   outmat[rows.iter,cols.iter] <- itermat
   outmat
 }  
- 
+## 
 ## From matrix of EntrezIDs, create matrix of RefSeqs
+##
+## output matrix typically more rows than input matrix 
 refSeqMat <- function(emat){
   eids <- rownames(emat)
   nms <- unlist(nms.of.eid[eids])
   outmat <- matrix(nrow=length(nms),ncol=ncol(emat))
   rownames(outmat) <- nms
   colnames(outmat) <- colnames(emat)
-  for ( nm in nms ){
-    outmat[nm,] <- emat[eid.of.nm[nm],]
-  }
+  outmat[nms,] <- emat[eid.of.nm[nms],]
+#  for ( nm in nms ){
+#    outmat[nm,] <- emat[eid.of.nm[nm],]
+#  }
   outmat
 }
 
 ## 
 ## From matrix of Refseq, create matrix of EIDs
 ##
+## output matrix typically fewer rows than input matrix 
+##
 ## method:
 ## "mean" : mean of refseq values
 ## "intmean": nearest integer of mean
 ## "max": maximum
-
 library(modeest) ## contains mfv ~ most frequent value ~ mode
 ## assuming integer usage here
-
 ## we have an "all NA" detector for the vector results but not the vector one
 
 eidMat <- function(nmat,method="mean"){
+  
   nms.all <- rownames(nmat)
   eids <- unique(eid.of.nm[nms.all])
+  v <- eid.of.nm[nms.all]
+  
   outmat <- matrix(nrow=length(eids),ncol=ncol(nmat))
   rownames(outmat) <- eids
   colnames(outmat) <- colnames(nmat)
-  for ( eid in eids ){
-    nms <- nms.of.eid[[eid]]
-    wehavethese.nm <- intersect(nms,nms.all) ## we need this because of NM members for eid that are not in original matrix
-    nhaves <-length(wehavethese.nm)
-    if ( nhaves == 1){
-      outmat[eid,] <- nmat[wehavethese.nm,]
-    } else { ## more than one
-      smallmat <- nmat[wehavethese.nm,]
-      if ( is.matrix(smallmat) ){
-        if ( method=="mean" ){ reduced <- apply(smallmat,2,mean,na.rm=T)}
-        if ( method=="mode" ){ reduced <- apply(smallmat,2,mfv,na.rm=T)}
-        if ( method=="max" ){ reduced <- apply(smallmat,2,max,na.rm=T)}
-      }
-      else { ## not a matrix
-        na.count <- length(which(is.na(smallmat)))
-        if ( na.count==length(smallmat)){
-          reduced <- NA
-        } else {
-          if ( method=="mean" ){ reduced <- mean(smallmat,na.rm=T) }
-          if ( method=="mode" ){ reduced <- mfv(smallmat,na.rm=T) }
-          if ( method=="max" ){ reduced <- max(smallmat,na.rm=T) }
-        }
-      }
-      outmat[eid,] <- reduced
-    } ## end conditional on nhaves
-  } ## end loop over eids
+  
+  countz <- tapply(rep(1,length(nms.all)),as.factor(v),sum)
+  easy.eids <- names(which(countz==1))
+  outmat[easy.eids,] <- nmat[intersect(unlist(nms.of.eid[easy.eids]),nms.all), ]
+
+  harder.eids <- setdiff(eids,easy.eids)
+  harder.nms <- intersect(as.character(unlist(nms.of.eid[harder.eids])),nms.all)
+  
+  w <- v[harder.nms]
+  for ( i in 1:ncol(nmat) ){ 
+    if ( method == "mean" ){
+      h <- tapply(nmat[harder.nms,i],as.factor(w),mean,na.rm=T)
+    }
+    if ( method == "max" ){
+      h <- tapply(nmat[harder.nms,i],as.factor(w),max,na.rm=T)
+    }
+    if ( method == "mode" ){
+      h <- tapply(nmat[harder.nms,i],as.factor(w),mfv,na.rm=T)
+    }
+    h[which(is.na(h))] <- NA
+    ## mean(c(NA,NA,NA),na.rm=T) is NaN, not NA!
+    ## however, is.na(NaN) is NA
+    outmat[harder.eids,i] <- h[harder.eids]
+  }
   outmat
 }
 

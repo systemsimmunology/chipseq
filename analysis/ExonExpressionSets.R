@@ -42,7 +42,7 @@ names(bb) <- diffexp.exon.eid
 
 setmat <- matrix(0,nrow=nrow(dm.lps.exon),ncol=6)
 rownames(setmat) <- rownames(dm.lps.exon)
-colnames(setmat) <- c("On Exon Array","Constitutive Expression - Exon","Differential Expression - Exon","Quantitative - Exon","Qualitative Change - Exon","Cluster - Exon")
+colnames(setmat) <- c("On Exon Array","Constitutive Expression - Exon","Differential Expression - Exon","Quantitative Change - Exon","Qualitative Change - Exon","Cluster - Exon")
 setmat[,1]=1
 setmat[,2]=(rownames(dm.lps.exon) %in%  constitutive.exon.eid )*1
 setmat[,3]=(rownames(dm.lps.exon) %in%  diffexp.exon.eid )*1
