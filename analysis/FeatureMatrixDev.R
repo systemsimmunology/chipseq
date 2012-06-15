@@ -210,11 +210,21 @@ colnames(fm.eid.new) <- c("NCBI Link",colnames(fm.eid),"Plot Link")
 rownames(fm.eid.new) <- eids ## needs to be reinstated
 fm.eid <- fm.eid.new
 
-write.matrix(fm.eid,file="FeatMatGeneID.tsv",topLeftString="Gene ID")
-write.matrix(fm.nm.new,file="FeatMatRefSeq.tsv",topLeftString="RefSeq")
 
 save(fm.nm, file="fm.nm.RData")
 save(fm.eid,file="fm.eid.RData")
+
+fm.nm[,"Poised Peak Score"] <- round(as.numeric(fm.nm[,"Poised Peak Score"]),2)
+fm.eid[,"Poised Peak Score"] <- round(as.numeric(fm.eid[,"Poised Peak Score"]),2)
+
+fm.nm[,"PolII Signal CV"] <- round(as.numeric(fm.nm[,"PolII Signal CV"]),1)
+fm.eid[,"PolII Signal CV"] <- round(as.numeric(fm.eid[,"PolII Signal CV"]),1)
+
+fm.nm[,"Max PolII Signal"] <- round(as.numeric(fm.nm[,"Max PolII Signal"]),2)
+fm.eid[,"Max PolII Signal"] <- round(as.numeric(fm.eid[,"Max PolII Signal"]),2)
+
+write.matrix(fm.eid,file="FeatMatGeneID.tsv",topLeftString="Gene ID")
+write.matrix(fm.nm,file="FeatMatRefSeq.tsv",topLeftString="RefSeq")
 
 ## Post filtering
 ## awk '{FS="\t" ; if( ($25!="NA") && ($25!="nPnRnI") ) print }' FeatMatRefSeq.tsv > FeatMatRefSeq.2.tsv

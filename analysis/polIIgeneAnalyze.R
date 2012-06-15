@@ -39,8 +39,17 @@ for ( eid in poised.then.run.eid ){
 
 library("RSvgDevice")
 
+load("~/chipseq/results/20120605/fm.nm.RData")
+
+
+logvec <- (!is.na(fm.nm[,"PoisedRunningInduced"])) &
+(fm.nm[,"PoisedRunningInduced"]!="nPnRnI") & 
+(as.numeric(fm.nm[,"Max PolII Signal"]) > 3.7 ) #capture 3.779092 and above
+
+nms <- rownames(fm.nm)[logvec]
+
 system.time(
-for ( eid in eid.of.nm[nms[1:500]] ){
+for ( eid in eid.of.nm[nms] ){
   label <- paste(c(gene.symbol[eid],"-",eid),collapse="")
   filename <- paste(c("KinPlots/",label,".svg"),collapse="")
 ##  png(filename)
