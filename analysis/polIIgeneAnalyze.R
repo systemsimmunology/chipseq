@@ -38,16 +38,23 @@ for ( eid in poised.then.run.eid ){
  
 
 library("RSvgDevice")
+ 
+#load("~/chipseq/results/20120605/fm.nm.RData")
 
-load("~/chipseq/results/20120605/fm.nm.RData")
+load("~/chipseq/results/20120718/fm.nm.RData")
 
-
+## filter for web display 1 
 logvec <- (!is.na(fm.nm[,"PoisedRunningInduced"])) &
 (fm.nm[,"PoisedRunningInduced"]!="nPnRnI") & 
-(as.numeric(fm.nm[,"Max PolII Signal"]) > 3.7 ) #capture 3.779092 and above
-
+(as.numeric(fm.nm[,"Max PolII Signal"]) > 3.95 ) #captures >4 (unix filter, post round-off)
 nms <- rownames(fm.nm)[logvec]
 
+
+## filter for web display 2 
+logvec <- fm.nm[,"PoisedRunningInduced"]=="PnRE"
+nms <- rownames(fm.nm)[which(logvec)] ## (wonder why "which" is needed here and not above)
+
+## EIDs
 system.time(
 for ( eid in eid.of.nm[nms] ){
   label <- paste(c(gene.symbol[eid],"-",eid),collapse="")
@@ -55,6 +62,19 @@ for ( eid in eid.of.nm[nms] ){
 ##  png(filename)
   devSVG(filename)
   kinplot(eid)
+  dev.off()
+}
+)
+
+## NMs
+system.time(
+for ( nm in nms ){
+  eid <- eid.of.nm[nm]
+  label <- paste(c(gene.symbol[eid],"-",eid,"-",nm),collapse="")
+  filename <- paste(c("KinPlots/",label,".svg"),collapse="")
+##  png(filename)
+  devSVG(filename)
+  kinplotnm(nm)
   dev.off()
 }
 )
@@ -605,6 +625,9 @@ clustered.nms <- rownames(clustmat)
 
 quartz()
 randnms <- sample(clustered.nms,25)
+
+
+
 for ( enem in randnms ){
   plot(c(0,1,2,4),plotmat[enem,1:4],type='l',ylim=c(0,1),xlab="",ylab="",main=enem)
 
@@ -626,16 +649,36 @@ meansig <- apply(polIIgene.nm.sigint[,c(1,2,4,5)],1,mean,na.rm=T)
 sdsig <- apply(polIIgene.nm.sigint[,c(1,2,4,5)],1,sd,na.rm=T)
 cvsig <- sdsig/meansig
 
-#misnomer
-randnms <- names(sort(maxsig,decreasing=T))[1:25]
+#
+
+randnms <- sample(rownames(polIIgene.nm.sigint),20)
+
+
+
+##randnms <- names(sort(maxsig,decreasing=T))[1:20]
+
+
+plotset <- setdiff(nms,set3)[21:40]
+randnms <- sample(set3,20)
+
+plotset <- nms[1:20]
 
 quartz()
-par(mfrow=c(5,5))
-for ( enem in randnms ){
+par(mfrow=c(4,5))
+
+for ( enem in plotset){
   plot(c(0,1,2,4),polIIgene.nm.sigint[enem,c(1,2,4,5)],xlab="",ylab="",ylim=c(0,max(polIIgene.nm.sigint[enem,c(1,2,4,5)])),main=enem,pch=19,col='blue',type='l')
 }
 
+plot(log10(maxsig),cvsig)
+   
+set1 <- names(which(maxsig>0.5))
+set2 <- names(which( (cvsig<1.95) & (cvsig>0.5)))
+set3 <- intersect(set1,set2)
+
 keepers <- names(which(maxsig>3.779092))
+
+keepers <- set3
 
 ## To start with, let's use "keepers" from fracolap
 data.mat <- polIIgene.nm.sigint[keepers,c(1,2,4,5)]
@@ -654,6 +697,8 @@ distmat <- 1-cor(t(m))
 #distmat <- 1-uncentcor
  
 plotmat <- polIIgene.nm.sigint[,colnames(data.mat)]
+
+library(cluster)
 
 p6 <- pam(distmat,diss=T,k=6)
 all.cluster.members <- p6$clustering

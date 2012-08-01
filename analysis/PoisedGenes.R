@@ -62,8 +62,9 @@ sigo <- t(apply(polIIgene.nm.fracolap,1,'>',0.2)) ## set of substantial overlaps
 sigo <- sigo[,c(1,2,4,5,7)] ## keep just A samples
 fracolap.jump.nm <- names(which( (apply(sigo[,2:5]*1,1,sum)>0)&(!sigo[,1]) ))
 ## No sig overlap at time zero. Has sigoverlap at some later time.
-fracolap.jump.nm <- names(which(polIIgene.nm.fracolap[fracolap.jump.nm,1] < 0.05))
-## March 23, 2010: Be more restrictive about zero time point
+fracolap.jump.nm <- names(which(polIIgene.nm.fracolap[fracolap.jump.nm,1] < 0.10))
+## March 23, 2012: Be more restrictive about zero time point. Set minimum to 0.05
+## July 18, 2012: Turned out to be too restrictive, e.g. lost Serp1 (0.052) and Tnfsf9 (0.09)
 fracolap.jump.eid <- unique(as.character(eid.of.nm[fracolap.jump.nm]))
 
 running.nm.binvec <- rep(0,length=nrow(polIIgene.nm.fracolap))

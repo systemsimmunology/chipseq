@@ -17,6 +17,8 @@ h <- as.numeric(as.vector(df.eid[,"Poised Peak Score"]))
 df.eid[,"Poised Peak Score"] <- h
 
 
+table(fm.eid[,"Constitutive Expression - Three Prime"],fm.eid[,"Constitutive Expression - Exon"])
+
 table(fm.eid[,"Cluster - Three Prime"],fm.eid[,"Cluster - Exon"])
 
 table(fm.eid[,"Differential Expression - Three Prime"],fm.eid[,"Differential Expression - Exon"])
@@ -32,13 +34,15 @@ table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Running"])
 
 table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Poised at T=0"])
 
-table(fm.nm[,"Constitutive Expression - Three Prime"],fm.nm[,"Constitutive Expression - Exon"])
+table(fm.nm[,"PolII Signal Intensity Cluster"],fm.nm[,"Poised at T=0"])
+
+v <- names(which((fm.nm[,"PolII Signal Intensity Cluster"]=="Decreasing")&(fm.nm[,"Poised at T=0"]==1)))
+
 
 v <- names(which((fm.eid[,"Constitutive Expression - Exon"]==1)&(fm.eid[,"Constitutive Expression - Three Prime"]==0)))
 v <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
-
-
 v <- names(which((fm.nm[,"Cluster - Exon"]=="Down")&(fm.nm[,"Poised at T=0"]==1)))
+
 
 ##can also filter on peak score. Example gene Tfrc
 v <- names(which((fm.eid[,"Cluster - Exon"]=="Down")&(fm.eid[,"Poised at T=0"]==1)&(fm.eid[,"Poised Peak Score"]>7)))
@@ -53,11 +57,43 @@ plot(dm.lps.exon[canplot,1],df.eid[canplot,"Poised Peak Score"])
 
 boxplot.funnylabel("Poised Peak Score","Cluster - Exon",df.nm)
  
+##
+## Look at filtering by magnitude
 
 
+all.eid <- rownames(fm.eid)
+all.nm <- rownames(fm.nm)
+
+##
+v <- all.eid[which(abs(as.numeric(fm.eid[,"Quantitative Change - Exon"]))>500)]
+table(fm.eid[v,"Qualitative Change - Exon"],fm.eid[v,"Cluster - Exon"])
+## Counterintutive categories like "Induced" and "Down" are subtantially reduced from full set
+## 5/(5+285)= 0.01724138
+## 228/(228+1828)=0.1108949
+
+w <- all.nm[which(abs(as.numeric(fm.nm[,"Poised Peak Score"]))>6)]
+
+
+## Poised vs PolII clusters
+v <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>4)]
+table(fm.nm[v,"PolII Signal Intensity Cluster"]
+expectedcount(table(fm.nm[v,"Poised at T=0"],fm.nm[v,"PolII Signal Intensity Cluster"]))
+
+## This seems clearer too, than with full set
+table(fm.eid[v,"Qualitative Change - Exon"],fm.eid[v,"PolII Signal Intensity Cluster"])
+
+## still having 
+table(fm.nm[v,"Poised at T=0"],fm.nm[v,"PolII Signal Intensity Cluster"])
+
+
+## Super high pollII signal means not poised
+plot(fm.nm[,"Poised Peak Score"],fm.nm[,"Max PolII Signal"])
+
+
+##
+plot(fm.nm[,"Poised Peak Score"],fm.nm[,"Max PolII Signal"])
 
 ## c123 is one start to a feature matrix
-
 ## universe: all.nm, the rownames of c123
 ### gexpcluster <- c("Up Early","Gradual Up","Down","Up Later")[all.cluster.members]
 

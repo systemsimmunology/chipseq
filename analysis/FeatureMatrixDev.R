@@ -16,6 +16,7 @@ load("~/chipseq/annotation/nmlength.RData")
 load("~/chipseq/annotation/eidlength.RData")
 load("~/data/ncbi/gene.symbol.RData")
 load("~/data/ncbi/gene.eid.RData")
+load("~/data/ncbi/gene.fullname.RData")
 all.nm <- names(eid.of.nm)
 all.eid <- names(nms.of.eid)
 ## Could restrict "universe" to the genes for which we have data
@@ -54,12 +55,12 @@ fm.eid <- fm.eid.new
 ##
 ## Running at T=0
 ##
-load("~/chipseq/results/20120323/running.nm.binvec.RData")
+load("~/chipseq/results/20120718/running.nm.binvec.RData")
 pin <- as.matrix(running.nm.binvec)
 colnames(pin) <- "Running"
 fm.nm.new <- addmat(fm.nm,pin)
 fm.nm <- fm.nm.new
-load("~/chipseq/results/20120323/running.eid.binvec.RData")
+load("~/chipseq/results/20120718/running.eid.binvec.RData")
 pin <- as.matrix(running.eid.binvec)
 colnames(pin) <- "Running"
 fm.eid.new <- addmat(fm.eid,pin)
@@ -68,7 +69,7 @@ fm.eid <- fm.eid.new
 ##
 ## Possible effect of nearby genes
 ##
-m <- read.matrix("~/chipseq/results/20120605/PolIIConflict.tsv")
+m <- read.matrix("~/chipseq/results/20120718/PolIIConflict.tsv")
 hasna <- function(invec){!is.na(match(NA,invec))}
 hasone <- function(invec){
   if ( hasna(invec) ){return(NA)}
@@ -100,7 +101,7 @@ res <- eidMat(p2si,method="mean")
 fm.eid.new <- addmat(fm.eid,res)
 fm.eid <- fm.eid.new
 
-p2 <- read.matrix("~/chipseq/results/20120605/PolIISigintCluster.tsv")
+p2 <- read.matrix("~/chipseq/results/20120718/PolIISigintCluster.tsv")
 clustersin <- p2
 colnames(clustersin) <- "PolII Signal Intensity Cluster"
 fm.nm.new <- addmat(fm.nm,clustersin)
@@ -194,10 +195,10 @@ gend <- rg$V3; names(gend) <- rg$V4
 nms <- all.nm
 
 ncbi.link <- paste(ncbiprestring,nms,sep="")
-image.link <- paste(fileprestring,gene.symbol[eid.of.nm[nms]],"-",eid.of.nm[nms],".svg",sep="")
+image.link <- paste(fileprestring,gene.symbol[eid.of.nm[nms]],"-",eid.of.nm[nms],"-",nms,".svg",sep="")
 igb.link  <- paste(igbprestring,chromo[nms],"&start=",gstart[nms],"&end=",gend[nms],sep="")
-fm.nm.new <- cbind(gene.symbol[eid.of.nm[nms]],ncbi.link,fm.nm,image.link,igb.link)
-colnames(fm.nm.new) <- c("Gene Symbol","NCBI Link",colnames(fm.nm),"Plot Link","IGB Link")
+fm.nm.new <- cbind(gene.symbol[eid.of.nm[nms]],gene.fullname[eid.of.nm[nms]],ncbi.link,fm.nm,image.link,igb.link)
+colnames(fm.nm.new) <- c("Gene Symbol","Full Name","NCBI Link",colnames(fm.nm),"Plot Link","IGB Link")
 rownames(fm.nm.new) <- nms ## needs to be reinstated
 fm.nm <- fm.nm.new
 
@@ -227,5 +228,10 @@ write.matrix(fm.eid,file="FeatMatGeneID.tsv",topLeftString="Gene ID")
 write.matrix(fm.nm,file="FeatMatRefSeq.tsv",topLeftString="RefSeq")
 
 ## Post filtering
-## awk '{FS="\t" ; if( ($25!="NA") && ($25!="nPnRnI") ) print }' FeatMatRefSeq.tsv > FeatMatRefSeq.2.tsv
-## awk '{FS="\t" ; if($9 > 3) print }' FeatMatRefSeq.2.tsv > FeatMatRefSeq.3.tsv
+## awk '{FS="\t" ; if( ($26!="NA") && ($26!="nPnRnI") ) print }' FeatMatRefSeq.tsv > FeatMatRefSeq.2.tsv
+## awk '{FS="\t" ; if($10 > 4) print }' FeatMatRefSeq.2.tsv > FeatMatRefSeq.3.tsv
+
+## head -1 FeatMatRefSeq.tsv > header 
+## awk '{FS="\t" ; if ($26=="PRI") print }' FeatMatRefSeq.tsv > tempfile
+## cat header tempfile > FeatMatRefSeq.PRI.tsv 
+## rm tempfile
