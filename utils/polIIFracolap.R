@@ -19,12 +19,17 @@ names(nmlengths) <- nms
 polIIgene.nm.fracolap <- polIIgene.nm.bpolps / nmlengths
 rownames(polIIgene.nm.fracolap) <- nms
 colnames(polIIgene.nm.fracolap) <- polII.csconds
-baddies <- which(nms=="NM_175657") ## replicated
-nms <- nms[-baddies]
-nmlengths <- nmlengths[-baddies]
-chipseq.eids <- chipseq.eids[-baddies]
-polIIgene.nm.bpolps <- polIIgene.nm.bpolps[-baddies,]
-polIIgene.nm.fracolap <- polIIgene.nm.fracolap[-baddies,]
+
+##Occasional RefSeq in multiple copies, eg. NM_175657 was duplicated
+##baddies <- which(nms=="NM_175657") ## replicated
+baddies <- names(which(table(nms)>1))
+if ( length (baddies) > 0 ){
+  nms <- nms[-baddies]
+  nmlengths <- nmlengths[-baddies]
+  chipseq.eids <- chipseq.eids[-baddies]
+  polIIgene.nm.bpolps <- polIIgene.nm.bpolps[-baddies,]
+  polIIgene.nm.fracolap <- polIIgene.nm.fracolap[-baddies,]
+}
 
 ### polIIgene.fracolap: EntrezID summarization
 ### Take mean of values for available NMs

@@ -1,6 +1,5 @@
 
 ## reuqires nmlength, among other things
-
 kinplot <- function (eid) {
   lkb <- round(eidlength[eid],-2)/1000
   main <- paste(gene.symbol[eid],",",lkb,"kb")
@@ -25,6 +24,38 @@ kinplot <- function (eid) {
 #    points(ach4gene.fracolap[eid,],x=1:8,type='p',col='blue',pch=19)
 #    axis(1,1:8,labels=ach4.csconds)
 #  } else { frame() }
+  if ( eid %in% rownames(dm.lps.exon) ) {
+    main=paste(gene.symbol[eid],": Exon Array")
+    plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon,main=main)
+  } else { frame() }
+  if ( eid %in% rownames(dm.lps.3prime) ) {
+    main=paste(gene.symbol[eid],": 3' Array")
+    plotCSS(eid,CSSs.tc.3prime[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.3prime,tmax=8,main=main)
+  } else { frame() }
+  
+}
+
+
+## reuqires nmlength, among other things
+kinplotnm <- function (nm) {
+  lkb <- round(nmlength[nm],-2)/1000
+  eid <- as.character(eid.of.nm[nm])
+  polII.csconds <- c("t=0","t=1hr (1920)","t=1hr (1958)","t=2hr","t=4hr (1922)","t=4hr (1960)","t=6hr")
+  ach4.csconds <- c("t=0 (1934)","t=0 (1873)","t=1hr (1874)","t=1hr (1935)","t=2hr (1875)","t=2hr (1936)","t=4hr (1938)","t=4hr (H41877)")    
+  par(mfrow=c(2,2))
+  if (  nm %in% rownames(polIIgene.nm.fracolap)) {
+    main=paste(nm,": PolII Fractional Overlap")
+    plot(polIIgene.nm.fracolap[nm,c(1,2,4,5)],type='l',main=main,ylab="Fractional Overlap",xlab="Time [hr]",col='blue',ylim=c(0,1),xaxt="n")
+    points(polIIgene.nm.fracolap[nm,c(1,2,4,5)],x=1:4,type='p',col='blue',pch=19)
+    axis(1,1:4,labels=c(0,1,2,4))
+  } else { frame() }
+  if (  nm %in% rownames(polIIgene.nm.sigint)) {
+    main=paste(gene.symbol[eid],": PolII Signal Intensity")
+    ymax <- max(polIIgene.nm.sigint[nm,c(1,2,4,5)])
+    plot(polIIgene.nm.sigint[nm,c(1,2,4,5)],type='l',main=main,ylab="Intensity",xlab="Time [hr]",col='blue',ylim=c(0,ymax),xaxt="n")
+    points(polIIgene.nm.sigint[nm,c(1,2,4,5)],x=1:4,type='p',col='blue',pch=19)
+    axis(1,1:4,labels=c(0,1,2,4))
+  } else { frame() }
   if ( eid %in% rownames(dm.lps.exon) ) {
     main=paste(gene.symbol[eid],": Exon Array")
     plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon,main=main)

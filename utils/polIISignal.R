@@ -2,6 +2,7 @@
 ## PolII-gene, upstream, and downstream overlap as a function of time
 ## 
 polII.csconds <- c("t=0","t=1hr (1920)","t=1hr (1958)","t=2hr","t=4hr (1922)","t=4hr (1960)","t=6hr")
+load("~/chipseq/annotation/nmlength.RData")
 
 ##### PolII Signal Integral
 #### Creates polIIgene.nm.fracolap, rows are NM
@@ -12,10 +13,21 @@ names(chipseq.eids) <- nms
 polIIgene.nm.sigint <- as.matrix(ao[8:14])
 rownames(polIIgene.nm.sigint) <- nms
 colnames(polIIgene.nm.sigint) <- polII.csconds
-baddies <- which(nms=="NM_175657") ## replicated. 5/14/12: would be better to detect using which(table(nms)>1)
-nms <- nms[-baddies]
-chipseq.eids <- chipseq.eids[-baddies]
-polIIgene.nm.sigint <- polIIgene.nm.sigint[-baddies,]
+
+## July 2010. Now total integral, divide by gene length
+testmat <-  polIIgene.nm.sigint / nmlength[rownames(polIIgene.nm.sigint)]
+polIIgene.nm.sigint <- testmat 
+
+##Occasional RefSeq in multiple copies, eg. NM_175657 was duplicated
+##baddies <- which(nms=="NM_175657") ## replicated
+baddies <- names(which(table(nms)>1))
+if ( length (baddies) > 0 ){
+  nms <- nms[-baddies]
+  nmlengths <- nmlengths[-baddies]
+  chipseq.eids <- chipseq.eids[-baddies]
+  polIIgene.nm.bpolps <- polIIgene.nm.bpolps[-baddies,]
+  polIIgene.nm.fracolap <- polIIgene.nm.fracolap[-baddies,]
+}
 
 ### polIIgene.sigint: EntrezID summarization
 ### Take mean of values for available NMs

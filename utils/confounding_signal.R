@@ -27,7 +27,7 @@ sigo <- sigo[,c(1,2,4,5)] ## keep just A samples
  
 nms <- all.nm
 
-logmat <- matrix(NA,nrow=length(nms),ncol=4)
+logmat <- matrix(0,nrow=length(nms),ncol=4) ## used to be NA. 
 rownames(logmat) <- nms
 colnames(logmat) <- colnames(polIIgene.nm.fracolap)[c(1,2,4,5)]
 
