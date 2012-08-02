@@ -16,42 +16,40 @@ df.eid <- as.data.frame(fm.eid)
 h <- as.numeric(as.vector(df.eid[,"Poised Peak Score"]))
 df.eid[,"Poised Peak Score"] <- h
 
-
+## Expression Array Platform Comparisons
 table(fm.eid[,"Constitutive Expression - Three Prime"],fm.eid[,"Constitutive Expression - Exon"])
+v <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
+w <- names(which((fm.eid[,"Constitutive Expression - Exon"]==1)&(fm.eid[,"Constitutive Expression - Three Prime"]==0)))
+
+table(fm.eid[,"Differential Expression - Three Prime"],fm.eid[,"Differential Expression - Exon"])
+v <- names(which((fm.eid[,"Differential Expression - Three Prime"]==1)&(fm.eid[,"Differential Expression - Exon"]==0)))
+w <- names(which((fm.eid[,"Differential Expression - Exon"]==1)&(fm.eid[,"Differential Expression - Three Prime"]==0)))
 
 table(fm.eid[,"Cluster - Three Prime"],fm.eid[,"Cluster - Exon"])
 
-table(fm.eid[,"Differential Expression - Three Prime"],fm.eid[,"Differential Expression - Exon"])
 
-table(fm.eid[,"Constitutive Expression - Three Prime"],fm.eid[,"Constitutive Expression - Exon"])
+## Comparison of Gene Expression to PolII
+v <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>4)]
+w <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>1)]
 
-v <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
+table(fm.nm[,"PolII Signal Intensity Cluster"],fm.nm[,"Cluster - Three Prime"])
+table(fm.nm[v,"PolII Signal Intensity Cluster"],fm.nm[v,"Cluster - Three Prime"])
+table(fm.nm[w,"PolII Signal Intensity Cluster"],fm.nm[w,"Cluster - Three Prime"])
 
-
-table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Cluster - Three Prime"])
-
-table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Running"])
-
-table(fm.nm[,"PolII Fracolap Cluster"],fm.nm[,"Poised at T=0"])
-
+## PolII signal vs poised
 table(fm.nm[,"PolII Signal Intensity Cluster"],fm.nm[,"Poised at T=0"])
+table(fm.nm[v,"PolII Signal Intensity Cluster"],fm.nm[v,"Poised at T=0"])
+table(fm.nm[w,"PolII Signal Intensity Cluster"],fm.nm[w,"Poised at T=0"])
+expectedcount(table(fm.nm[w,"PolII Signal Intensity Cluster"],fm.nm[w,"Poised at T=0"]))
 
-v <- names(which((fm.nm[,"PolII Signal Intensity Cluster"]=="Decreasing")&(fm.nm[,"Poised at T=0"]==1)))
-
-
-v <- names(which((fm.eid[,"Constitutive Expression - Exon"]==1)&(fm.eid[,"Constitutive Expression - Three Prime"]==0)))
-v <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
 v <- names(which((fm.nm[,"Cluster - Exon"]=="Down")&(fm.nm[,"Poised at T=0"]==1)))
-
 
 ##can also filter on peak score. Example gene Tfrc
 v <- names(which((fm.eid[,"Cluster - Exon"]=="Down")&(fm.eid[,"Poised at T=0"]==1)&(fm.eid[,"Poised Peak Score"]>7)))
-
-
 v <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
 
 
-canplot <- intersect(rownames(dm.lps.exon),rowames(fm.eid))
+canplot <- intersect(rownames(dm.lps.exon),rownames(fm.eid))
 
 plot(dm.lps.exon[canplot,1],df.eid[canplot,"Poised Peak Score"])
 
@@ -93,24 +91,7 @@ plot(fm.nm[,"Poised Peak Score"],fm.nm[,"Max PolII Signal"])
 ##
 plot(fm.nm[,"Poised Peak Score"],fm.nm[,"Max PolII Signal"])
 
-## c123 is one start to a feature matrix
-## universe: all.nm, the rownames of c123
-### gexpcluster <- c("Up Early","Gradual Up","Down","Up Later")[all.cluster.members]
 
-upearly.logvec <- all.nm %in% names(which(gexpcluster.nm=="Up Early"))
-gradualup.logvec <- all.nm %in% names(which(gexpcluster.nm=="Gradual Up"))
-uplater.logvec <- all.nm %in% names(which(gexpcluster.nm=="Up Later"))
-down.logvec <- all.nm %in% names(which(gexpcluster.nm=="Down"))
-
-gexpclust.fm <- cbind(upearly.logvec,gradualup.logvec,uplater.logvec,down.logvec)*1
-
-colnames(gexpclust.fm) <- c("Up Early","Gradual Up","Up Later","Down")
-rownames(gexpclust.fm) <- all.nm
-
-fm <- cbind(c123,gexpclust.fm)
-
-fisher.test(table(fm[,"Poised at T=0"],fm[,"Diff. Expressed"]))
-cor(fm[,"Poised at T=0"],fm[,"Diff. Expressed"])
 
 fisher.test(table(fm[,"Poised at T=0"],fm[,"Up Early"]))
 fisher.test(table(fm[,"Poised at T=0"],fm[,"Gradual Up"]))
