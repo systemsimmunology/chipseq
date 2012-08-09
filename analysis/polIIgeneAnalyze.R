@@ -54,6 +54,9 @@ nms <- rownames(fm.nm)[logvec]
 logvec <- fm.nm[,"PoisedRunningInduced"]=="PnRE"
 nms <- rownames(fm.nm)[which(logvec)] ## (wonder why "which" is needed here and not above)
 
+logvec <- fm.nm[,"PoisedRunningInduced"]=="PRI"
+nms <- rownames(fm.nm)[which(logvec)] ## (wonder why "which" is needed here and not above)
+
 ## EIDs
 system.time(
 for ( eid in eid.of.nm[nms] ){
@@ -65,6 +68,8 @@ for ( eid in eid.of.nm[nms] ){
   dev.off()
 }
 )
+
+
 
 ## NMs
 system.time(
@@ -78,92 +83,6 @@ for ( nm in nms ){
   dev.off()
 }
 )
-
-
-##
-## Three-way comparison
-## 
-
-have.polII.signal.nm <- union(rownames(polIIgene.nm.fracolap),rownames(polII.nm.scoretss))
-have.polII.signal.eid <- as.character(eid.of.nm[have.polII.signal.nm])
-
-
-library(limma) ## for vennCounts
-## limma not available in R 2.14!
-## retreived vennCounts and vennDiagram and copied into a utils file
-
-source("~/bin/R/functions/vennUtils.R")
-
-case <- 3
-
-## In terms of RefSeqs
-v1 <- poised.t0.nm
-v2 <- fracolap.jump.nm
-v3 <- diffexp.nm
-
-if ( case==1 ){
-  all.nm <- union(v1,union(v2,v3))
-}
-if ( case==2 ){
-  all.nm <- on.3prime.array.nm
-}
-if ( case==3){
-  all.nm <- intersect(on.3prime.array.nm,have.polII.signal.nm)
-}
-
-v1.logvec <- all.nm %in% v1
-v2.logvec <- all.nm %in% v2
-v3.logvec <- all.nm %in% v3
-c123 <- cbind(v1.logvec,v2.logvec,v3.logvec)
-c123 <- c123*1
-colnames(c123) <- c("Poised at T=0","Running","Diff. Expressed")
-rownames(c123) <- all.nm
-a.nm <- vennCounts(c123)
-
-## In terms of Entrez IDs
-v1 <- poised.t0.eid
-v2 <- fracolap.jump.eid
-v3 <- diffexp.eid
-
-
-if ( case == 1 ) {
-  all.eid <- union(v1,union(v2,v3))
-}
-if ( case == 2){
-  all.eid <- on.3prime.array.eid
-}
-if ( case == 3 ){
-  all.eid <- intersect(on.3prime.array.eid,have.polII.signal.eid)
-}
-
-v1.logvec <- all.eid %in% v1
-v2.logvec <- all.eid %in% v2
-v3.logvec <- all.eid %in% v3
-c123 <- cbind(v1.logvec,v2.logvec,v3.logvec)
-c123 <- c123*1
-colnames(c123) <- c("Poised at T=0","Running","Diff. Expressed")
-rownames(c123) <- all.eid
-a.eid <- vennCounts(c123)
-
-
-if ( case==1 ){
-  txt <- "Universe: Union of the three sets"
-}
-
-if ( case==2 ){
-  txt <- "Universe: On 3' Array"
-}
-
-if ( case==3 ){
-  txt <- "Universe: On 3\' Array AND has some PolII signal"
-}
-
-
-par(mfrow=c(1,2))
-
-vennDiagram(a.nm,main="RefSeq IDs")
-vennDiagram(a.eid,main="Entrez IDs")
-mtext(txt,outer=TRUE,line=-3,cex=2)
 
 ##
 ## Data exploration
@@ -182,7 +101,6 @@ pairs(polIIgene.nm.fracolap[1:5000,],pch=20)
 ## full version
 ##pairs(polIIgene.nm.bpolps)
 ##pairs(polIIgene.nm.fracolap)
-
 
 heatmap3(polIIgene.fracolap[larger.changes.eids,],do.dendro=c(TRUE,FALSE), main="",legend = 2, scale="none", legfrac=7, col = brewer.pal(9,"Blues"),Colv=NA,rowlab=FALSE)
 heatmap(polIIgene.fracolap[larger.changes.eids,],Colv=NA, margins=c(15,15),revC=TRUE,scale="none", col = brewer.pal(9,"Blues"))
@@ -500,7 +418,8 @@ polIIgene.nm.fracolap[unlist(nms.of.eid[names(which(c>1))]),]
 ## These have scores >1.99.
 ## There are probably others
 ## Same gene is given at multiple locations, who knows why.
-  
+
+polIIgene.nm.fracolap.max <- apply(polIIgene.nm.fracolap,1,max,na.rm=T)
 ## After some length, doesn't make sense to consider fracolpa
 plot(polIIgene.nm.fracolap.max,nmlength[names(polIIgene.nm.fracolap.max)],xlim=c(0,0.01))
 

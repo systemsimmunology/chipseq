@@ -3,6 +3,7 @@ source("~/tcga/utils/mutils.R") # for boxplot
 
 load("fm.eid.RData")
 load("fm.nm.RData")
+all.nm <- rownames(fm.nm)
 ## these are matrices of type character.
 
 ## It will also be useful to have data frames
@@ -18,36 +19,38 @@ df.eid[,"Poised Peak Score"] <- h
 
 ## Expression Array Platform Comparisons
 table(fm.eid[,"Constitutive Expression - Three Prime"],fm.eid[,"Constitutive Expression - Exon"])
-v <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
-w <- names(which((fm.eid[,"Constitutive Expression - Exon"]==1)&(fm.eid[,"Constitutive Expression - Three Prime"]==0)))
+s1 <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
+s2 <- names(which((fm.eid[,"Constitutive Expression - Exon"]==1)&(fm.eid[,"Constitutive Expression - Three Prime"]==0)))
 
 table(fm.eid[,"Differential Expression - Three Prime"],fm.eid[,"Differential Expression - Exon"])
-v <- names(which((fm.eid[,"Differential Expression - Three Prime"]==1)&(fm.eid[,"Differential Expression - Exon"]==0)))
-w <- names(which((fm.eid[,"Differential Expression - Exon"]==1)&(fm.eid[,"Differential Expression - Three Prime"]==0)))
+s1 <- names(which((fm.eid[,"Differential Expression - Three Prime"]==1)&(fm.eid[,"Differential Expression - Exon"]==0)))
+s2 <- names(which((fm.eid[,"Differential Expression - Exon"]==1)&(fm.eid[,"Differential Expression - Three Prime"]==0)))
 
 table(fm.eid[,"Cluster - Three Prime"],fm.eid[,"Cluster - Exon"])
 
-
 ## Comparison of Gene Expression to PolII
-v <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>4)]
-w <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>1)]
+p4.nm <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>4)] ## stringent signal filter
+p1.nm <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>1)] ## moderate signal filter 
 
 table(fm.nm[,"PolII Signal Intensity Cluster"],fm.nm[,"Cluster - Three Prime"])
-table(fm.nm[v,"PolII Signal Intensity Cluster"],fm.nm[v,"Cluster - Three Prime"])
-table(fm.nm[w,"PolII Signal Intensity Cluster"],fm.nm[w,"Cluster - Three Prime"])
+table(fm.nm[p4.nm,"PolII Signal Intensity Cluster"],fm.nm[p4.nm,"Cluster - Three Prime"])
+table(fm.nm[p1.nm,"PolII Signal Intensity Cluster"],fm.nm[p1.nm,"Cluster - Three Prime"])
 
 ## PolII signal vs poised
 table(fm.nm[,"PolII Signal Intensity Cluster"],fm.nm[,"Poised at T=0"])
-table(fm.nm[v,"PolII Signal Intensity Cluster"],fm.nm[v,"Poised at T=0"])
-table(fm.nm[w,"PolII Signal Intensity Cluster"],fm.nm[w,"Poised at T=0"])
-expectedcount(table(fm.nm[w,"PolII Signal Intensity Cluster"],fm.nm[w,"Poised at T=0"]))
+table(fm.nm[p4.nm,"PolII Signal Intensity Cluster"],fm.nm[p4.nm,"Poised at T=0"])
+table(fm.nm[p1.nm,"PolII Signal Intensity Cluster"],fm.nm[p1.nm,"Poised at T=0"])
+expectedcount(table(fm.nm[p1.nm,"PolII Signal Intensity Cluster"],fm.nm[p1.nm,"Poised at T=0"]))
 
-v <- names(which((fm.nm[,"Cluster - Exon"]=="Down")&(fm.nm[,"Poised at T=0"]==1)))
+## Exon cluster vs poised 
+table(fm.nm[,"Cluster - Exon"],fm.nm[,"Poised at T=0"])
+table(fm.nm[p4.nm,"Cluster - Exon"],fm.nm[p4.nm,"Poised at T=0"])
+table(fm.nm[p1.nm,"Cluster - Exon"],fm.nm[p1.nm,"Poised at T=0"])
+expectedcount(table(fm.nm[p1.nm,"Cluster - Exon"],fm.nm[p1.nm,"Poised at T=0"]))
 
 ##can also filter on peak score. Example gene Tfrc
-v <- names(which((fm.eid[,"Cluster - Exon"]=="Down")&(fm.eid[,"Poised at T=0"]==1)&(fm.eid[,"Poised Peak Score"]>7)))
-v <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
-
+#v <- names(which((fm.eid[,"Cluster - Exon"]=="Down")&(fm.eid[,"Poised at T=0"]==1)&(fm.eid[,"Poised Peak Score"]>7)))
+#v <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
 
 canplot <- intersect(rownames(dm.lps.exon),rownames(fm.eid))
 
@@ -57,7 +60,6 @@ boxplot.funnylabel("Poised Peak Score","Cluster - Exon",df.nm)
  
 ##
 ## Look at filtering by magnitude
-
 
 all.eid <- rownames(fm.eid)
 all.nm <- rownames(fm.nm)
@@ -71,11 +73,6 @@ table(fm.eid[v,"Qualitative Change - Exon"],fm.eid[v,"Cluster - Exon"])
 
 w <- all.nm[which(abs(as.numeric(fm.nm[,"Poised Peak Score"]))>6)]
 
-
-## Poised vs PolII clusters
-v <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>4)]
-table(fm.nm[v,"PolII Signal Intensity Cluster"]
-expectedcount(table(fm.nm[v,"Poised at T=0"],fm.nm[v,"PolII Signal Intensity Cluster"]))
 
 ## This seems clearer too, than with full set
 table(fm.eid[v,"Qualitative Change - Exon"],fm.eid[v,"PolII Signal Intensity Cluster"])
@@ -142,24 +139,36 @@ fisher.test(table(fm[,"Poised at T=0"],fm[,"Gradual Up"]))
 fisher.test(table(fm[,"Poised at T=0"],fm[,"Up Later"]))
 fisher.test(table(fm[,"Poised at T=0"],fm[,"Down"]))
 
+###
+## Do poised genes that are induced tend to have an early (or earlier expression) pattern?
+##
+
+s1 <- names(which((fm.eid[,"Qualitative Change - Three Prime"]=="Induced")&(fm.eid[,"Poised at T=0"]==1)))
+s1.indicator <- ((fm.eid[,"Qualitative Change - Three Prime"]=="Induced")&(fm.eid[,"Poised at T=0"]==1))*1
+
+nodown.categories <- fm.eid[,"Cluster - Three Prime"]
+nodown.categories[which(fm.eid[,"Cluster - Three Prime"]=="Down")] <- NA
+
+nodown.indicator <- (((fm.eid[,"Cluster - Three Prime"]=="Gradual Up") |
+                      (fm.eid[,"Cluster - Three Prime"]=="Up Down") |
+                      (fm.eid[,"Cluster - Three Prime"]=="Up Late")))*1
+table(nodown.categories,fm.eid[,"Poised at T=0"])
+expectedcount(table(nodown.categories,fm.eid[,"Poised at T=0"]))
 
 
+## try version with polII signal
+only.up  <- fm.nm[,"PolII Signal Intensity Cluster"]
+only.up[which(fm.nm[,"PolII Signal Intensity Cluster"]=="Decreasing")] <- NA
+only.up[which(fm.nm[,"PolII Signal Intensity Cluster"]=="Low Variation")] <- NA
 
-expectedcount <- function(m) {
-  rn <- rownames(m)
-  cn <- colnames(m)
-  v1 <-  apply(m,1,sum)/sum(m)
-  v2 <-  apply(m,2,sum)/sum(m)
-  all1s <- matrix(1,nrow=nrow(m),ncol=ncol(m))
-  m1 <- v1 * all1s
-  ##m2 <- t( all1s * v2) doesn't work - I miss MATLAB
-  m2 <- numeric()
-  for ( j in 1:nrow(all1s) ){
-    m2 <- rbind(m2,v2)
-  }
-  outmat <- m1*m2*sum(m)
-  rownames(outmat) <-rn
-  colnames(outmat) <-cn
-  outmat
-}
+
+w <- all.nm[which(abs(as.numeric(fm.nm[,"Poised Peak Score"]))>6)]
+wind <- (as.numeric(fm.nm[,"Poised Peak Score"])>6)*1
+
+table(only.up, fm.nm[, "Poised at T=0"])
+
+table(only.up, wind)
+
+## not seeing association between poising and subsequent pattern
+
 

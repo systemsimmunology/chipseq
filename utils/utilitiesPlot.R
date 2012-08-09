@@ -50,7 +50,7 @@ kinplotnm <- function (nm) {
     axis(1,1:4,labels=c(0,1,2,4))
   } else { frame() }
   if (  nm %in% rownames(polIIgene.nm.sigint)) {
-    main=paste(gene.symbol[eid],": PolII Signal Intensity")
+    main=paste(nm,": PolII Signal Intensity")
     ymax <- max(polIIgene.nm.sigint[nm,c(1,2,4,5)])
     plot(polIIgene.nm.sigint[nm,c(1,2,4,5)],type='l',main=main,ylab="Intensity",xlab="Time [hr]",col='blue',ylim=c(0,ymax),xaxt="n")
     points(polIIgene.nm.sigint[nm,c(1,2,4,5)],x=1:4,type='p',col='blue',pch=19)

@@ -67,10 +67,25 @@ fracolap.jump.nm <- names(which(polIIgene.nm.fracolap[fracolap.jump.nm,1] < 0.10
 ## July 18, 2012: Turned out to be too restrictive, e.g. lost Serp1 (0.052) and Tnfsf9 (0.09)
 fracolap.jump.eid <- unique(as.character(eid.of.nm[fracolap.jump.nm]))
 
+## Aug 2012. Ellipse score.
+x <- polIIgene.nm.fracolap[,1]
+y <- apply(polIIgene.nm.fracolap[,c(2,4,5)],1,max) 
+alpha <- 2 
+dell <- sqrt( alpha^2 * x^2 + (y-1)^2 )
+sete <- names(which(dell< 0.8))
+fracolap.jump.nm <- sete
+
+fracolap.jump.eid <- unique(as.character(eid.of.nm[fracolap.jump.nm]))
+
 running.nm.binvec <- rep(0,length=nrow(polIIgene.nm.fracolap))
 names(running.nm.binvec) <- rownames(polIIgene.nm.fracolap)
 running.nm.binvec[fracolap.jump.nm] <- 1
 save(running.nm.binvec,file="running.nm.binvec.RData")
+
+runmat.nm <- cbind(running.nm.binvec,dell)
+colnames(runmat.nm) <- c("Running","Distance from Running Ideal")
+save(runmat.nm,file="runmat.nm.RData")
+
 
 eid.with.data <- unique(eid.of.nm[rownames(polIIgene.nm.fracolap)])
 running.eid.binvec <- rep(0,length=length(eid.with.data))

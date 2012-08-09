@@ -55,16 +55,24 @@ fm.eid <- fm.eid.new
 ##
 ## Running at T=0
 ##
-load("~/chipseq/results/20120718/running.nm.binvec.RData")
-pin <- as.matrix(running.nm.binvec)
-colnames(pin) <- "Running"
-fm.nm.new <- addmat(fm.nm,pin)
+
+#load("~/chipseq/results/20120718/running.nm.binvec.RData")
+#pin <- as.matrix(running.nm.binvec)
+#colnames(pin) <- "Running"
+
+load("~/chipseq/results/20120807/runmat.nm.RData")
+fm.nm.new <- addmat(fm.nm,runmat.nm)
 fm.nm <- fm.nm.new
-load("~/chipseq/results/20120718/running.eid.binvec.RData")
-pin <- as.matrix(running.eid.binvec)
-colnames(pin) <- "Running"
-fm.eid.new <- addmat(fm.eid,pin)
+
+res <- eidMat(runmat.nm,method="max")
+fm.eid.new <- addmat(fm.eid,res)
 fm.eid <- fm.eid.new
+
+#load("~/chipseq/results/20120718/running.eid.binvec.RData")
+#pin <- as.matrix(running.eid.binvec)
+#colnames(pin) <- "Running"
+#fm.eid.new <- addmat(fm.eid,pin)
+#fm.eid <- fm.eid.new
 
 ##
 ## Possible effect of nearby genes
@@ -211,12 +219,14 @@ colnames(fm.eid.new) <- c("NCBI Link",colnames(fm.eid),"Plot Link")
 rownames(fm.eid.new) <- eids ## needs to be reinstated
 fm.eid <- fm.eid.new
 
-
 save(fm.nm, file="fm.nm.RData")
 save(fm.eid,file="fm.eid.RData")
 
 fm.nm[,"Poised Peak Score"] <- round(as.numeric(fm.nm[,"Poised Peak Score"]),2)
 fm.eid[,"Poised Peak Score"] <- round(as.numeric(fm.eid[,"Poised Peak Score"]),2)
+
+fm.nm[,"Distance from Running Ideal"] <- round(as.numeric(fm.nm[,"Distance from Running Ideal"]),3)
+fm.eid[,"Distance from Running Ideal"] <- round(as.numeric(fm.eid[,"Distance from Running Ideal"]),3)
 
 fm.nm[,"PolII Signal CV"] <- round(as.numeric(fm.nm[,"PolII Signal CV"]),1)
 fm.eid[,"PolII Signal CV"] <- round(as.numeric(fm.eid[,"PolII Signal CV"]),1)
