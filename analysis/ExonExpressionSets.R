@@ -48,7 +48,7 @@ setmat[,2]=(rownames(dm.lps.exon) %in%  constitutive.exon.eid )*1
 setmat[,3]=(rownames(dm.lps.exon) %in%  diffexp.exon.eid )*1
 setmat[,4]=NA
 setmat[diffexp.exon.eid,4]=round(lps.mic[diffexp.exon.eid],2)
-setmat[,5]=NA
+setmat[,5]="Below Threshold"
 setmat[diffexp.exon.eid,5]=bb[diffexp.exon.eid]
 setmat[constitutive.exon.eid,5]="Constitutive"
 

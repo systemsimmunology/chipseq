@@ -164,11 +164,56 @@ only.up[which(fm.nm[,"PolII Signal Intensity Cluster"]=="Low Variation")] <- NA
 
 w <- all.nm[which(abs(as.numeric(fm.nm[,"Poised Peak Score"]))>6)]
 wind <- (as.numeric(fm.nm[,"Poised Peak Score"])>6)*1
+names(wind) <- all.nm
 
-table(only.up, fm.nm[, "Poised at T=0"])
+table(only.up,fm.nm[, "Poised at T=0"])
 
 table(only.up, wind)
 
 ## not seeing association between poising and subsequent pattern
+table(only.up[p1.nm],fm.nm[p1.nm,"Poised at T=0"])
+table(only.up[p1.nm], wind[p1.nm])
 
 
+##
+## Genes remaining poised
+## 
+
+## Method I. Use poised.logmat
+q <- apply(poised.logmat,1,sum)
+alwayspoised.nm <- names(which(q==4))
+
+write.table(unique(eid.of.nm[alwayspoised.nm]),file="~/Downloads/ap.txt",quote=F,row.name=F)
+
+## Method II. Use PnRnI
+## May need to filter
+
+## Non-expressed genes e.g NM_001042418 get NA for this.
+notexp.3prime <- fm.eid[,"Qualitative Change - Three Prime"]=="Below Threshold" #logical vector
+notexp.exon <- fm.eid[,"Qualitative Change - Exon"]=="Below Threshold" #logical vector
+## most stringent for not expressed
+notexp <- notexp.exon & notexp.3prime ## (logvec)
+## if we have info only on one array
+j1 <- notexp.exon & fm.eid[,"On Three Prime Array"]=="0"
+j2 <- notexp.3prime  & fm.eid[,"On Exon Array"]=="0"
+j <-  j1 | j2 
+## include these in notexp
+notexp <- notexp | j # (logvec)
+## refSeqVec(notexp*1)) ## corresponding nm vec, indicator
+
+notexp.eid <- names(which(notexp)) # vector
+notexp.nm <- as.character(unlist(nms.of.eid[notexp.eid]))
+
+
+## w <- intersect(nms.PnRnI,notexp.nm)
+ww <- intersect(poised.t0.nm,notexp.nm)
+
+c <- names(which(fm.nm[w,"Poised Peak Score"]>4))
+
+d <- names(which(fm.nm[ww,"Poised Peak Score"]>4))
+
+write.table(unique(eid.of.nm[c]),file="~/Downloads/npne.txt",quote=F,row.name=F)
+
+write.table(unique(eid.of.nm[d]),file="~/Downloads/take2.txt",quote=F,row.name=F)
+
+gene.fullname[intersect(unique(eid.of.nm[c]),getGIDsOfGO(GOID))]

@@ -110,3 +110,35 @@ ugdPlot <- function ( eid ){
   axis(1,labels=c("5k up","gene","5k down"),at=c(0,1/2,1))
 }
 
+
+##
+## igb - zoom igb to gene nm
+##
+## Requirements:  IGB running and loaded
+## and the steps with the FALSE clause done once
+
+if (FALSE){
+  library(httpRequest)
+  igbstring="/UnibrowControl?seqid="
+  rg <- read.table("~/chipseq/annotation/refGene.mouse.bed",as.is=TRUE)
+  chromo <- rg$V1; names(chromo) <- rg$V4
+  gstart <- rg$V2; names(gstart) <- rg$V4
+  gend <- rg$V3; names(gend) <- rg$V4
+}
+
+igb <- function(nm,pad=FALSE) {
+  if(pad){
+    e<-round((gend[nm]-gstart[nm])*0.05)
+  } else {
+    e<-0
+  }
+  igb.link  <- paste(igbstring,chromo[nm],"&start=",gstart[nm]-e,"&end=",gend[nm]+e,sep="")
+  getToHost("127.0.0.1",igb.link,port="7085")
+}
+
+## send search to ncbi Gene web page
+web.gene <- function( instring ) {
+  system(paste("open http://www.ncbi.nlm.nih.gov/gene?term=",instring,sep=""))
+}
+
+

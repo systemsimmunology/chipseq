@@ -16,6 +16,7 @@ load("~/allarrays/data/20100426.curated.3prime/all.lambdas.objects.RData")
 load("~/allarrays/data/20100426.curated.3prime/all.ratios.objects.RData")
 load("~/allarrays/data/20100426.curated.3prime/all.mus.objects.RData")
 ncbiID <- as.character(unlist(sapply(rownames(lps.mus),strsplit,split="_at")))
+names(ncbiID) <- rownames(lps.mus)
 
 ##
 ## Overall, keep in mind 
@@ -77,7 +78,7 @@ setmat[,2]=(rownames(lps.mus) %in%  constitutive.3prime.ps )*1
 setmat[,3]=(rownames(lps.mus) %in%  lps.6hr.ps )*1
 setmat[,4]=NA
 setmat[lps.6hr.ps,4]=round(lps.mic[lps.6hr.ps],2)
-setmat[,5]=NA
+setmat[,5]="Below Threshold"
 setmat[lps.6hr.ps,5]=bb[lps.6hr.ps]
 setmat[constitutive.3prime.ps,5]="Constitutive"
 

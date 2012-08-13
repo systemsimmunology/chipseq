@@ -37,7 +37,7 @@ min.score <- 3
 poised.logmat <- (abs(polII.nm.tssdist)<max.dist) &  (polII.nm.tsswidth<max.width) & (polII.nm.scoretss >min.score)
 poised.logmat <- replace(poised.logmat,which(is.na(poised.logmat)),FALSE) ## NA values also do not meet the criterion
 poised.logmat <- poised.logmat*1 ## convert to binary rep
-poised.logmat <- poised.logmat[,c(1,2,4,5,7)] ## restrict to A samples
+poised.logmat <- poised.logmat[,c(1,2,4,5)] ## restrict to A samples, skip hr 6
 poised.t0.nm <- names(which(poised.logmat[,1]==1))
 poised.t0.eid <- unique(eid.of.nm[poised.t0.nm])
 

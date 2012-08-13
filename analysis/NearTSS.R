@@ -18,12 +18,13 @@ load("~/data/ncbi/gene.eid.RData")
 
 max.width <- 500
 max.dist <- 500
+min.score <- 3
 
 ## Binary matrix for poising, at every time point
 poised.logmat <- (abs(polII.nm.tssdist)<max.dist) &  (polII.nm.tsswidth<max.width)
 poised.logmat <- replace(poised.logmat,which(is.na(poised.logmat)),FALSE) ## NA values also do not meet the criterion
 poised.logmat <- poised.logmat*1 ## convert to binary rep
-poised.logmat <- poised.logmat[,c(1,2,4,5,7)] ## restrict to A
+poised.logmat <- poised.logmat[,c(1,2,4,5)] ## restrict to A,skip 6hr
 
 ## Is there poising at t=0?
 poised.t0.nm <- names(which(poised.logmat[,1]==1))
@@ -45,7 +46,7 @@ colnames(m)[c(1,2)] <- c("Entrez ID","Gene Symbol")
 write.matrix(m,"RefSeq",file="PoisedSometime.tsv")
 
 ## Study cases where gene is paused over *all* of time course
-alwayspoised.nm <- names(which(q==5))
+alwayspoised.nm <- names(which(q==4))
 alwayspoised.eid <- as.character(eid.of.nm[alwayspoised.nm])
 m <- cbind(eid.of.nm[alwayspoised.nm],
            gene.symbol[eid.of.nm[alwayspoised.nm]]

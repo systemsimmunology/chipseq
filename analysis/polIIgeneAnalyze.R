@@ -55,7 +55,10 @@ logvec <- fm.nm[,"PoisedRunningInduced"]=="PnRE"
 nms <- rownames(fm.nm)[which(logvec)] ## (wonder why "which" is needed here and not above)
 
 logvec <- fm.nm[,"PoisedRunningInduced"]=="PRI"
-nms <- rownames(fm.nm)[which(logvec)] ## (wonder why "which" is needed here and not above)
+nms.PRI <- rownames(fm.nm)[which(logvec)] ## (wonder why "which" is needed here and not above)
+
+logvec <- fm.nm[,"PoisedRunningInduced"]=="PnRnI"
+nms.PnRnI <- rownames(fm.nm)[which(logvec)] ## (wonder why "which" is needed here and not above)
 
 ## EIDs
 system.time(

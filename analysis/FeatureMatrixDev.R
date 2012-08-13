@@ -122,25 +122,34 @@ fm.eid <- fm.eid.new
 ##
 ## 3prime Array Categories
 ## 
-threeprime <- read.matrix("~/chipseq/results/20120605/ThreePrimeArrayExpression.tsv")
+threeprime <- read.matrix("~/chipseq/results/20120807/ThreePrimeArrayExpression.tsv")
 tp.ps <- rownames(threeprime)
 tp.eid <- as.character(unlist(sapply(tp.ps,strsplit,split="_at")))
 rownames(threeprime) <- tp.eid 
 threeprime <- threeprime[intersect(rownames(threeprime),all.eid),]
 fm.eid.new <- addmat(fm.eid,threeprime)
+fm.eid.new[which(is.na(fm.eid.new[,"On Three Prime Array"])),"On Three Prime Array"] <- "0"
 fm.eid <- fm.eid.new
 fm.nm.new <- addmat(fm.nm,refSeqMat(threeprime))
+fm.nm.new[which(is.na(fm.nm.new[,"On Three Prime Array"])),"On Three Prime Array"] <- "0"
 fm.nm <- fm.nm.new
 
 ##
 ## Exon Array Categories
 ## 
-exon <- read.matrix("~/chipseq/results/20120605/ExonArrayExpression.tsv")
+exon <- read.matrix("~/chipseq/results/20120807/ExonArrayExpression.tsv")
 exon <- exon[intersect(rownames(exon),all.eid),]
 fm.eid.new <- addmat(fm.eid,exon)
+fm.eid.new[which(is.na(fm.eid.new[,"On Exon Array"])),"On Exon Array"] <- "0"
 fm.eid <- fm.eid.new
 fm.nm.new <- addmat(fm.nm,refSeqMat(exon))
+fm.nm.new[which(is.na(fm.nm.new[,"On Exon Array"])),"On Exon Array"] <- "0"
 fm.nm <- fm.nm.new
+
+
+##
+## Combined induced value
+##
 
 induced <- rep(NA,length(all.eid))
 names(induced) <- all.eid
@@ -219,8 +228,25 @@ colnames(fm.eid.new) <- c("NCBI Link",colnames(fm.eid),"Plot Link")
 rownames(fm.eid.new) <- eids ## needs to be reinstated
 fm.eid <- fm.eid.new
 
+
+
+##
+## Still problems with duplicated NM_175657
+##
+## ToDo: copy duplicate removal from polIISignal.R to polIIFracolap.R
+## check that no evidence remains 
+baddies <- "NM_175657"
+fm.nm <- fm.nm[setdiff(rownames(fm.nm),baddies),]
+baddies <- eid.of.nm[baddies]
+fm.eid <- fm.eid[setdiff(rownames(fm.eid),baddies),]
+
 save(fm.nm, file="fm.nm.RData")
 save(fm.eid,file="fm.eid.RData")
+
+
+##
+## Output as TSV with fewer sig digits
+##
 
 fm.nm[,"Poised Peak Score"] <- round(as.numeric(fm.nm[,"Poised Peak Score"]),2)
 fm.eid[,"Poised Peak Score"] <- round(as.numeric(fm.eid[,"Poised Peak Score"]),2)

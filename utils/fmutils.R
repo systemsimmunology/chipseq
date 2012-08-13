@@ -35,11 +35,20 @@ refSeqMat <- function(emat){
   rownames(outmat) <- nms
   colnames(outmat) <- colnames(emat)
   outmat[nms,] <- emat[eid.of.nm[nms],]
-#  for ( nm in nms ){
-#    outmat[nm,] <- emat[eid.of.nm[nm],]
-#  }
   outmat
 }
+
+##
+## From vector of EntrezIDs, create vector of RefSeqs
+refSeqVec <- function (evec) {
+  eids <- names(evec)
+  nms <- unlist(nms.of.eid[eids])
+  outvec <- vector(length=length(nms))
+  names(outvec) <- nms
+  outvec[nms] <- evec[eid.of.nm[nms]]
+  outvec
+}
+  
 
 ## 
 ## From matrix of Refseq, create matrix of EIDs
