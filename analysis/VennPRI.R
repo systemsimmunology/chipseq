@@ -1,9 +1,10 @@
 
 source("~/bin/R/functions/vennUtils.R")
 
-load("~/chipseq/results/20120807/fm.nm.RData")
+load("~/chipseq/results/20120814/fm.nm.RData")
 c123 <- fm.nm[,c("Poised at T=0","Running","Induced")]
-m <- matrix(as.numeric(c123),ncol=3)
+m <- c123
+##m <- matrix(as.numeric(c123),ncol=3)
 colnames(m) <- colnames(c123)
 rownames(m) <- rownames(c123)
 
@@ -15,9 +16,10 @@ s.nm <- paste("All:",length(nonna),", P:",ptot,", R:",rtot,", I:",itot,sep="")
 
 a.nm <- vennCounts(m)
 
-load("~/chipseq/results/20120807/fm.eid.RData")
+load("~/chipseq/results/20120814/fm.eid.RData")
 c123 <- fm.eid[,c("Poised at T=0","Running","Induced")]
-m <- matrix(as.numeric(c123),ncol=3)
+m <- c123
+##m <- matrix(as.numeric(c123),ncol=3)
 colnames(m) <- colnames(c123)
 rownames(m) <- rownames(c123)
 

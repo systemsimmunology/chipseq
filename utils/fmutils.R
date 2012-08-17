@@ -20,6 +20,9 @@ addmat <- function(nowmat,itermat){
   outmat <- matrix(NA,nrow=length(out.rows),ncol=length(out.cols))
   rownames(outmat) <- out.rows
   colnames(outmat) <- out.cols
+  if ( is.data.frame(nowmat) ){
+    outmat <- as.data.frame(outmat)
+  }
   outmat[rows.now,cols.now] <- nowmat
   outmat[rows.iter,cols.iter] <- itermat
   outmat
@@ -34,6 +37,9 @@ refSeqMat <- function(emat){
   outmat <- matrix(nrow=length(nms),ncol=ncol(emat))
   rownames(outmat) <- nms
   colnames(outmat) <- colnames(emat)
+  if ( is.data.frame(emat) ){
+    outmat <- as.data.frame(outmat)
+  }  
   outmat[nms,] <- emat[eid.of.nm[nms],]
   outmat
 }
@@ -63,6 +69,23 @@ library(modeest) ## contains mfv ~ most frequent value ~ mode
 ## assuming integer usage here
 ## we have an "all NA" detector for the vector results but not the vector one
 
+## most frequent in character vector
+vote <- function (invec ){
+  outval <- NA
+  if ( length(na.rm(invec))){
+    outval <- names(which.max(table(invec)))
+  }
+  outval
+}
+# ties may resolve to first occurence
+
+## max function that returns NA if all NA, otherwise true non-NA max
+max.ver2 <- function (invec) {
+  out <- NA
+  if ( length(na.rm(invec)) > 0 ){out <- max(invec,na.rm=T)}
+  out
+}
+
 eidMat <- function(nmat,method="mean"){
   
   nms.all <- rownames(nmat)
@@ -86,10 +109,13 @@ eidMat <- function(nmat,method="mean"){
       h <- tapply(nmat[harder.nms,i],as.factor(w),mean,na.rm=T)
     }
     if ( method == "max" ){
-      h <- tapply(nmat[harder.nms,i],as.factor(w),max,na.rm=T)
+      h <- tapply(nmat[harder.nms,i],as.factor(w),max.ver2) ## see above
     }
     if ( method == "mode" ){
       h <- tapply(nmat[harder.nms,i],as.factor(w),mfv,na.rm=T)
+    }
+    if ( method == "vote" ){
+      h <- tapply(nmat[harder.nms,i],as.factor(w),vote) ## see above
     }
     h[which(is.na(h))] <- NA
     ## mean(c(NA,NA,NA),na.rm=T) is NaN, not NA!
