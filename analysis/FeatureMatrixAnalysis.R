@@ -10,12 +10,9 @@ all.eid <- rownames(fm.eid)
 ##
 ## Some filters
 ##
-
- 
 s4.nm <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>4)] ## stringent signal filter
 s1.nm <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>1)] ## moderate signal filter 
 p6.nm <- all.nm[which(abs(as.numeric(fm.nm[,"Poised Peak Score"]))>6)] ## poised score filter
-
 
 ##
 ## Basic stats
@@ -64,6 +61,23 @@ table(fm.nm[s4.nm,"PolII Signal Intensity Cluster"],fm.nm[s4.nm,"Poised at T=0"]
 table(fm.nm[s1.nm,"PolII Signal Intensity Cluster"],fm.nm[s1.nm,"Poised at T=0"])
 expectedcount(table(fm.nm[s1.nm,"PolII Signal Intensity Cluster"],fm.nm[s1.nm,"Poised at T=0"]))
 
+## Same comparison,but restrict to increasing signal
+polup <- fm.nm[,"PolII Signal Intensity Cluster"]
+names(polup) <- all.nm
+polup[which(fm.nm[,"PolII Signal Intensity Cluster"]=="Decreasing")] <- NA
+polup[which(fm.nm[,"PolII Signal Intensity Cluster"]=="Low Variation")] <- NA
+tay <- table(polup,fm.nm[,"Poised at T=0"])
+tay
+fisher.test(tay)
+expectedcount(tay)
+
+table(polup[s4.nm],fm.nm[s4.nm,"Poised at T=0"])
+table(polup[s1.nm],fm.nm[s1.nm,"Poised at T=0"])
+
+
+
+
+
 ##
 ## Exon cluster vs poised 
 ##
@@ -71,6 +85,7 @@ table(fm.nm[,"Cluster - Exon"],fm.nm[,"Poised at T=0"])
 table(fm.nm[s4.nm,"Cluster - Exon"],fm.nm[s4.nm,"Poised at T=0"])
 table(fm.nm[s1.nm,"Cluster - Exon"],fm.nm[s1.nm,"Poised at T=0"])
 expectedcount(table(fm.nm[s1.nm,"Cluster - Exon"],fm.nm[s1.nm,"Poised at T=0"]))
+
 
 ##
 ## Qualitative expression changes vs poised

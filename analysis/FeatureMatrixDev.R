@@ -334,11 +334,3 @@ fm.eid[,"Max PolII Signal"] <- round(as.numeric(fm.eid[,"Max PolII Signal"]),2)
 write.matrix(fm.eid,file="FeatMatGeneID.tsv",topLeftString="Gene ID")
 write.matrix(fm.nm,file="FeatMatRefSeq.tsv",topLeftString="RefSeq")
 
-## Post filtering
-## awk '{FS="\t" ; if( ($26!="NA") && ($26!="nPnRnI") ) print }' FeatMatRefSeq.tsv > FeatMatRefSeq.2.tsv
-## awk '{FS="\t" ; if($10 > 4) print }' FeatMatRefSeq.2.tsv > FeatMatRefSeq.3.tsv
-
-## head -1 FeatMatRefSeq.tsv > header 
-## awk '{FS="\t" ; if ($26=="PRI") print }' FeatMatRefSeq.tsv > tempfile
-## cat header tempfile > FeatMatRefSeq.PRI.tsv 
-## rm tempfile
