@@ -5,22 +5,28 @@ library(org.Mm.eg.db)
 GO2geneID <- as.list(org.Mm.egGO2EG)
 geneID2GO <- inverseList(GO2geneID)
 
+# choices for quantitative change variable
 qc.choice <- "Qualitative Change - Exon"
 qc.choice <- "Qualitative Change - Arrays Combined"
 
 load("fm.eid.RData")
 df <- fm.eid[,c("Max PolII Signal","Poised at T=0","Induced",qc.choice)]
+
+# remove rows with no PolII signal, Constitutive or Repressed expression
+# retain "Below Threshold", "Induced" expression
 keepers <- which( !is.na(df[,"Max PolII Signal"]) &
                  ( df[,qc.choice]=="Below Threshold" |
                    df[,qc.choice]=="Induced" )
                  )
 df <- df[keepers,]
 
+## Sort by decreasing (maximum) PolII signal intenstiy 
 sIndex <- rank(df[,"Max PolII Signal"],ties.method="first")
 names(sIndex) <- rownames(df)
 sIndex <- length(sIndex)-sIndex+1 # reverse rank
 df <- df[order(sIndex),]
 
+##  Filter functions required by topGOdata class
 pi.filter <- function ( allScore ) {
   return( df[allScore,"Induced"]==1 & df[allScore,"Poised at T=0"]==1)
 }
@@ -40,11 +46,14 @@ nGOdata <- new("topGOdata",
                gene2GO = geneID2GO,
                annot = annFUN.gene2GO)
 
+
 ## PI
 rezFisher.pi.classic <- runTest(nGOdata, algorithm = "classic", statistic = "fisher")
 allRez.pi.classic <- GenTable(nGOdata,classic=rezFisher.pi.classic,topNodes=50)            
 rezFisher.pi.weight01  <- runTest(nGOdata, algorithm = "weight01", statistic = "fisher")
-allRez.pi.weight01 <- GenTable(nGOdata,weight01=rezFisher.pi.weight01,topNodes=50)            
+allRez.pi.weight01 <- GenTable(nGOdata,weight01=rezFisher.pi.weight01,topNodes=50)
+allRez.pi.weight01[,"Term"] <- as.character(goLong[allRez.pi.weight01[,"GO.ID"]]) ## topGO uses ... for long names. Replace.
+write.matrix(as.matrix(allRez.pi.weight01),topLeftString="Rank",file="PoisedInduced_EnrichedGO.tsv")
 showSigOfNodes(nGOdata,score(rezFisher.pi.weight01),firstSigNodes=5,useInfo='all')
 printGraph(nGOdata,rezFisher.pi.weight01,firstSigNodes=5,fn.prefix="PI",useInfo='all',pdfSW=TRUE)
 
@@ -53,7 +62,9 @@ geneSelectionFun(nGOdata) <- p.filter
 rezFisher.p.classic <- runTest(nGOdata, algorithm = "classic", statistic = "fisher")
 allRez.p.classic <- GenTable(nGOdata,classic=rezFisher.p.classic,topNodes=50)            
 rezFisher.p.weight01  <- runTest(nGOdata, algorithm = "weight01", statistic = "fisher")
-allRez.p.weight01 <- GenTable(nGOdata,weight01=rezFisher.p.weight01,topNodes=50)            
+allRez.p.weight01 <- GenTable(nGOdata,weight01=rezFisher.p.weight01,topNodes=50)
+allRez.p.weight01[,"Term"] <- as.character(goLong[allRez.p.weight01[,"GO.ID"]]) ## topGO uses ... for long names. Replace.
+write.matrix(as.matrix(allRez.p.weight01),topLeftString="Rank",file="Poised_EnrichedGO.tsv")
 showSigOfNodes(nGOdata,score(rezFisher.p.weight01),firstSigNodes=5,useInfo='all')
 printGraph(nGOdata,rezFisher.p.weight01,firstSigNodes=5,fn.prefix="P",useInfo='all',pdfSW=TRUE)            
 
@@ -63,6 +74,8 @@ rezFisher.i.classic <- runTest(nGOdata, algorithm = "classic", statistic = "fish
 allRez.i.classic <- GenTable(nGOdata,classic=rezFisher.i.classic,topNodes=50)            
 rezFisher.i.weight01  <- runTest(nGOdata, algorithm = "weight01", statistic = "fisher")
 allRez.i.weight01 <- GenTable(nGOdata,weight01=rezFisher.i.weight01,topNodes=50)            
+allRez.i.weight01[,"Term"] <- as.character(goLong[allRez.i.weight01[,"GO.ID"]]) ## topGO uses ... for long names. Replace.
+write.matrix(as.matrix(allRez.i.weight01),topLeftString="Rank",file="Induced_EnrichedGO.tsv")
 showSigOfNodes(nGOdata,score(rezFisher.i.weight01),firstSigNodes=5,useInfo='all')
 printGraph(nGOdata,rezFisher.i.weight01,firstSigNodes=5,fn.prefix="I",useInfo='all',pdfSW=TRUE)            
 
