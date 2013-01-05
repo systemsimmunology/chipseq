@@ -3,3 +3,5 @@ data
 dev
 processed_data
 results
+.Rproj.user
+chipseq.Rproj
