@@ -1,0 +1,153 @@
+Examine Pairwise Correlations
+========================================================
+Look at specific pairwise correlations, with some emphasis on those that seem to be incorrect. 
+Red denotes positive correlation, blue negative
+
+```
+pe.cor: Correlation between features
+pe.pvals: P-vals for association
+Red: Positive Correlation 
+Blue: Negative Correlation
+White: Association not statistically signifcant
+```
+
+
+```{r echo=FALSE}
+suppressMessages(library(gplots))
+suppressMessages(library(xtable))
+source(file.path(Sys.getenv("TUMAGG_HOME"),"utils/plot_utils.R")) # for boxplot
+library(xtable)
+```
+
+```{r echo=FALSE}
+data.dir <- "~/chipseq/results/20120816"
+load(file.path(data.dir,"pe.pvals.RData"))
+load(file.path(data.dir,"pe.cor.RData"))
+load(file.path(data.dir,"pe.counts.RData"))
+load(file.path(data.dir,"fm.nm.RData"))
+fm <- fm.nm
+```
+
+Heatmap of associations
+------------------------
+
+### Correlations
+
+```{r echo=F,fig.width=18, fig.height=18}
+heatmap.2(pe.cor, dendrogram="none",
+          col=bluered,trace="none",
+          Rowv=NULL,
+          Colv=NULL,
+          density.info="none",cexCol=1.2,cexRow=1.2,scale="none",
+          margin=c(20,20),
+          symm=TRUE,
+          symbreaks=TRUE)
+```
+
+### $-log10(pvalues)$
+
+```{r echo=F, fig.width=18, fig.height=18}
+m <- -log10(pe.pvals)*sign(pe.cor)
+m[which(m== Inf)] <- 300
+m[which(m== -Inf)] <- -300
+heatmap.2(m, dendrogram="none",
+          col=bluered,trace="none",
+#          breaks=seq(-5,5,1),
+          Rowv=NULL,
+          Colv=NULL,
+          density.info="none",cexCol=1.2,cexRow=1.2,scale="none",
+          margin=c(20,20),
+          symm=TRUE,
+          symbreaks=TRUE)
+```
+
+Questions concerning heatmap
+-----------------------------
+
+### * "PoisedPeakScore" and "Constitutive Expression - Exon" is red. What's up with that?*
+
+Correlation and p-values
+```{r}
+feat1="Poised Peak Score"
+feat2="Constitutive Expression - Exon"
+pe.cor[feat1,feat2]
+pe.pvals[feat1,feat2]
+kruskal.test(fm.nm[,feat1],fm.nm[,feat2])$p.value 
+```
+
+```{r echo=F}
+boxplot.funnylabel(feat1,feat2,data=fm.nm,xlab=feat2,ylab=feat1,indlabels=NULL)
+```
+Included in this are genes with peak score zero. Let's see what happens when we exclude those.
+P-value, for only those NMs where peak score is non-zero
+```{r}
+indspos <- which(fm.nm[,feat1]>0)
+kruskal.test(fm.nm[indspos,feat1],fm.nm[indspos,feat2])$p.value
+```
+e.g. association is not significant
+
+Correlation, correspondingly goes way down, when this same filter is applied
+```{r}
+cor(fm[,feat1],fm[,feat2],use="pairwise.complete.obs",method="spearman") ## 0.2060852
+cor(fm[indspos,feat1],fm[indspos,feat2],use="pairwise.complete.obs",method="spearman") ## 0.02300226
+```
+
+### *Column "PoisedRunningInduced"*
+
+"PoisedRunningInduced","Induced" is blue. Expect red.
+
+```{r echo=FALSE}
+a <- table(fm.nm[,"PoisedRunningInduced"],fm.nm[,"Induced"])
+```
+
+```{r results='asis'}
+print(xtable(a), type='html')
+```
+Shows first variable is the eight-states of all possible PRI states. Thus hard to place meaning into that association. This will be true for other assocations with PRI states.
+
+### *Column "Poised at T=0"*
+
+Contrasted with "Induced"
+```{r}
+feat1 <- "Poised at T=0"
+feat2 <- "Induced"
+pe.cor[feat1,feat2]
+pe.pvals[feat1,feat2]
+```
+```{r results='asis'}
+a <- table(fm.nm[,feat1],fm.nm[,feat2])
+print(xtable(a), type='html')
+```
+Red. This seems fine, and has been discussed in earlier analyses.
+
+
+Contrasted with "Quantitative Change - Three Prime"
+```{r}
+feat1 <- "Poised at T=0"
+feat2 <- "Quantitative Change - Three Prime"
+pe.cor[feat1,feat2]
+pe.pvals[feat1,feat2]
+```
+
+
+```{r echo=F}
+boxplot.funnylabel(feat2,feat1,data=fm.nm,xlab=feat1,ylab=feat2,indlabels=NULL)
+```
+Blue. seems odd. Quantitative change can have pos or neg values. Not sure why correlation would be negative. Another view of the same data:
+
+```{r echo=F}
+p0 <- hist(fm.nm[which(fm[,feat1]==0),feat2],breaks=100,plot=F)
+p1 <- hist(fm.nm[which(fm[,feat1]==1),feat2],breaks=100,plot=F)
+plot(p0,col=rgb(0,0,1,1/4),xlab="Quantitative Change - Three Prime",main="Red:Poised,Blue:Not Poised",xlim=c(-1000,1000))
+plot(p1,col=rgb(1,0,0,1/4),add=T)
+```
+
+```{r}
+median(fm.nm[which(fm[,feat1]==0),feat2],na.rm=T)
+median(fm.nm[which(fm[,feat1]==1),feat2],na.rm=T)
+```
+
+
+
+
+
