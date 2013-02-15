@@ -41,137 +41,140 @@ Have Poised assessment: ```r length(which(!is.na(fm.nm[,"Poised at T=0"])))```
 Have expression values: ```r length(which(!is.na(fm.nm[,"Induced"])))```  
 Have all three: ```r length(which(!is.na(fm.nm[,"Poised at T=0"]) & !is.na(fm.nm[,"Max PolII Signal"]) & !is.na(fm.nm[,"Induced"]))) ```  
 
+Exon expression categories (gene id counts)
+```{r echo=FALSE}
+table(fm.eid[,"Qualitative Change - Exon"])
+```
+
+3' Expression categories (gene id counts)
+```{r echo=FALSE}
+table(fm.eid[,"Qualitative Change - Three Prime"])
+```
 
 ### Expression Array Platform Comparisons
+On both arrays: ```r length(which(!is.na(fm.eid[,"Constitutive Expression - Three Prime"])&!is.na(fm.eid[,"Constitutive Expression - Exon"])))``` Gene IDs.
 
-```{r}
+Comparison of three prime (rows) and exon (columns) constitutive expression. 1=constitutive as per Gene Expression Differential Tests, e.g "flat" over all timepoints and above threshold. 0=on the array but not in the "1" set.
+
+```{r echo=FALSE}
 table(fm.eid[,"Constitutive Expression - Three Prime"],fm.eid[,"Constitutive Expression - Exon"])
 s1 <- names(which((fm.eid[,"Constitutive Expression - Three Prime"]==1)&(fm.eid[,"Constitutive Expression - Exon"]==0)))
 s2 <- names(which((fm.eid[,"Constitutive Expression - Exon"]==1)&(fm.eid[,"Constitutive Expression - Three Prime"]==0)))
+```
 
+Off-diagonal cases: 3-prime constitutive but not exon constitutive: can be subtle difference of not meeting threshold, or genuine disagreement (exon profile sometimes looks like "noisy" version of 3-prime ). Exon constitute but not 3-prime constitutive: e.g. exon profile barely makes threshold for constitutive (< 2-fold). In general "constitutive" definition is based on "not differentially expressed" and *could* be made more stringent if we really wanted to study truly constiutive genes.
+
+Comparison of three prime (rows) and exon (columns) differential expression. 1=differentially expressed, otherwise 0 (but must be on array to be included)
+```{r echo=FALSE}
 table(fm.eid[,"Differential Expression - Three Prime"],fm.eid[,"Differential Expression - Exon"])
 s1 <- names(which((fm.eid[,"Differential Expression - Three Prime"]==1)&(fm.eid[,"Differential Expression - Exon"]==0)))
 s2 <- names(which((fm.eid[,"Differential Expression - Exon"]==1)&(fm.eid[,"Differential Expression - Three Prime"]==0)))
-
-table(fm.eid[,"Cluster - Three Prime"],fm.eid[,"Cluster - Exon"])
-
-table(fm.eid[,"Qualitative Change - Three Prime"],fm.eid[,"Qualitative Change - Exon"])
 ```
 
 
-##
-## Comparison of Gene Expression to PolII
-##
+Off-diagonal elements arise from thresholding differences. 
 
+Comparison of three prime (rows) and exon (columns) cluster assignments for genes on both arrays. 
+```{r echo=FALSE}
+table(fm.eid[,"Cluster - Three Prime"],fm.eid[,"Cluster - Exon"])
+```
+
+
+For nearly all cases, maximal cluster in row = maximal cluster in column.
+Comparison of three prime (rows) and exon (columns) qualitative change for genes on both arrays. 
+```{r echo=FALSE}
+table(fm.eid[,"Qualitative Change - Three Prime"],fm.eid[,"Qualitative Change - Exon"])
+```
+Question: Why are many of the exon CIR being labeled as B by 3-prime array analysis? Answer (possibly): Too conservative in choice of 3-prime threshold? Should we aim for thresholds that  imply  similar  sensitivity for   both  arrays?
+
+
+Comparison of Gene Expression to PolII
+---------------------------------------
+
+Comparison of PolII Signal Intensity Cluster (row) with three prime expression cluster (column). 2780 RefSeqs.
+```{r echo=FALSE}
 table(fm.nm[,"PolII Signal Intensity Cluster"],fm.nm[,"Cluster - Three Prime"])
-table(fm.nm[s4.nm,"PolII Signal Intensity Cluster"],fm.nm[s4.nm,"Cluster - Three Prime"])
-table(fm.nm[s1.nm,"PolII Signal Intensity Cluster"],fm.nm[s1.nm,"Cluster - Three Prime"])
+```
+This table contains ```r sum(sum(table(fm.nm[,"PolII Signal Intensity Cluster"],fm.nm[,"Cluster - Three Prime"]))) ``` entries. As mentioned above (signal intensity clustering section) this includes many low-signal PolII profiles.  
 
-## PolII signal vs poised
+Filter on polII signal intensity. Stringent: maximum pol II signal intensity > 4, yields ```r length(s4.nm)``` RefSeqs; Moderate: maximum pol II signal intensity > 1, yields ```r length(s1.nm)`` RefSeqs 
+
+Stringent 
+```{r echo=FALSE}
+tay <- table(fm.nm[s4.nm,"PolII Signal Intensity Cluster"],fm.nm[s4.nm,"Cluster - Three Prime"])
+tay
+```
+(```r sum(tay)``` of the ```r length(s4.nm)``` RefSeqs have a 3-prime clustering assignment)
+
+Moderate 
+```{r echo=FALSE}
+tay <- table(fm.nm[s1.nm,"PolII Signal Intensity Cluster"],fm.nm[s1.nm,"Cluster - Three Prime"])
+tay
+```
+(```r sum(tay)``` of the ```r length(s1.nm)`` Refseqs have  3-prime  clustering assignment)
+
+Conclude: Strong correspondence between PolII kinetics and gene expression kinetics. Correspondence becomes more pronounced for genes with greater PolII signals. Late expressed ( > 4hr) genes can be reflected in earlier PolII signal. 
+
+Associations with PolII poising
+------------------------------
+
+First *compare against PolII signal clusters.*  
+No restriction overall magnitude of PolII intensity
+
+```{r echo=FALSE}
 table(fm.nm[,"PolII Signal Intensity Cluster"],fm.nm[,"Poised at T=0"])
-table(fm.nm[s4.nm,"PolII Signal Intensity Cluster"],fm.nm[s4.nm,"Poised at T=0"])
+```
+Moderate
+```{r echo=FALSE}
 table(fm.nm[s1.nm,"PolII Signal Intensity Cluster"],fm.nm[s1.nm,"Poised at T=0"])
-expectedcount(table(fm.nm[s1.nm,"PolII Signal Intensity Cluster"],fm.nm[s1.nm,"Poised at T=0"]))
+```
+Stringent
+```{r echo=FALSE}
+table(fm.nm[s4.nm,"PolII Signal Intensity Cluster"],fm.nm[s4.nm,"Poised at T=0"])
+```
 
-## Same comparison,but restrict to increasing signal
+Conclusion: Poising tends toward increasing PollII kinetics. Eg. for the moderate filter, the expected value based on absence of association is
+```r round(expectedcount(table(fm.nm[s1.nm,"PolII Signal Intensity Cluster"],fm.nm[s1.nm,"Poised at T=0"]))["Decreasing","1"])```
+for Poised and Decreasing, but only 
+```r table(fm.nm[s1.nm,"PolII Signal Intensity Cluster"],fm.nm[s1.nm,"Poised at T=0"])["Decreasing","1"]```
+are observed. 
+The anti-association between poised and Decreasing may in part be due to their definitions.
+
+If we look at induced signals only
+```{r echo=FALSE}
 polup <- fm.nm[,"PolII Signal Intensity Cluster"]
 names(polup) <- all.nm
 polup[which(fm.nm[,"PolII Signal Intensity Cluster"]=="Decreasing")] <- NA
 polup[which(fm.nm[,"PolII Signal Intensity Cluster"]=="Low Variation")] <- NA
 tay <- table(polup,fm.nm[,"Poised at T=0"])
 tay
-fisher.test(tay)
-expectedcount(tay)
+```
 
-table(polup[s4.nm],fm.nm[s4.nm,"Poised at T=0"])
-table(polup[s1.nm],fm.nm[s1.nm,"Poised at T=0"])
+The poised genes are not preferentially associated with subsequent expression kinetics.  Slight skewing towards early profile but barely significant, p-value=
+```r fisher.test(tay)$p.value``` with an expected count at 1 hr of 
+```r round(expectedcount(tay)["Peak at 1hr","1"])``` poised genes.
 
+*Poising compared with qualitative expression change*  
+Using combined expression change from both arrays (RefSeqs)
 
-
-
-
-##
-## Exon cluster vs poised 
-##
-table(fm.nm[,"Cluster - Exon"],fm.nm[,"Poised at T=0"])
-table(fm.nm[s4.nm,"Cluster - Exon"],fm.nm[s4.nm,"Poised at T=0"])
-table(fm.nm[s1.nm,"Cluster - Exon"],fm.nm[s1.nm,"Poised at T=0"])
-expectedcount(table(fm.nm[s1.nm,"Cluster - Exon"],fm.nm[s1.nm,"Poised at T=0"]))
-
-
-##
-## Qualitative expression changes vs poised
-## 
- 
+```{r echo=FALSE} 
 table(fm.nm[,"Qualitative Change - Arrays Combined"],fm.nm[,"Poised at T=0"])
+```
+
+To simplify, remove decreasing and constitutive genes
+```{r echo=FALSE}
 upornot <- (fm.nm[,"Qualitative Change - Arrays Combined"]=="Below Threshold") | (fm.nm[,"Qualitative Change - Arrays Combined"]=="Induced")
 ups <- rownames(fm.nm)[which(upornot)]
 tay <- table(fm.nm[ups,"Qualitative Change - Arrays Combined"],fm.nm[ups,"Poised at T=0"])
 tay
-fisher.test(tay)
-expectedcount(tay)
+```
+Association test: p <```r fisher.test(tay)$p.value```.  Strong association between gene induction and poising. Expect value for no association is ```r round(expectedcount(tay)["Induced","1"])``` genes. Holds true also if exon and 3-prime arrays are considered alone.
 
-table(fm.nm[,"Qualitative Change - Exon"],fm.nm[,"Poised at T=0"])
-upornot <- (fm.nm[,"Qualitative Change - Exon"]=="Below Threshold") | (fm.nm[,"Qualitative Change - Exon"]=="Induced")
-ups <- rownames(fm.nm)[which(upornot)]
-tay <- table(fm.nm[ups,"Qualitative Change - Exon"],fm.nm[ups,"Poised at T=0"])
-tay
-fisher.test(tay)
-expectedcount(tay)
-
-
-table(fm.nm[,"Qualitative Change - Three Prime"],fm.nm[,"Poised at T=0"])
-upornot <- (fm.nm[,"Qualitative Change - Three Prime"]=="Below Threshold") | (fm.nm[,"Qualitative Change - Three Prime"]=="Induced")
-ups <- rownames(fm.nm)[which(upornot)]
-tay <- table(fm.nm[ups,"Qualitative Change - Three Prime"],fm.nm[ups,"Poised at T=0"])
-tay
-fisher.test(tay)
-expectedcount(tay)
-
-
- 
-table(fm.eid[,"Qualitative Change - Arrays Combined"],fm.eid[,"Poised at T=0"])
+For Gene IDs, the corresponding values are
+```{r echo=FALSE}
 upornot <- (fm.eid[,"Qualitative Change - Arrays Combined"]=="Below Threshold") | (fm.eid[,"Qualitative Change - Arrays Combined"]=="Induced")
 ups <- rownames(fm.eid)[which(upornot)]
 tay <- table(fm.eid[ups,"Qualitative Change - Arrays Combined"],fm.eid[ups,"Poised at T=0"])
 tay
-fisher.test(tay)
-expectedcount(tay)
-
- 
-table(fm.eid[,"Qualitative Change - Exon"],fm.eid[,"Poised at T=0"])
-upornot <- (fm.eid[,"Qualitative Change - Exon"]=="Below Threshold") | (fm.eid[,"Qualitative Change - Exon"]=="Induced")
-ups <- rownames(fm.eid)[which(upornot)]
-tay <- table(fm.eid[ups,"Qualitative Change - Exon"],fm.eid[ups,"Poised at T=0"])
-tay
-fisher.test(tay)
-expectedcount(tay)
-
-
-r.eid <- getGIDsOfGO(GOID)
-all.eid <- rownames(fm.eid)
-
-## membership in gocat
-r.logvec <- all.eid %in% r.eid
-## membership in universe is upornot
-names(r.logvec) <- all.eid
-
-## membership in PI
- pi.logvec <- (fm.eid[,"Qualitative Change - Arrays Combined"]=="Induced") &  (fm.eid[,"Poised at T=0"]==1)
-names(pi.logvec) <- all.eid
-
-tay <- table(pi.logvec[ups], r.logvec[ups] )
-tay
-fisher.test(tay)
-expectedcount(tay)
-
-gene.symbol[names(which(pi.logvec[ups] & r.logvec[ups]))]
-
-## what about "just poised"
-
-p.logvec <- fm.eid[,"Poised at T=0"]==1
-names(p.logvec) <- all.eid
-tay <- table(p.logvec[ups], r.logvec[ups] )
-tay
-fisher.test(tay)
-expectedcount(tay)
+```
+which is a total of ```r sum(sum(tay))``` Gene IDs.
