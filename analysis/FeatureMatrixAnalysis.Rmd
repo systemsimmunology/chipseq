@@ -1,4 +1,7 @@
 
+Feature Matrix Analysis
+=======================
+
 ```{r echo=FALSE}
 suppressMessages(library(gplots))
 suppressMessages(library(xtable))
@@ -17,17 +20,8 @@ all.nm <- rownames(fm.nm)
 all.eid <- rownames(fm.eid)
 ```
 
-
-### Some filters
-```{r cache=TRUE}
-s4.nm <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>4)] ## stringent signal filter
-s1.nm <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>1)] ## moderate signal filter 
-p6.nm <- all.nm[which(abs(as.numeric(fm.nm[,"Poised Peak Score"]))>6)] ## poised score filter
-```
-
-## Basic stats
-
-*Some Overall Stats*
+Some Overall Stats
+-------------------
 
 GeneIDs(rows): ```r nrow(fm.eid)```  
 Have PolII assessment: ```r length(which(!is.na(fm.eid[,"Max PolII Signal"])))```  
@@ -51,7 +45,20 @@ table(fm.eid[,"Qualitative Change - Exon"])
 table(fm.eid[,"Qualitative Change - Three Prime"])
 ```
 
-### Expression Array Platform Comparisons
+Filters on transcripts and genes
+---------------------------------
+
+*Filtering poised signal by overall signal strength*. 
+We will use two filters, a "stringent" one and a "moderate one". The stringent filter will retain transcripts whose PolII signal exceeds 4 units at some point in time, and the moderate filter will retain transcripts whose Poll signal exceeds 1 at some time point.
+```{r cache=TRUE}
+s4.nm <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>4)] ## stringent signal filter
+s1.nm <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>1)] ## moderate signal filter 
+```
+The stringent filter yields ```r length(s4.nm)``` RefSeqs, the moderate one ```r length(s1.nm)`` RefSeqs.
+
+Expression Array Platform Comparisons
+-------------------------------------
+
 On both arrays: ```r length(which(!is.na(fm.eid[,"Constitutive Expression - Three Prime"])&!is.na(fm.eid[,"Constitutive Expression - Exon"])))``` Gene IDs.
 
 Comparison of three prime (rows) and exon (columns) constitutive expression. 1=constitutive as per Gene Expression Differential Tests, e.g "flat" over all timepoints and above threshold. 0=on the array but not in the "1" set.
@@ -97,7 +104,6 @@ table(fm.nm[,"PolII Signal Intensity Cluster"],fm.nm[,"Cluster - Three Prime"])
 ```
 This table contains ```r sum(sum(table(fm.nm[,"PolII Signal Intensity Cluster"],fm.nm[,"Cluster - Three Prime"]))) ``` entries. As mentioned above (signal intensity clustering section) this includes many low-signal PolII profiles.  
 
-Filter on polII signal intensity. Stringent: maximum pol II signal intensity > 4, yields ```r length(s4.nm)``` RefSeqs; Moderate: maximum pol II signal intensity > 1, yields ```r length(s1.nm)`` RefSeqs 
 
 Stringent 
 ```{r echo=FALSE}
@@ -118,7 +124,8 @@ Conclude: Strong correspondence between PolII kinetics and gene expression kinet
 Associations with PolII poising
 ------------------------------
 
-First *compare against PolII signal clusters.*  
+### Compare against PolII signal clusters.
+
 No restriction overall magnitude of PolII intensity
 
 ```{r echo=FALSE}
