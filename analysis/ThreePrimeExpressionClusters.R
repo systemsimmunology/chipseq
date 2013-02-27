@@ -6,9 +6,9 @@
 ## Running on server is recommended
 library(clusterCons)
  
-load("~/allarrays/data/20100426.curated.3prime/all.lambdas.objects.RData")
-load("~/allarrays/data/20100426.curated.3prime/all.ratios.objects.RData")
-load("~/allarrays/data/20100426.curated.3prime/all.mus.objects.RData")
+load("~/allarrays/data/20120926.curated.3prime/all.lambdas.objects.RData")
+load("~/allarrays/data/20120926.curated.3prime/all.ratios.objects.RData")
+load("~/allarrays/data/20120926.curated.3prime/all.mus.objects.RData")
 
 ##
 ## Differentially Expresssed
