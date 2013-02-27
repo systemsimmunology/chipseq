@@ -13,8 +13,8 @@ load("~/allarrays/data/20100426.curated.3prime/all.mus.objects.RData")
 ##
 ## Differentially Expresssed
 ##
-lambda.cutoff <- 66.31579 ## 0.01% cutoff - leads to 3069 genes for full time-course, at mu.cutoff 100
-##lambda.cutoff <- 26.61275 ## 0.05% cutoff - leads to 4913 genes for full time-course
+lambda.cutoff <- 67.22123 ## 0.01% cutoff - September 2012
+##lambda.cutoff <- 26.44526 ## 0.05% cutoff - September 2012 
 
 mu.cutoff <- 300
 imax <- 8 ## imax=8 <-> 6 hrs 

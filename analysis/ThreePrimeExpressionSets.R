@@ -4,7 +4,6 @@
 ## charcterization of diffexp, nonchanging,
 ## cluster shapes
 
-
 load("~/data/ncbi/nms.of.eid.RData")
 load("~/data/ncbi/eid.of.nm.RData")
 load("~/chipseq/annotation/nmlength.RData")
@@ -12,24 +11,16 @@ load("~/chipseq/annotation/eidlength.RData")
 all.nm <- names(eid.of.nm)
 all.eid <- names(nms.of.eid)
 
-load("~/allarrays/data/20100426.curated.3prime/all.lambdas.objects.RData")
-load("~/allarrays/data/20100426.curated.3prime/all.ratios.objects.RData")
-load("~/allarrays/data/20100426.curated.3prime/all.mus.objects.RData")
+load("~/allarrays/data/20120926.curated.3prime/all.lambdas.objects.RData")
+load("~/allarrays/data/20120926.curated.3prime/all.ratios.objects.RData")
+load("~/allarrays/data/20120926.curated.3prime/all.mus.objects.RData")
 ncbiID <- as.character(unlist(sapply(rownames(lps.mus),strsplit,split="_at")))
 names(ncbiID) <- rownames(lps.mus)
 
 ##
-## Overall, keep in mind 
-## 2252 genes differentially expressed, based on 
-## lambda.cutoff <- 26.61275 ## 0.05% cutoff
-## Clustering was performed on a smaller set, of 1517 genes
-## lambda.cutoff <- 66.31579 ## 0.01% cutoff
-
-##
 ## Differentially Expresssed
 ##
-lambda.cutoff <- 26.61275 ## 0.05% cutoff - leads to 4913 genes for full time-course
-
+lambda.cutoff <- 26.44526  ## 0.05% cutoff September 2012
 mu.cutoff <- 300
 imax <- 8 ## imax=8 <-> 6 hrs 
 sigSlice <- function( lambdaCutoff , ratioMatrix, lambdaMatrix){
