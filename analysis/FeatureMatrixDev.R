@@ -11,8 +11,11 @@
 ## Note that PolII is processed with NR_ only.
 source("~/chipseq/utils/fmutils.R")
 
-load("~/data/ncbi/nms.of.eid.RData")
-load("~/data/ncbi/eid.of.nm.RData")
+load("~/data/ncbi/28May2012/nms.of.eid.RData")
+load("~/data/ncbi/28May2012/eid.of.nm.RData")
+
+#load("~/data/ncbi/16Mar2012/nms.of.eid.RData")
+#load("~/data/ncbi/16Mar2012/eid.of.nm.RData")
 load("~/chipseq/annotation/nmlength.RData")
 load("~/chipseq/annotation/eidlength.RData")
 load("~/data/ncbi/gene.symbol.RData")
@@ -138,7 +141,7 @@ fm.eid <- fm.eid.new
 ##
 ## 3prime Array Categories
 ## 
-threeprime <- read.matrix("~/chipseq/results/20120807/ThreePrimeArrayExpression.tsv")
+threeprime <- read.matrix("~/chipseq/results/20130227/ThreePrimeArrayExpression.tsv")
 tp.ps <- rownames(threeprime)
 tp.eid <- as.character(unlist(sapply(tp.ps,strsplit,split="_at")))
 rownames(threeprime) <- tp.eid 
@@ -159,7 +162,7 @@ fm.nm <- fm.nm.new
 ##
 ## Exon Array Categories
 ## 
-exon <- read.matrix("~/chipseq/results/20120807/ExonArrayExpression.tsv")
+exon <- read.matrix("~/chipseq/results/20130227/ExonArrayExpression.tsv")
 exon <- exon[intersect(rownames(exon),all.eid),]
 exon <- as.data.frame(exon,stringsAsFactors=FALSE)
 exon[,"On Exon Array"] <- as.numeric(exon[,"On Exon Array"])
