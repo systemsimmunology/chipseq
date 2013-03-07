@@ -77,7 +77,7 @@ setmat[constitutive.3prime.ps,5]="Constitutive"
 ## Plot clusters and characterize patterns
 ##
 ## 3' array clusters
-load("~/chipseq/results/20120323/clusters.3prime.RData")
+load("~/chipseq/results/20130227/clusters.3prime.RData")
 clustmat <- clusters.3prime
 clustered.ps <- rownames(clustmat)
 data.mat <- lps.ratios[clustered.ps,1:7]
@@ -119,7 +119,7 @@ setmat[clustered.ps,6] <- cvec1
 ## 93%, 97%,100%,99.8%
 ## correctly classfied
 
-load("~/chipseq/results/20120323/clusters.3prime.RData")
+load("~/chipseq/results/20130227/clusters.3prime.RData")
 ## gives clusters.3prime
 clustmat <- clusters.3prime
 clustered.pss <- rownames(clustmat)
