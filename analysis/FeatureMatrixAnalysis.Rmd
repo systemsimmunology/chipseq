@@ -9,10 +9,8 @@ library(xtable)
 ```
 
 ```{r echo=FALSE, cache=TRUE}
-data.dir <- "~/chipseq/results/20120816"
-load(file.path(data.dir,"pe.pvals.RData"))
-load(file.path(data.dir,"pe.cor.RData"))
-load(file.path(data.dir,"pe.counts.RData"))
+data.dir <- "~/chipseq/results/20130227"
+#data.dir <- "~/chipseq/results/20120816"
 load(file.path(data.dir,"fm.nm.RData"))
 load(file.path(data.dir,"fm.eid.RData"))
 all.nm <- rownames(fm.nm)

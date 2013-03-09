@@ -10,17 +10,16 @@
 ## in one round, use either RefSeq or GeneID, then covert
 ## Note that PolII is processed with NR_ only.
 source("~/chipseq/utils/fmutils.R")
-
-load("~/data/ncbi/28May2012/nms.of.eid.RData")
-load("~/data/ncbi/28May2012/eid.of.nm.RData")
-
-#load("~/data/ncbi/16Mar2012/nms.of.eid.RData")
-#load("~/data/ncbi/16Mar2012/eid.of.nm.RData")
+load("~/data/ncbi/20July2012/nms.of.eid.RData")
+load("~/data/ncbi/20July2012/eid.of.nm.RData")
 load("~/chipseq/annotation/nmlength.RData")
 load("~/chipseq/annotation/eidlength.RData")
 load("~/data/ncbi/gene.symbol.RData")
 load("~/data/ncbi/gene.eid.RData")
 load("~/data/ncbi/gene.fullname.RData")
+#load("~/data/ncbi/20July2012/gene.symbol.RData")
+#load("~/data/ncbi/20July2012/gene.eid.RData")
+#load("~/data/ncbi/20July2012/gene.fullname.RData")
 all.nm <- names(eid.of.nm)
 all.eid <- names(nms.of.eid)
 ## coordinates
