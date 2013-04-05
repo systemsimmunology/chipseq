@@ -19,7 +19,7 @@ for tag in "${tags[@]}"; do
     sed "s/PRI/$tag/g" annotations_grid.json > tempfile 
     mv -f tempfile annotations_grid.json 
     rm -f tempfile
-    ln -s /titan/cancerregulome9/workspaces/users/vthorsson/EpiGenomeLandscape/KinPlots images ## require unix form of filesystem link
+    ln -s $CR9/EpiGenomeLandscape/KinPlots images 
     popd >& /dev/null
 ## Create Feature matrix $tag and copy to web folder 
     awk -v t=$tag '{FS="\t" ; if ($27==t) print }' FeatMatRefSeq.tsv > tempfile ## Pass shell variables to awk http://www.cyberciti.biz/faq/linux-unix-appleosx-bsd-bash-passing-variables-to-awk/

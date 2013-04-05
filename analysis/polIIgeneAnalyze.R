@@ -10,21 +10,31 @@ load("~/chipseq/processed_data/polII/polII.nm.fracolap.RData")
 load("~/chipseq/processed_data/polII/polII.fracolap.cube.RData")
 load("~/chipseq/annotation/eidlength.RData")
 load("~/chipseq/annotation/nmlength.RData")
-load("~/data/ncbi/nms.of.eid.RData")
-load("~/data/ncbi/eid.of.nm.RData")
+load("~/data/ncbi/20July2012/nms.of.eid.RData")
+load("~/data/ncbi/20July2012/eid.of.nm.RData")
 load("~/data/ncbi/gene.symbol.RData")
+load("~/chipseq/processed_data/PolII/polII.sigint.RData")
 library(RColorBrewer)
 source("~/chipseq/utils/heatmap3.R")
 source("~/bin/R/functions/plottingUtils.R")
 source("~/allarrays/utils/utilitiesPlot.R") ## required for plotCSS
 source("~/chipseq/utils/utilitiesPlot.R")
 ## Expression data needed for filtering, plots etc.
-load("~/allarrays/data/20100407.curated.exon/CSSs.tc.RData")
-load("~/allarrays/data/20100407.curated.exon/dm.RData")
+data.dir <- file.path(Sys.getenv("AA"),"data") 
+dir3prime.cur <- paste(data.dir,"20120926.curated.3prime",sep="/")
+selectiveLoad("lps.mus",paste(dir3prime.cur,"all.mus.objects.RData",sep="/"))
+lps.3prime.mus <- lps.mus
+direxon.cur <- paste(data.dir,"20121001.curated.exon",sep="/")
+load(paste(direxon.cur,"lps.mus.RData",sep="/"))
+lps.exon.mus <- lps.mus
+
+#load("~/allarrays/data/20120926.curated.3prime/all.mus.objects.RData")
+#load("~/allarrays/data/20121001.curated.exon/CSSs.tc.RData")
+#load("~/allarrays/data/20121001.curated.exon/dm.RData")
 dm.lps.exon <- dm
 CSSs.tc.exon <- CSSs.tc
-load("~/allarrays/data/20100407.curated.3prime/CSSs.tc.RData")
-load("~/allarrays/data/20100407.curated.3prime/dm.RData")
+load("~/allarrays/data/20120926.curated.3prime/CSSs.tc.RData")
+load("~/allarrays/data/20120926.curated.3prime/dm.RData")
 dm.lps.3prime <- dm
 CSSs.tc.3prime <- CSSs.tc
 

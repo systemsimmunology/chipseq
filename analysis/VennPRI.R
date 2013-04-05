@@ -1,7 +1,7 @@
 
 source("~/bin/R/functions/vennUtils.R")
 
-load("~/chipseq/results/20120814/fm.nm.RData")
+load("~/chipseq/results/20130227/fm.nm.RData")
 c123 <- fm.nm[,c("Poised at T=0","Running","Induced")]
 m <- c123
 ##m <- matrix(as.numeric(c123),ncol=3)
@@ -16,7 +16,7 @@ s.nm <- paste("All:",length(nonna),", P:",ptot,", R:",rtot,", I:",itot,sep="")
 
 a.nm <- vennCounts(m)
 
-load("~/chipseq/results/20120814/fm.eid.RData")
+load("~/chipseq/results/20130227/fm.eid.RData")
 c123 <- fm.eid[,c("Poised at T=0","Running","Induced")]
 m <- c123
 ##m <- matrix(as.numeric(c123),ncol=3)
@@ -42,7 +42,7 @@ mtext(s.eid,side=3,line=0,outer=FALSE,cex=1.5)
 all.nm <- rownames(fm.nm)
 s1.nm <- all.nm[which(as.numeric(fm.nm[,"Max PolII Signal"])>1)] ## moderate signal filter
 
-load("~/chipseq/results/20120814/fm.nm.RData")
+load("~/chipseq/results/20130227/fm.nm.RData")
 c123 <- fm.nm[,c("Poised at T=0","Running","Induced")]
 m <- c123
 ##m <- matrix(as.numeric(c123),ncol=3)

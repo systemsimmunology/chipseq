@@ -23,18 +23,71 @@ kinplot <- function (eid) {
 #    plot(ach4gene.fracolap[eid,],type='l',main=main,ylab="AcH4 Fractional Overlap",xlab="",col='blue',ylim=c(0,1),xaxt="n")
 #    points(ach4gene.fracolap[eid,],x=1:8,type='p',col='blue',pch=19)
 #    axis(1,1:8,labels=ach4.csconds)
-#  } else { frame() }
-  if ( eid %in% rownames(dm.lps.exon) ) {
+#  } else { frame() }  
+  if ( paste(eid,"_at",sep="") %in% rownames(lps.exon.mus)) {
     main=paste(gene.symbol[eid],": Exon Array")
-    plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon,main=main)
+    plotLPSProfile.exon(eid,main=main)
   } else { frame() }
-  if ( eid %in% rownames(dm.lps.3prime) ) {
+  if ( paste(eid,"_at",sep="") %in% rownames(lps.3prime.mus) ) {
     main=paste(gene.symbol[eid],": 3' Array")
-    plotCSS(eid,CSSs.tc.3prime[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.3prime,tmax=8,main=main)
+    plotLPSProfile.3prime(eid,main=main)
   } else { frame() }
-  
+      
 }
 
+# based on plotCSS
+plotLPSProfile.3prime <- function (eid,ymax=NULL,tmax=8.,inset.text=NULL,main=NULL) {
+  psid <- paste(eid,"_at",sep="")
+  x <- c(c(0,20,40,60,80,120)/60,4,6,8,18,24)
+  nt <- length(x) ## number of time points
+  maxind <- length(which(x <= tmax ))
+  x <- x[1:maxind]
+  ## columns of datamatrix
+  cols <- colnames(lps.3prime.mus)[1:maxind]
+  tc <- lps.3prime.mus[psid,cols]
+  if (is.null(main)){
+    main <- paste(gene.symbol[eid]," : 3' Array",sep="")
+  }
+  xlab <- "Time [hr]"
+  ylab <- "Intensity"
+  if ( is.null(ymax) ){
+    ylim <- c(0.,max(tc))
+  } else {
+    ylim <- c(0.,ymax)
+  }
+  plot(tc,x=x,xlab=xlab,ylim=ylim,ylab=ylab,type='l',col='blue',main=main)
+  points(tc,x=x,type='p',col='blue',pch=19)
+  if ( !is.null(inset.text) ){
+    text(0.1*max(x),0.9*ymax,inset.text,cex=2)
+  } 
+}
+
+# based on plotCSS
+plotLPSProfile.exon <- function (eid,ymax=NULL,tmax=12.,inset.text=NULL,main=NULL) {
+  psid <- paste(eid,"_at",sep="")
+  x <- c(c(0,60,120)/60,4,6,12)
+  nt <- length(x) ## number of time points
+  maxind <- length(which(x <= tmax ))
+  x <- x[1:maxind]
+  ## columns of datamatrix
+  cols <- colnames(lps.exon.mus)[1:maxind]
+  tc <- lps.exon.mus[psid,cols]
+  if (is.null(main)){
+    main <- paste(gene.symbol[eid]," : Exon Array",sep="")
+  }
+  xlab <- "Time [hr]"
+  ylab <- "Intensity"
+  if ( is.null(ymax) ){
+    ylim <- c(0.,max(tc))
+  } else {
+    ylim <- c(0.,ymax)
+  }
+  plot(tc,x=x,xlab=xlab,ylim=ylim,ylab=ylab,type='l',col='blue',main=main)
+  points(tc,x=x,type='p',col='blue',pch=19)
+  if ( !is.null(inset.text) ){
+    text(0.1*max(x),0.9*ymax,inset.text,cex=2)
+  } 
+}
 
 ## reuqires nmlength, among other things
 kinplotnm <- function (nm) {
@@ -56,15 +109,14 @@ kinplotnm <- function (nm) {
     points(polIIgene.nm.sigint[nm,c(1,2,4,5)],x=1:4,type='p',col='blue',pch=19)
     axis(1,1:4,labels=c(0,1,2,4))
   } else { frame() }
-  if ( eid %in% rownames(dm.lps.exon) ) {
+  if ( paste(eid,"_at",sep="") %in% rownames(lps.exon.mus)) {
     main=paste(gene.symbol[eid],": Exon Array")
-    plotCSS(eid,CSSs.tc.exon[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.exon,main=main)
+    plotLPSProfile.exon(eid,main=main)
   } else { frame() }
-  if ( eid %in% rownames(dm.lps.3prime) ) {
+  if ( paste(eid,"_at",sep="") %in% rownames(lps.3prime.mus) ) {
     main=paste(gene.symbol[eid],": 3' Array")
-    plotCSS(eid,CSSs.tc.3prime[["BMDM_Bl6_LPS__Female"]],data.matrix=dm.lps.3prime,tmax=8,main=main)
-  } else { frame() }
-  
+    plotLPSProfile.3prime(eid,main=main)
+  } else { frame() }  
 }
 
 
